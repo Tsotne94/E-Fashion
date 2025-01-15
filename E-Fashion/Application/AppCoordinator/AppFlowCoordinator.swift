@@ -7,49 +7,56 @@
 import Foundation
 import UIKit
 import Combine
+import FirebaseAuth
 
 class AppFlowCoordinator: Coordinator {
-    
     let window: UIWindow
     var childCoordinators = [Coordinator]()
+    private var subscriptions = Set<AnyCancellable>()
     
-    var hasSeenOnboarding = CurrentValueSubject<Bool, Never>(false)
-    var subscriptions = Set<AnyCancellable>()
-    
+    @Inject private var viewModel: AppFlowViewModel
+    private var appState = CurrentValueSubject<AppState, Never>(.onboarding)
+
     init(window: UIWindow) {
         self.window = window
     }
     
     func start() {
-        setupOnboardingValue()
-        hasSeenOnboarding
-            .removeDuplicates()
-            .sink { [weak self] hasSeen in
-            if !hasSeen {
-                let mainCoordinator = MainCoordinator()
-                mainCoordinator.start()
-                self?.childCoordinators = [mainCoordinator]
-                
-                self?.window.rootViewController = mainCoordinator.rootViewController
-            } else if let hasSeenOnboarding = self?.hasSeenOnboarding {
-                let onboardingCoordinator = OnboardingCoordinator(hasSeenOnboarding: hasSeenOnboarding)
-                onboardingCoordinator.start()
-                self?.childCoordinators = [onboardingCoordinator]
-                
-                self?.window.rootViewController = onboardingCoordinator.rootViewController
+        viewModel.output
+            .sink { [weak self] action in
+                switch action {
+                case .startOnboarding:
+                    self?.startOnboarding()
+                case .startAuthentication:
+                    self?.startAuthentication()
+                case .startMainFlow:
+                    self?.startMainFlow()
+                }
             }
-        }.store(in: &subscriptions)
+            .store(in: &subscriptions)
+        
+        viewModel.loadAppState()
     }
     
-    func setupOnboardingValue() {
-        let key = "hasSeenOnboarding"
-        let value = UserDefaults.standard.bool(forKey: key)
-        hasSeenOnboarding.send(value)
-        
-        hasSeenOnboarding
-            .filter({ $0 })
-            .sink { value in
-                UserDefaults.standard.setValue(value, forKey: key)
-            }.store(in: &subscriptions)
+    func startOnboarding() {
+        let onboardingCoordinator = OnboardingCoordinator(appState: appState)
+        onboardingCoordinator.start()
+        self.childCoordinators = [onboardingCoordinator]
+        self.window.rootViewController = onboardingCoordinator.rootViewController
+    }
+    
+    func startAuthentication() {
+//        let authCoordinator = AuthenticationCoordinator(appState: appState)
+//        authCoordinator.start()
+//        self.childCoordinators = [authCoordinator]
+//        self.window.rootViewController = authCoordinator.rootViewController
+    }
+    
+    func startMainFlow() {
+        let mainCoordinator = MainCoordinator()
+        mainCoordinator.start()
+        self.childCoordinators = [mainCoordinator]
+        self.window.rootViewController = mainCoordinator.rootViewController
     }
 }
+

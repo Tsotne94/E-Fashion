@@ -16,6 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions:
                      [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
+        DependencyContainer.root.registerUseCases()
+        DependencyContainer.root.registerRepositories()
+        DependencyContainer.root.registerViewModels()
+    
         configureWindow()
         
         return true

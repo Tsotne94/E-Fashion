@@ -11,19 +11,17 @@ import Combine
 class OnboardingCoordinator: Coordinator {
     var rootViewController = UIViewController()
     
-    var hasSeenOnboarding: CurrentValueSubject<Bool, Never>
+    var appState: CurrentValueSubject<AppState, Never>
     
-    init(hasSeenOnboarding: CurrentValueSubject<Bool, Never>) {
-        self.hasSeenOnboarding = hasSeenOnboarding
+    init(appState: CurrentValueSubject<AppState, Never>) {
+        self.appState = appState
     }
     
     func start() {
         let view = OnboardingViewController { [weak self] in
-            self?.hasSeenOnboarding.send(true)
+            self?.appState.send(.mainFlow)
         }
         rootViewController = view
     }
-    
-    
 }
  
