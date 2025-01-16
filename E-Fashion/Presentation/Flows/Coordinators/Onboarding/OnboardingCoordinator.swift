@@ -10,18 +10,20 @@ import Combine
 
 class OnboardingCoordinator: Coordinator {
     var rootViewController = UIViewController()
+    weak var parentCoordinator: AppFlowCoordinator?
     
-    var appState: CurrentValueSubject<AppState, Never>
-    
-    init(appState: CurrentValueSubject<AppState, Never>) {
-        self.appState = appState
+    init(parentCoordinator: AppFlowCoordinator?) {
+        self.parentCoordinator = parentCoordinator
     }
     
     func start() {
-        let view = OnboardingViewController { [weak self] in
-            self?.appState.send(.mainFlow)
-        }
-        rootViewController = view
+        rootViewController = OnboardingViewController(doneRequested: { [weak self] in
+            self?.parentCoordinator?.viewModel.startMainFlow()
+        })
+    }
+    
+    func goToAuthentication() {
+        
     }
 }
  

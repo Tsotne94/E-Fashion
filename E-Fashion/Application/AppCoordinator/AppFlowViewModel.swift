@@ -42,10 +42,6 @@ public class DefaultAppFlowViewModel: AppFlowViewModel {
         loadAppState()
     }
     
-    public func start() {
-        loadAppState()
-    }
-    
     public func startOnboarding() {
         _output.send(.startOnboarding)
     }
@@ -56,6 +52,7 @@ public class DefaultAppFlowViewModel: AppFlowViewModel {
     }
     
     public func startMainFlow() {
+        hasSeenOnboardingUseCase.execute()
         updateAppStateUseCase.execute(state: .mainFlow)
         _output.send(.startMainFlow)
     }

@@ -7,12 +7,14 @@
 import UIKit
 
 final class MainCoordinator: Coordinator {
+    weak var parentCoordinator: AppFlowCoordinator?
     
     var rootViewController: UITabBarController
     var childCoordinators = [Coordinator]()
     
-    init() {
+    init(parentCoordinator: AppFlowCoordinator) {
         self.rootViewController = MainTabBarController()
+        self.parentCoordinator = parentCoordinator
     }
     
     func start() {
