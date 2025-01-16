@@ -26,7 +26,7 @@ public enum AppFlowViewModelOutputAction {
     case startMainFlow
 }
 
-public class DefaultAppFlowViewModel: AppFlowViewModel {
+public final class DefaultAppFlowViewModel: AppFlowViewModel {
     @Inject var loadAppStateUseCase: LoadAppStateUseCase
     @Inject var updateAppStateUseCase: UpdateAppStateUseCase
     @Inject var hasSeenOnboardingUseCase: HasSeenOnboardingUseCase
@@ -42,10 +42,6 @@ public class DefaultAppFlowViewModel: AppFlowViewModel {
         loadAppState()
     }
     
-    public func start() {
-        loadAppState()
-    }
-    
     public func startOnboarding() {
         _output.send(.startOnboarding)
     }
@@ -56,6 +52,7 @@ public class DefaultAppFlowViewModel: AppFlowViewModel {
     }
     
     public func startMainFlow() {
+        hasSeenOnboardingUseCase.execute()
         updateAppStateUseCase.execute(state: .mainFlow)
         _output.send(.startMainFlow)
     }

@@ -11,7 +11,7 @@ public extension DependencyContainer {
         DependencyContainer.root.register {
             Module { DefaultAppStateRepository() as AppStateRepository }
 #warning("activate this in future")
-//            Module { DefaultAuthenticationRepository() as AuthenticationRepository } #warnin
+//            Module { DefaultAuthenticationRepository() as AuthenticationRepository } #warning
         }
     }
 }

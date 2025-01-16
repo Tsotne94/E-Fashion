@@ -9,6 +9,12 @@ import UIKit
 import Combine
 
 class AuthenticationCoordinator: Coordinator {
+    weak var parentCoordinator: AppFlowCoordinator?
+    
+    init(parentCoordinator: AppFlowCoordinator?) {
+        self.parentCoordinator = parentCoordinator
+    }
+    
     func start() {
         
     }

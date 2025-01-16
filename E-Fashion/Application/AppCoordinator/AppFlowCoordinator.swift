@@ -9,13 +9,12 @@ import UIKit
 import Combine
 import FirebaseAuth
 
-class AppFlowCoordinator: Coordinator {
+final class AppFlowCoordinator: Coordinator {
     let window: UIWindow
     var childCoordinators = [Coordinator]()
     private var subscriptions = Set<AnyCancellable>()
     
-    @Inject private var viewModel: AppFlowViewModel
-    private var appState = CurrentValueSubject<AppState, Never>(.onboarding)
+    @Inject var viewModel: AppFlowViewModel
 
     init(window: UIWindow) {
         self.window = window
@@ -39,24 +38,25 @@ class AppFlowCoordinator: Coordinator {
     }
     
     func startOnboarding() {
-        let onboardingCoordinator = OnboardingCoordinator(appState: appState)
+        let onboardingCoordinator = OnboardingCoordinator(parentCoordinator: self)
         onboardingCoordinator.start()
         self.childCoordinators = [onboardingCoordinator]
         self.window.rootViewController = onboardingCoordinator.rootViewController
     }
     
     func startAuthentication() {
-//        let authCoordinator = AuthenticationCoordinator(appState: appState)
+//        let authCoordinator = AuthenticationCoordinator()
 //        authCoordinator.start()
 //        self.childCoordinators = [authCoordinator]
 //        self.window.rootViewController = authCoordinator.rootViewController
     }
     
     func startMainFlow() {
-        let mainCoordinator = MainCoordinator()
+        let mainCoordinator = MainCoordinator(parentCoordinator: self)
         mainCoordinator.start()
         self.childCoordinators = [mainCoordinator]
-        self.window.rootViewController = mainCoordinator.rootViewController
+        self.window.setRootViewControllerWithPushTransition(mainCoordinator.rootViewController)
     }
 }
 
+#warning("add aplicaition logoooo")
