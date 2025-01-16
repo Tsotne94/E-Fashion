@@ -14,7 +14,7 @@ class FirstTabViewModel: ObservableObject {
        
        init() {
            $nname
-               .sink { [weak self] newValue in
+               .sink { newValue in
                    print("nname updated: \(newValue)")
                }
                .store(in: &subscriptions)

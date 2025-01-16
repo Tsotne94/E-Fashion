@@ -26,7 +26,7 @@ public enum AppFlowViewModelOutputAction {
     case startMainFlow
 }
 
-public class DefaultAppFlowViewModel: AppFlowViewModel {
+public final class DefaultAppFlowViewModel: AppFlowViewModel {
     @Inject var loadAppStateUseCase: LoadAppStateUseCase
     @Inject var updateAppStateUseCase: UpdateAppStateUseCase
     @Inject var hasSeenOnboardingUseCase: HasSeenOnboardingUseCase

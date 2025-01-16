@@ -18,7 +18,7 @@ class BagViewController: UIViewController {
         super.viewDidLoad()
         
         viewModel.$nname
-            .sink { [weak self] newValue in
+            .sink { newValue in
                 // This block will be called whenever 'nname' changes
                 print("nname updated in controller: \(newValue)")
                 // Handle the update, e.g., update the UI

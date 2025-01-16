@@ -55,7 +55,8 @@ final class AppFlowCoordinator: Coordinator {
         let mainCoordinator = MainCoordinator(parentCoordinator: self)
         mainCoordinator.start()
         self.childCoordinators = [mainCoordinator]
-        self.window.rootViewController = mainCoordinator.rootViewController
+        self.window.setRootViewControllerWithPushTransition(mainCoordinator.rootViewController)
     }
 }
 
+#warning("add aplicaition logoooo")

@@ -7,8 +7,8 @@
 
 enum CustomFonts {
     static let nutinoBlack = "Nunito-Black"
-    static let nutinoBold = "Nutino-Bold"
-    static let nutinoLight = "Nutino-Light"
-    static let nutinoMedium = "Nutino-Medium"
-    static let nutinoRegular = "Nutino-Regular"
+    static let nutinoBold = "Nunito-Bold"
+    static let nutinoLight = "Nunito-Light"
+    static let nutinoMedium = "Nunito-Medium"
+    static let nutinoRegular = "Nunito-Regular"
 }
