@@ -21,9 +21,5 @@ class OnboardingCoordinator: Coordinator {
             self?.parentCoordinator?.viewModel.startMainFlow()
         })
     }
-    
-    func goToAuthentication() {
-        
-    }
 }
  
