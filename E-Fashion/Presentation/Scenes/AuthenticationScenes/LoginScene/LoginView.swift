@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct LoginView: View {
+    let doneRequested: () -> Void
+    
+    init(doneRequested: @escaping () -> Void) {
+        self.doneRequested = doneRequested
+    }
+    
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
 }
 
 #Preview {
-    LoginView()
+    LoginView(doneRequested: { })
 }
