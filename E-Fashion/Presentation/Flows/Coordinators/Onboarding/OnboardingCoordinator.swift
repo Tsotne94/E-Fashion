@@ -11,6 +11,7 @@ import Combine
 class OnboardingCoordinator: Coordinator {
     var rootViewController = UIViewController()
     weak var parentCoordinator: AppFlowCoordinator?
+    @Inject var test: AppFlowViewModel
     
     init(parentCoordinator: AppFlowCoordinator?) {
         self.parentCoordinator = parentCoordinator
@@ -18,7 +19,8 @@ class OnboardingCoordinator: Coordinator {
     
     func start() {
         rootViewController = OnboardingViewController(doneRequested: { [weak self] in
-            self?.parentCoordinator?.viewModel.startMainFlow()
+//            self?.parentCoordinator?.viewModel.startMainFlow()
+            self?.test.startMainFlow()
         })
     }
 }
