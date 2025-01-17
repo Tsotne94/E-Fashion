@@ -7,12 +7,14 @@
 import Foundation
 import UIKit
 import Combine
+import SwiftUI
 
 protocol AuthenticationCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
-    func goToSignUp()
-    func goToForgotPasswordView()
+    func goToSignUp(animated: Bool)
+    func goToForgotPasswordView(animated: Bool)
     func goBack(animated: Bool)
+    func popToRoot(animated: Bool)
 }
 
 final class DefaultAuthenticationCoordinator: NSObject, AuthenticationCoordinator {
@@ -25,22 +27,35 @@ final class DefaultAuthenticationCoordinator: NSObject, AuthenticationCoordinato
     }
     
     func start() {
-        rootViewController.setViewControllers([OnboardingViewController(doneRequested: { })], animated: false)
+        let hostingView = UIHostingController(rootView: LoginView())
+        rootViewController.setViewControllers([hostingView], animated: false)
     }
 
-    func goToSignUp() {
-        
+    func goToSignUp(animated: Bool) {
+        let hostingView = UIHostingController(rootView: SignUpView())
+        rootViewController.pushViewController(hostingView, animated: animated)
     }
     
-    func goToForgotPasswordView() {
-        
+    func goToForgotPasswordView(animated: Bool) {
+        let hostingView = UIHostingController(rootView: ForgotPasswordView())
+        rootViewController.pushViewController(hostingView, animated: animated)
     }
     
     func goBack(animated: Bool) {
         rootViewController.popViewController(animated: animated)
     }
+    
+    func successfullLogin() {
+        parentCoordinator.startMainFlow()
+    }
+    
+    func popToRoot(animated: Bool) {
+        rootViewController.popToRootViewController(animated: animated)
+    }
 }
 
 extension DefaultAuthenticationCoordinator: UINavigationControllerDelegate {
-    
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        navigationController.isNavigationBarHidden = true
+    }
 }

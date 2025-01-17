@@ -30,6 +30,7 @@ enum LoginViewModelOutputAction {
 }
 
 final class DefaultLoginViewModel: ObservableObject, LoginViewModel {
+    @Inject private var authenticationCoordinator: AuthenticationCoordinator
     @Inject private var signInUseCase: SignInUseCase
     
     @Published var email: String = ""
