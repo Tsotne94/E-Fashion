@@ -8,19 +8,20 @@ import Foundation
 import UIKit
 import Combine
 
-class OnboardingCoordinator: Coordinator {
+protocol Onboa
+
+
+class DefaultOnboardingCoordinator: Coordinator {
     var rootViewController = UIViewController()
-    weak var parentCoordinator: AppFlowCoordinator?
-    @Inject var test: AppFlowViewModel
+    @Inject private var parentCoordinator: AppFlowCoordinator
     
-    init(parentCoordinator: AppFlowCoordinator?) {
-        self.parentCoordinator = parentCoordinator
+    init() {
+
     }
     
     func start() {
         rootViewController = OnboardingViewController(doneRequested: { [weak self] in
-//            self?.parentCoordinator?.viewModel.startMainFlow()
-            self?.test.startMainFlow()
+            self?.parentCoordinator.viewModel.startAuthentication()
         })
     }
 }

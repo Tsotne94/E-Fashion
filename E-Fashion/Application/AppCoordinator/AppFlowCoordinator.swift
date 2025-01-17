@@ -9,7 +9,15 @@ import UIKit
 import Combine
 import FirebaseAuth
 
-final class AppFlowCoordinator: Coordinator {
+protocol AppFlowCoordinator: Coordinator {
+    var viewModel: AppFlowViewModel { get }
+    func start()
+    func startOnboarding()
+    func startAuthentication()
+    func startMainFlow()
+}
+
+final class DefaultAppFlowCoordinator: AppFlowCoordinator {
     let window: UIWindow
     var childCoordinators = [Coordinator]()
     private var subscriptions = Set<AnyCancellable>()
@@ -39,7 +47,7 @@ final class AppFlowCoordinator: Coordinator {
     }
     
     func startOnboarding() {
-        let onboardingCoordinator = OnboardingCoordinator(parentCoordinator: self)
+        let onboardingCoordinator = DefaultOnboardingCoordinator()
         onboardingCoordinator.start()
         self.childCoordinators = [onboardingCoordinator]
         self.window.rootViewController = onboardingCoordinator.rootViewController
@@ -55,7 +63,7 @@ final class AppFlowCoordinator: Coordinator {
     }
     
     func startMainFlow() {
-        let mainCoordinator = MainCoordinator(parentCoordinator: self)
+        let mainCoordinator = MainCoordinator()
         mainCoordinator.start()
         self.childCoordinators = [mainCoordinator]
         
