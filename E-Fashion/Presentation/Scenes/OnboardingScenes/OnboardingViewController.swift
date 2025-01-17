@@ -7,7 +7,7 @@
 import UIKit
 import Combine
 
-class OnboardingViewController: UIPageViewController {
+final class OnboardingViewController: UIPageViewController {
     private var pages: [UIViewController] = {
         let pages = [
             DemoViewController(
@@ -167,7 +167,10 @@ class OnboardingViewController: UIPageViewController {
     }
     
     @objc private func nextTapped() {
-        guard pageControl.currentPage < pages.count - 1 else { doneRequested(); return }
+        guard pageControl.currentPage < pages.count - 1 else {
+            doneRequested()
+            return
+        }
         pageControl.currentPage += 1
         currentPage.send(pageControl.currentPage)
         goToNextPage()
@@ -182,6 +185,8 @@ class OnboardingViewController: UIPageViewController {
     
     @objc private func skipTapped() {
         doneRequested()
+        print("presssseeeeeddddd")
+        print()
     }
     
     private func goToNextPage() {
