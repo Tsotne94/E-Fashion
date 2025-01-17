@@ -47,12 +47,12 @@ public final class DefaultAppFlowViewModel: AppFlowViewModel {
     }
     
     public func startAuthentication() {
+        hasSeenOnboardingUseCase.execute()
         updateAppStateUseCase.execute(state: .authentication)
         _output.send(.startAuthentication)
     }
     
     public func startMainFlow() {
-        hasSeenOnboardingUseCase.execute()
         updateAppStateUseCase.execute(state: .mainFlow)
         _output.send(.startMainFlow)
     }

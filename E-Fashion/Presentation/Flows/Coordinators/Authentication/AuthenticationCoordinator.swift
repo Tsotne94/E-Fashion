@@ -8,19 +8,39 @@ import Foundation
 import UIKit
 import Combine
 
-final class AuthenticationCoordinator: NSObject, Coordinator {
+protocol AuthenticationCoordinator: Coordinator {
+    var rootViewController: UINavigationController { get }
+    func goToSignUp()
+    func goToForgotPasswordView()
+    func goBack(animated: Bool)
+}
+
+final class DefaultAuthenticationCoordinator: NSObject, AuthenticationCoordinator {
     var rootViewController = UINavigationController()
-    @Inject private var parentCoordinator: AppFlowCoordinator
     
+    @Inject private var parentCoordinator: AppFlowCoordinator
+
     override init() {
         
     }
     
     func start() {
+        rootViewController.setViewControllers([OnboardingViewController(doneRequested: { })], animated: false)
+    }
+
+    func goToSignUp() {
         
+    }
+    
+    func goToForgotPasswordView() {
+        
+    }
+    
+    func goBack(animated: Bool) {
+        rootViewController.popViewController(animated: animated)
     }
 }
 
-extension AuthenticationCoordinator: UINavigationControllerDelegate {
+extension DefaultAuthenticationCoordinator: UINavigationControllerDelegate {
     
 }

@@ -24,6 +24,9 @@ final class DefaultAppFlowCoordinator: AppFlowCoordinator {
     private var animatedTransition = false
     
     @Inject var viewModel: AppFlowViewModel
+    
+    @Inject private var onboardingCoordinator: OnboardingCoordinator
+    @Inject private var authenticationCoordinator: AuthenticationCoordinator
 
     init(window: UIWindow) {
         self.window = window
@@ -47,7 +50,6 @@ final class DefaultAppFlowCoordinator: AppFlowCoordinator {
     }
     
     func startOnboarding() {
-        let onboardingCoordinator = DefaultOnboardingCoordinator()
         onboardingCoordinator.start()
         self.childCoordinators = [onboardingCoordinator]
         self.window.rootViewController = onboardingCoordinator.rootViewController
@@ -56,10 +58,11 @@ final class DefaultAppFlowCoordinator: AppFlowCoordinator {
     }
     
     func startAuthentication() {
-        //        let authCoordinator = AuthenticationCoordinator()
-        //        authCoordinator.start()
-        //        self.childCoordinators = [authCoordinator]
-        //        self.window.rootViewController = authCoordinator.rootViewController
+        authenticationCoordinator.start()
+        self.childCoordinators = [authenticationCoordinator]
+        self.window.setRootViewControllerWithPushTransition(authenticationCoordinator.rootViewController, animated: animatedTransition)
+        
+        self.animatedTransition = true
     }
     
     func startMainFlow() {

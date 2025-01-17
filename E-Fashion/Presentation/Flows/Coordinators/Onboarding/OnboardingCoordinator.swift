@@ -8,10 +8,11 @@ import Foundation
 import UIKit
 import Combine
 
-protocol Onboa
+protocol OnboardingCoordinator: Coordinator {
+    var rootViewController: UIViewController { get }
+}
 
-
-class DefaultOnboardingCoordinator: Coordinator {
+final class DefaultOnboardingCoordinator: OnboardingCoordinator {
     var rootViewController = UIViewController()
     @Inject private var parentCoordinator: AppFlowCoordinator
     
