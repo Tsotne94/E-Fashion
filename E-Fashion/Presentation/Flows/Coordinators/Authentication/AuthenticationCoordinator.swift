@@ -8,14 +8,19 @@ import Foundation
 import UIKit
 import Combine
 
-class AuthenticationCoordinator: Coordinator {
-    weak var parentCoordinator: AppFlowCoordinator?
+final class AuthenticationCoordinator: NSObject, Coordinator {
+    var rootViewController = UINavigationController()
+    @Inject private var parentCoordinator: AppFlowCoordinator
     
-    init(parentCoordinator: AppFlowCoordinator?) {
-        self.parentCoordinator = parentCoordinator
+    override init() {
+        
     }
     
     func start() {
         
     }
+}
+
+extension AuthenticationCoordinator: UINavigationControllerDelegate {
+    
 }

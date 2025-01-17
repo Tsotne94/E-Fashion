@@ -13,6 +13,7 @@ final class AppFlowCoordinator: Coordinator {
     let window: UIWindow
     var childCoordinators = [Coordinator]()
     private var subscriptions = Set<AnyCancellable>()
+    private var animatedTransition = false
     
     @Inject var viewModel: AppFlowViewModel
 
@@ -42,20 +43,23 @@ final class AppFlowCoordinator: Coordinator {
         onboardingCoordinator.start()
         self.childCoordinators = [onboardingCoordinator]
         self.window.rootViewController = onboardingCoordinator.rootViewController
+        
+        self.animatedTransition = true
     }
     
     func startAuthentication() {
-//        let authCoordinator = AuthenticationCoordinator()
-//        authCoordinator.start()
-//        self.childCoordinators = [authCoordinator]
-//        self.window.rootViewController = authCoordinator.rootViewController
+        //        let authCoordinator = AuthenticationCoordinator()
+        //        authCoordinator.start()
+        //        self.childCoordinators = [authCoordinator]
+        //        self.window.rootViewController = authCoordinator.rootViewController
     }
     
     func startMainFlow() {
         let mainCoordinator = MainCoordinator(parentCoordinator: self)
         mainCoordinator.start()
         self.childCoordinators = [mainCoordinator]
-        self.window.setRootViewControllerWithPushTransition(mainCoordinator.rootViewController)
+        
+        self.window.setRootViewControllerWithPushTransition(mainCoordinator.rootViewController, animated: animatedTransition)
     }
 }
 
