@@ -10,6 +10,7 @@ public extension DependencyContainer {
     func registerViewModels() {
         DependencyContainer.root.register {
             Module { DefaultAppFlowViewModel() as AppFlowViewModel }
+            Module { DefaultLoginViewModel() as LoginViewModel }
         }
     }
 }
