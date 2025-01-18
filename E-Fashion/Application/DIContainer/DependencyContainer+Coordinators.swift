@@ -6,9 +6,15 @@
 //
 public extension DependencyContainer {
     func registerCoordinators() {
+        let authCoordinator = DefaultAuthenticationCoordinator()
+        
         DependencyContainer.root.register {
-            Module { DefaultOnboardingCoordinator() as OnboardingCoordinator }
-            Module { DefaultAuthenticationCoordinator() as AuthenticationCoordinator }
+            Module {
+                DefaultOnboardingCoordinator() as OnboardingCoordinator
+            }
+            Module {
+                authCoordinator as AuthenticationCoordinator
+            }
         }
     }
 }

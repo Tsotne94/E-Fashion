@@ -44,6 +44,8 @@ final class DefaultLoginViewModel: LoginViewModel, ObservableObject {
     @Published var isLoading: Bool = false
     
     private var _output = PassthroughSubject<LoginViewModelOutputAction, Never>()
+    
+    @MainActor
     var output: AnyPublisher<LoginViewModelOutputAction, Never> {
         _output.eraseToAnyPublisher()
     }

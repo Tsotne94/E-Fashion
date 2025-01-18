@@ -7,35 +7,6 @@
 import SwiftUI
 import Combine
 
-enum InputField: Hashable {
-    case name
-    case email
-    case password
-    
-    var labelWidth: CGFloat {
-        switch self {
-        case .email: return 60
-        case .password: return 95
-        case .name: return 60
-        }
-    }
-}
-
-struct AnimationState {
-    var width: CGFloat = 0
-    var offset: CGFloat = 0
-    
-    mutating func animate(for field: InputField, isFocused: Bool, isEmpty: Bool) {
-        if isEmpty && !isFocused {
-            width = 0
-            offset = 0
-        } else {
-            width = field.labelWidth
-            offset = -30
-        }
-    }
-}
-
 struct LoginView: View {
     @StateObject private var viewModel = DefaultLoginViewModel()
     @FocusState private var focusedField: InputField?
@@ -43,22 +14,41 @@ struct LoginView: View {
     @State private var emailAnimation = AnimationState()
     @State private var passwordAnimation = AnimationState()
     
+    @State private var subscriptions = Set<AnyCancellable>()
+    
     var body: some View {
-        ScrollView {
-            VStack(spacing: 35) {
-                headerView
-                inputFieldsGroup
-                loginButton
-                signUpButton
-                divider
-                socialLoginButtons
-                Spacer()
-            }
+        VStack(spacing: 35) {
+            headerView
+            inputFieldsGroup
+            loginButton
+            signUpButton
+            divider
+            socialLoginButtons
+            Spacer()
         }
         .padding()
         .background(Color.customWhite, ignoresSafeAreaEdges: .all)
         .onChange(of: focusedField) { _ in
             updateAnimations()
+        }
+        .onAppear {
+            viewModel.output
+                .sink { status in
+                    handleOutput(status: status)
+                }.store(in: &subscriptions)
+        }.overlay {
+            if viewModel.isLoading {
+                SUILoader()
+            }
+        }
+    }
+    
+    private func handleOutput(status: LoginViewModelOutputAction) {
+        switch status {
+        case .successfullLogin:
+            print("something")
+        case .loginError(let loginError):
+            print("something")
         }
     }
     

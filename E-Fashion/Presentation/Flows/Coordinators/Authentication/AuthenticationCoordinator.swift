@@ -24,22 +24,18 @@ final class DefaultAuthenticationCoordinator: NSObject, AuthenticationCoordinato
     @Inject private var parentCoordinator: AppFlowCoordinator
 
     override init() {
-        
+        super.init()
+        rootViewController.delegate = self
     }
     
     func start() {
         let hostingView = UIHostingController(rootView: LoginView())
         rootViewController.setViewControllers([hostingView], animated: false)
-        print("Root navigation controller: \(rootViewController)")
     }
     
     func goToSignUp(animated: Bool) {
-        print("reached coordinator")
         let hostingView = UIHostingController(rootView: SignUpView())
         rootViewController.pushViewController(hostingView, animated: animated)
-        
-        
-        print(rootViewController.viewControllers)
     }
     
     func goToForgotPasswordView(animated: Bool) {
