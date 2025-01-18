@@ -15,6 +15,7 @@ protocol AuthenticationCoordinator: Coordinator {
     func goToForgotPasswordView(animated: Bool)
     func goBack(animated: Bool)
     func popToRoot(animated: Bool)
+    func successfullLogin()
 }
 
 final class DefaultAuthenticationCoordinator: NSObject, AuthenticationCoordinator {
@@ -29,11 +30,16 @@ final class DefaultAuthenticationCoordinator: NSObject, AuthenticationCoordinato
     func start() {
         let hostingView = UIHostingController(rootView: LoginView())
         rootViewController.setViewControllers([hostingView], animated: false)
+        print("Root navigation controller: \(rootViewController)")
     }
-
+    
     func goToSignUp(animated: Bool) {
+        print("reached coordinator")
         let hostingView = UIHostingController(rootView: SignUpView())
         rootViewController.pushViewController(hostingView, animated: animated)
+        
+        
+        print(rootViewController.viewControllers)
     }
     
     func goToForgotPasswordView(animated: Bool) {

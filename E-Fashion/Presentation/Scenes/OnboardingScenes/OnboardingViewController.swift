@@ -11,15 +11,15 @@ final class OnboardingViewController: UIPageViewController {
     private var pages: [UIViewController] = {
         let pages = [
             DemoViewController(
-                imageName: GreetingImages.FirstGreeting,
+                imageName: GreetingImages.firstGreeting,
                 titleText: OnboardingTexts.firstPageTitle,
                 pageDescription: OnboardingTexts.firstPageDescription),
             DemoViewController(
-                imageName: GreetingImages.SecondGreeting,
+                imageName: GreetingImages.secondGreeting,
                 titleText: OnboardingTexts.secondPageTitle,
                 pageDescription: OnboardingTexts.secondPageDescription),
             DemoViewController(
-                imageName: GreetingImages.ThirdGreeting,
+                imageName: GreetingImages.thirdGreeting,
                 titleText: OnboardingTexts.thirdPageTitle,
                 pageDescription: OnboardingTexts.thirdPageDescription)
         ]

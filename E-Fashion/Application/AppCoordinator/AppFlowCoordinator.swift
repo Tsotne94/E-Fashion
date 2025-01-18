@@ -7,7 +7,6 @@
 import Foundation
 import UIKit
 import Combine
-import FirebaseAuth
 
 protocol AppFlowCoordinator: Coordinator {
     var viewModel: AppFlowViewModel { get }

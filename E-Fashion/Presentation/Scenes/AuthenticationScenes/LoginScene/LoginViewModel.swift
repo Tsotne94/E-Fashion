@@ -18,6 +18,11 @@ protocol LoginViewModelInput {
     func signUp()
     func loginWithFacebook()
     func loginWithGoogle()
+    
+    var email: String { get set }
+    var password: String { get set }
+    var passwordIsHidden: Bool { get set }
+    var isLoading: Bool { get set }
 }
 
 protocol LoginViewModelOutput {
@@ -29,13 +34,14 @@ enum LoginViewModelOutputAction {
     case loginError(LoginError)
 }
 
-final class DefaultLoginViewModel: ObservableObject, LoginViewModel {
+final class DefaultLoginViewModel: LoginViewModel, ObservableObject {
     @Inject private var authenticationCoordinator: AuthenticationCoordinator
     @Inject private var signInUseCase: SignInUseCase
     
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var passwordIsHidden: Bool = true
+    @Published var isLoading: Bool = false
     
     private var _output = PassthroughSubject<LoginViewModelOutputAction, Never>()
     var output: AnyPublisher<LoginViewModelOutputAction, Never> {
@@ -51,8 +57,13 @@ final class DefaultLoginViewModel: ObservableObject, LoginViewModel {
     }
     
     func logIn() {
+        isLoading = true
+        
         signInUseCase.execute(email: email, password: password)
             .receive(on: DispatchQueue.main)
+            .handleEvents(receiveCompletion: { [weak self] _ in
+                self?.isLoading = false
+            })
             .sink { [weak self] completion in
                 switch completion {
                 case .failure(let error):
@@ -60,12 +71,13 @@ final class DefaultLoginViewModel: ObservableObject, LoginViewModel {
                 case .finished:
                     break
                 }
-            } receiveValue: { [weak self] user in
+            } receiveValue: { [weak self] _ in
                 self?._output.send(.successfullLogin)
-            }.store(in: &subscriptions)
-
+                self?.authenticationCoordinator.successfullLogin()
+            }
+            .store(in: &subscriptions)
     }
-    
+
     func showPassword() {
         passwordIsHidden = false
     }
@@ -75,21 +87,22 @@ final class DefaultLoginViewModel: ObservableObject, LoginViewModel {
     }
     
     func signUp() {
-        
+        print("caleeeed")
+        self.authenticationCoordinator.goToSignUp(animated: true)
     }
     
     func loginWithFacebook() {
-//#warning("implement if you have time!!!")
+        //#warning("implement if you have time!!!")
     }
     
     func loginWithGoogle() {
-//#warning("implement if you have time!!!")
+        //#warning("implement if you have time!!!")
     }
     
     private func mapError(_ error: Error) -> LoginError {
         if let nsError = error as? NSError {
             switch nsError.code {
-            case 17009: 
+            case 17009:
                 return .wrongPassword
             case 17011:
                 return .userNotFound
