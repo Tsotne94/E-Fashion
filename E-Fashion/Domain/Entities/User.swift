@@ -4,25 +4,25 @@
 //
 //  Created by Cotne Chubinidze on 15.01.25.
 //
-import FirebaseAuth
-
 public struct User {
     let uid: String
     let email: String?
     let displayName: String?
+    let imageUrl: String?
     
-    // Initialize the struct from Firebase User
-    init(firebaseUser: FirebaseAuth.User) {
-        self.uid = firebaseUser.uid
-        self.email = firebaseUser.email
-        self.displayName = firebaseUser.displayName
+    init(uid: String, email: String? = nil, displayName: String? = nil, imageUrl: String? = nil) {
+        self.uid = uid
+        self.email = email
+        self.displayName = displayName
+        self.imageUrl = imageUrl
     }
     
-    // Default initializer for empty User (for error cases)
     init() {
         self.uid = ""
         self.email = nil
         self.displayName = nil
+        self.imageUrl = nil
     }
 }
+
 

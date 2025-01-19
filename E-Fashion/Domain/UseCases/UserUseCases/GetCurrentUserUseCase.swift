@@ -5,17 +5,18 @@
 //  Created by Cotne Chubinidze on 15.01.25.
 //
 import Foundation
+import Combine
 
 public protocol GetCurrentUserUseCase {
-    func execute() -> User?
+    func execute() -> AnyPublisher<User, Error>
 }
 
 public struct DefaultGetCurrentUserUseCase: GetCurrentUserUseCase {
-    @Inject private var authenticationRepository: AuthenticationRepository
+    @Inject private var userRepository: UserRepository
     
     public init() { }
     
-    public func execute() -> User? {
-        authenticationRepository.getCurrentUser()
+    public func execute() -> AnyPublisher<User, Error> {
+        userRepository.getCurrentUser()
     }
 }

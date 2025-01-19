@@ -19,7 +19,7 @@ public struct DefaultAuthenticationRepository: AuthenticationRepository {
                     print("Sign-in failed with error: \(error.localizedDescription)")
                     promise(.failure(error))
                 } else if let firebaseUser = authResult?.user {
-                    let user = User(firebaseUser: firebaseUser)
+                    let user = UserDTO(from: firebaseUser).toUser()
                     promise(.success(user))
                 } else {
                     promise(.success(User()))
@@ -48,9 +48,5 @@ public struct DefaultAuthenticationRepository: AuthenticationRepository {
         .map { _ in () }
         .catch { _ in Just(()) }
         .eraseToAnyPublisher()
-    }
-    
-    func getCurrentUser() -> User? {
-        nil
     }
 }

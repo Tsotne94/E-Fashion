@@ -8,6 +8,7 @@ import Combine
 import FirebaseAuth
 
 public struct DefaultAppStateRepository: AppStateRepository {
+    @Inject private var getCurrentUserUseCase: GetCurrentUserUseCase
     
     public init() { }
     
