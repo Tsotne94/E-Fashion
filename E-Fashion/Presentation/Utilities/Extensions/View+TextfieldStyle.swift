@@ -8,6 +8,6 @@ import SwiftUI
 
 extension View {
     func textFieldStyle(width: CGFloat, text: String, animation: CGFloat) -> some View {
-        modifier(CustomTextFieldStyle(width: width, text: text, animation: animation))
+        modifier(SUICustomTextFieldStyle(width: width, text: text, animation: animation))
     }
 }

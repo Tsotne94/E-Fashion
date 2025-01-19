@@ -10,22 +10,37 @@ import Combine
 struct LoginView: View {
     @StateObject private var viewModel = DefaultLoginViewModel()
     @FocusState private var focusedField: InputField?
-    
     @State private var emailAnimation = AnimationState()
     @State private var passwordAnimation = AnimationState()
-    
-    @State private var subscriptions = Set<AnyCancellable>()
     @State private var errorMessage = ""
-    @State private var showAllert = false
+    @State private var showAlert = false
+    @State private var subscriptions = Set<AnyCancellable>()
     
     var body: some View {
         VStack(spacing: 35) {
-            headerView
+            SUIAuthHeaderView(title: SignInPageTexts.tittle)
+            
             inputFieldsGroup
-            loginButton
-            signUpButton
-            divider
-            socialLoginButtons
+            
+            SUIPrimaryButton(title: "Log In", action: viewModel.logIn)
+            
+            Button {
+                viewModel.signUp()
+            } label: {
+                Text("Don't Have An Account? **Sign Up**")
+                    .foregroundStyle(.accentBlack)
+                    .shadow(radius: 5, y: 3)
+            }
+            
+            SUIGradientDivider(text: "or")
+            
+            SUISocialLoginSection(
+                title: SignInPageTexts.loginOptions,
+                onSocialLogin: { provider in
+                    
+                }
+            )
+            
             Spacer()
         }
         .padding()
@@ -38,12 +53,13 @@ struct LoginView: View {
                 .sink { status in
                     handleOutput(status: status)
                 }.store(in: &subscriptions)
-        }.overlay {
+        }
+        .overlay {
             if viewModel.isLoading {
                 SUILoader()
             }
         }
-        .alert(isPresented: $showAllert) {
+        .alert(isPresented: $showAlert) {
             Alert(
                 title: Text(SignInPageTexts.loginFail),
                 message: Text(errorMessage),
@@ -52,33 +68,12 @@ struct LoginView: View {
         }
     }
     
-    private func handleOutput(status: LoginViewModelOutputAction) {
-        switch status {
-        case .successfullLogin:
-            print("Login SuccessFull")
-        case .loginError(let loginError):
-            errorMessage = loginError.description
-            showAllert = true
-        }
-    }
-    
-    private var headerView: some View {
-        HStack {
-            Text(SignInPageTexts.tittle)
-                .font(.custom(CustomFonts.nutinoBlack, size: UIScreen.main.bounds.height > 667 ? 45 : 35))
-                .frame(width: UIScreen.main.bounds.height > 667 ? 230 : 300)
-                .shadow(radius: 5, y: 3)
-                .padding(.bottom, 10)
-            Spacer()
-        }
-    }
-    
     private var inputFieldsGroup: some View {
         Group {
             emailField
             VStack(alignment: .trailing) {
                 passwordField
-                forgotPsswordButton
+                forgotPasswordButton
             }
         }
     }
@@ -119,7 +114,7 @@ struct LoginView: View {
         }
     }
     
-    private var forgotPsswordButton: some View {
+    private var forgotPasswordButton: some View {
         Button {
             viewModel.forgotPassword()
         } label: {
@@ -140,70 +135,6 @@ struct LoginView: View {
         }
     }
     
-    private var loginButton: some View {
-        Button {
-            viewModel.logIn()
-        } label: {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .frame(height: 55)
-                .overlay {
-                    Text("Log In")
-                        .bold()
-                        .font(.title3)
-                        .foregroundStyle(Color.white)
-                }
-                .foregroundStyle(.accentRed)
-                .shadow(radius: 10, y: 5)
-        }
-    }
-    
-    private var signUpButton: some View {
-        Button {
-            viewModel.signUp()
-        } label: {
-            Text("Don't Have An Account? **Sign Up**")
-                .foregroundStyle(.accentBlack)
-                .shadow(radius: 5, y: 3)
-        }
-    }
-    
-    private var divider: some View {
-        Rectangle()
-            .frame(height: 1)
-            .foregroundStyle(
-                LinearGradient(
-                    gradient: Gradient(colors: [.black, .white, .black]),
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .overlay {
-                Text("or")
-            }
-    }
-    
-    private var socialLoginButtons: some View {
-        VStack {
-            Text(SignInPageTexts.loginOptions)
-                .foregroundStyle(.accentBlack)
-                .shadow(radius: 5, y: 3)
-            
-            HStack(spacing: 20) {
-                ForEach([LoginSignup.google, LoginSignup.apple, LoginSignup.facebook], id: \.self) { image in
-                    socialLoginButton(image: image)
-                }
-            }
-        }
-    }
-    
-    private func socialLoginButton(image: String) -> some View {
-        Button {
-            
-        } label: {
-            Image(image)
-        }
-    }
-    
     private func updateAnimations() {
         withAnimation(.spring()) {
             emailAnimation.animate(
@@ -219,8 +150,14 @@ struct LoginView: View {
             )
         }
     }
-}
-
-#Preview {
-    LoginView()
+    
+    private func handleOutput(status: LoginViewModelOutputAction) {
+        switch status {
+        case .successfullLogin:
+            print("Login SuccessFull")
+        case .loginError(let loginError):
+            errorMessage = loginError.description
+            showAlert = true
+        }
+    }
 }

@@ -76,34 +76,32 @@ final class DefaultSignUpViewModel: SignUpViewModel, ObservableObject {
                 } receiveValue: { user in
                     print("cool")
                 }.store(in: &subscriptions)
-
         } else {
             _output.send(.passwordsDoNotMatch)
         }
     }
     
     func showPassword() {
-        
+        passwordIsHidden = false
     }
     
     func hidePassword() {
-        
+        passwordIsHidden = true
     }
     
     func showConfirmPassword() {
-        
+        confirmPasswordHidden = false
     }
     
     func hideConfirmPassword() {
-        
+        confirmPasswordHidden = true
     }
     
     func goToLogin() {
-        
+        authenticationCoordinator.goBack(animated: true)
     }
     
     func validatePasswords() -> Bool {
         return password == confirmPasswod
     }
- 
 }

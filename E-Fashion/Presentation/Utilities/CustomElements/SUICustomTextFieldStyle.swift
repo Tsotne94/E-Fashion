@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-struct CustomTextFieldStyle: ViewModifier {
+struct SUICustomTextFieldStyle: ViewModifier {
     let width: CGFloat
     let text: String
     let animation: CGFloat
