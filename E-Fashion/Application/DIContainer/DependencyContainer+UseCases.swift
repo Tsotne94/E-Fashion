@@ -13,6 +13,7 @@ public extension DependencyContainer {
             Module { DefaultSignInUseCase() as SignInUseCase }
             Module { DefaultSaveUserUseCase() as SaveUserUseCase }
             Module { DefaultGetCurrentUserUseCase() as GetCurrentUserUseCase }
+            Module { DefaultSaveUserUseCase() as SaveUserUseCase }
         }
     }
 }

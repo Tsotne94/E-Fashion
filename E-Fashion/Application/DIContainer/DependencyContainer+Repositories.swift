@@ -8,7 +8,8 @@ public extension DependencyContainer {
     func registerRepositories() {
         DependencyContainer.root.register {
             Module { DefaultAppStateRepository() as AppStateRepository }
-            Module { DefaultAuthenticationRepository() as AuthenticationRepository } 
+            Module { DefaultAuthenticationRepository() as AuthenticationRepository }
+            Module { DefaultUserRepository() as UserRepository }
         }
     }
 }
