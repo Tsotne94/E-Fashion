@@ -4,7 +4,6 @@
 //
 //  Created by Cotne Chubinidze on 19.01.25.
 //
-
 import SwiftUI
 import Lottie
 

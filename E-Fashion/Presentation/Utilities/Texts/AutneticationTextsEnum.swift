@@ -10,8 +10,8 @@ enum SignInPageTexts {
     static let passwordTextField = "Password"
     
     static let forgotPassword = "Forgot Password"
-    static let loginObtions = "- OR Continue With -"
-    static let create = "Create An Account"
+    static let loginOptions = "Continue With"
+    static let loginFail = "Failed To Log In"
 }
 
 enum SignUpPageTexts {

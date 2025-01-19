@@ -89,7 +89,6 @@ final class DefaultLoginViewModel: LoginViewModel, ObservableObject {
     }
     
     func signUp() {
-        print("caleeeed")
         self.authenticationCoordinator.goToSignUp(animated: true)
     }
     

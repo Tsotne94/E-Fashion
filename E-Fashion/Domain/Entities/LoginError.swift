@@ -4,7 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 17.01.25.
 //
-public enum LoginError: Error, CustomStringConvertible {
+public enum LoginError: Error, CustomStringConvertible, Equatable {
     case invalidEmail
     case wrongPassword
     case userNotFound

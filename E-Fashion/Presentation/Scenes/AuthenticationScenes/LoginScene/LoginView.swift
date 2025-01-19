@@ -15,6 +15,8 @@ struct LoginView: View {
     @State private var passwordAnimation = AnimationState()
     
     @State private var subscriptions = Set<AnyCancellable>()
+    @State private var errorMessage = ""
+    @State private var showAllert = false
     
     var body: some View {
         VStack(spacing: 35) {
@@ -41,14 +43,22 @@ struct LoginView: View {
                 SUILoader()
             }
         }
+        .alert(isPresented: $showAllert) {
+            Alert(
+                title: Text(SignInPageTexts.loginFail),
+                message: Text(errorMessage),
+                dismissButton: .default(Text("OK"))
+            )
+        }
     }
     
     private func handleOutput(status: LoginViewModelOutputAction) {
         switch status {
         case .successfullLogin:
-            print("something")
+            print("Login SuccessFull")
         case .loginError(let loginError):
-            print("something")
+            errorMessage = loginError.description
+            showAllert = true
         }
     }
     
@@ -66,7 +76,10 @@ struct LoginView: View {
     private var inputFieldsGroup: some View {
         Group {
             emailField
-            passwordField
+            VStack(alignment: .trailing) {
+                passwordField
+                forgotPsswordButton
+            }
         }
     }
     
@@ -91,6 +104,9 @@ struct LoginView: View {
                     TextField("", text: $viewModel.password)
                 }
             }
+            .onSubmit {
+                viewModel.logIn()
+            }
             .frame(height: 55)
             .padding(.leading)
             .textFieldStyle(
@@ -99,17 +115,25 @@ struct LoginView: View {
                 animation: passwordAnimation.offset
             )
             .focused($focusedField, equals: .password)
-            
             togglePasswordVisibilityButton
         }
-        .padding(.bottom, 10)
+    }
+    
+    private var forgotPsswordButton: some View {
+        Button {
+            viewModel.forgotPassword()
+        } label: {
+            Text(SignInPageTexts.forgotPassword)
+                .foregroundStyle(.accentRed)
+                .shadow(radius: 5, y: 3)
+        }
     }
     
     private var togglePasswordVisibilityButton: some View {
         Button {
             viewModel.passwordIsHidden.toggle()
         } label: {
-            Image(systemName: viewModel.passwordIsHidden ? "eye" : "eye.slash")
+            Image(systemName: viewModel.passwordIsHidden ? Icons.eye : Icons.eyeSlashed)
                 .padding(.trailing)
                 .foregroundStyle(Color.black)
                 .shadow(radius: 5, y: 3)
@@ -160,7 +184,7 @@ struct LoginView: View {
     
     private var socialLoginButtons: some View {
         VStack {
-            Text("Continue With")
+            Text(SignInPageTexts.loginOptions)
                 .foregroundStyle(.accentBlack)
                 .shadow(radius: 5, y: 3)
             
