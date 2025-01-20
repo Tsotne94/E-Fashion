@@ -7,19 +7,19 @@
 import UIKit
 import Combine
 
-class OnboardingViewController: UIPageViewController {
+final class OnboardingViewController: UIPageViewController {
     private var pages: [UIViewController] = {
         let pages = [
             DemoViewController(
-                imageName: GreetingImages.FirstGreeting,
+                imageName: GreetingImages.firstGreeting,
                 titleText: OnboardingTexts.firstPageTitle,
                 pageDescription: OnboardingTexts.firstPageDescription),
             DemoViewController(
-                imageName: GreetingImages.SecondGreeting,
+                imageName: GreetingImages.secondGreeting,
                 titleText: OnboardingTexts.secondPageTitle,
                 pageDescription: OnboardingTexts.secondPageDescription),
             DemoViewController(
-                imageName: GreetingImages.ThirdGreeting,
+                imageName: GreetingImages.thirdGreeting,
                 titleText: OnboardingTexts.thirdPageTitle,
                 pageDescription: OnboardingTexts.thirdPageDescription)
         ]
@@ -86,27 +86,19 @@ class OnboardingViewController: UIPageViewController {
             .sink { [weak self] page in
                 let newTitle = page == 2 ? "Get Started" : "Next"
                 self?.nextButton.setTitleWithAnimation(newTitle)
-            }
-            .store(in: &subscriptions)
-        
-        currentPage
-            .sink { [weak self] page in
+                
                 if page == 0 {
                     self?.previousButton.dissapearWithAnimation()
                 } else {
                     self?.previousButton.apearWithAnimation()
                 }
-            }
-            .store(in: &subscriptions)
-        
-        currentPage
-            .sink { [weak self] page in
+                
                 let pageText = "\(page + 1)/3"
                 let attributedText = NSMutableAttributedString(string: pageText)
                 attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: NSRange(location: 0, length: 1))
                 self?.currentPageLabel.attributedText = attributedText
-            }
-            .store(in: &subscriptions)
+                
+            }.store(in: &subscriptions)
     }
     
     private func setupPageControl() {
@@ -167,7 +159,10 @@ class OnboardingViewController: UIPageViewController {
     }
     
     @objc private func nextTapped() {
-        guard pageControl.currentPage < pages.count - 1 else { doneRequested(); return }
+        guard pageControl.currentPage < pages.count - 1 else {
+            doneRequested()
+            return
+        }
         pageControl.currentPage += 1
         currentPage.send(pageControl.currentPage)
         goToNextPage()
@@ -225,7 +220,6 @@ extension OnboardingViewController: UIPageViewControllerDelegate {
            pageControl.currentPage = currentIndex
        }
 }
-
 
 extension OnboardingViewController {
     @objc func pageControlTapped(_ sender: UIPageControl) {

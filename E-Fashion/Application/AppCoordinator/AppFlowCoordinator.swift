@@ -7,14 +7,25 @@
 import Foundation
 import UIKit
 import Combine
-import FirebaseAuth
 
-final class AppFlowCoordinator: Coordinator {
+protocol AppFlowCoordinator: Coordinator {
+    var viewModel: AppFlowViewModel { get }
+    func start()
+    func startOnboarding()
+    func startAuthentication()
+    func startMainFlow()
+}
+
+final class DefaultAppFlowCoordinator: AppFlowCoordinator {
     let window: UIWindow
     var childCoordinators = [Coordinator]()
     private var subscriptions = Set<AnyCancellable>()
+    private var animatedTransition = false
     
     @Inject var viewModel: AppFlowViewModel
+    
+    @Inject private var onboardingCoordinator: OnboardingCoordinator
+    @Inject private var authenticationCoordinator: AuthenticationCoordinator
 
     init(window: UIWindow) {
         self.window = window
@@ -38,24 +49,27 @@ final class AppFlowCoordinator: Coordinator {
     }
     
     func startOnboarding() {
-        let onboardingCoordinator = OnboardingCoordinator(parentCoordinator: self)
         onboardingCoordinator.start()
         self.childCoordinators = [onboardingCoordinator]
         self.window.rootViewController = onboardingCoordinator.rootViewController
+        
+        self.animatedTransition = true
     }
     
     func startAuthentication() {
-//        let authCoordinator = AuthenticationCoordinator()
-//        authCoordinator.start()
-//        self.childCoordinators = [authCoordinator]
-//        self.window.rootViewController = authCoordinator.rootViewController
+        authenticationCoordinator.start()
+        self.childCoordinators = [authenticationCoordinator]
+        self.window.setRootViewControllerWithPushTransition(authenticationCoordinator.rootViewController, animated: animatedTransition)
+        
+        self.animatedTransition = true
     }
     
     func startMainFlow() {
-        let mainCoordinator = MainCoordinator(parentCoordinator: self)
+        let mainCoordinator = MainCoordinator()
         mainCoordinator.start()
         self.childCoordinators = [mainCoordinator]
-        self.window.setRootViewControllerWithPushTransition(mainCoordinator.rootViewController)
+        
+        self.window.setRootViewControllerWithPushTransition(mainCoordinator.rootViewController, animated: animatedTransition)
     }
 }
 

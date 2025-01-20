@@ -47,26 +47,26 @@ public final class DefaultAppFlowViewModel: AppFlowViewModel {
     }
     
     public func startAuthentication() {
+        hasSeenOnboardingUseCase.execute()
         updateAppStateUseCase.execute(state: .authentication)
         _output.send(.startAuthentication)
     }
     
     public func startMainFlow() {
-        hasSeenOnboardingUseCase.execute()
         updateAppStateUseCase.execute(state: .mainFlow)
         _output.send(.startMainFlow)
     }
     
     public func loadAppState() {
         loadAppStateUseCase.execute()
-            .sink(receiveValue: { appState in
+            .sink(receiveValue: { [weak self] appState in
                 switch appState {
                 case .onboarding:
-                    self.startOnboarding()
+                    self?.startOnboarding()
                 case .authentication:
-                    self.startAuthentication()
+                    self?.startAuthentication()
                 case .mainFlow:
-                    self.startMainFlow()
+                    self?.startMainFlow()
                 }
             })
             .store(in: &subscriptions)

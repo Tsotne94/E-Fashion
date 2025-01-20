@@ -7,15 +7,15 @@
 import Combine
 
 public protocol SignUpUseCase {
-    func execute(email: String, password: String) -> AnyPublisher<User, Never>
+    func execute(email: String, password: String) -> AnyPublisher<User, Error>
 }
 
-public struct DefaultSignUpUseCase: SignInUseCase {
+public struct DefaultSignUpUseCase: SignUpUseCase {
     @Inject private var authenticationRepository: AuthenticationRepository
     
     public init() { }
     
-    public func execute(email: String, password: String) -> AnyPublisher<User, Never> {
+    public func execute(email: String, password: String) -> AnyPublisher<User, Error> {
         authenticationRepository.signUp(email: email, password: password)
     }
 }

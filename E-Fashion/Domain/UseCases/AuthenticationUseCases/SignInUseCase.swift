@@ -4,10 +4,11 @@
 //
 //  Created by Cotne Chubinidze on 15.01.25.
 //
+
 import Combine
 
 public protocol SignInUseCase {
-    func execute(email: String, password: String) -> AnyPublisher<User, Never>
+    func execute(email: String, password: String) -> AnyPublisher<User, Error>
 }
 
 public struct DefaultSignInUseCase: SignInUseCase {
@@ -15,7 +16,7 @@ public struct DefaultSignInUseCase: SignInUseCase {
     
     public init() { }
     
-    public func execute(email: String, password: String) -> AnyPublisher<User, Never> {
+    public func execute(email: String, password: String) -> AnyPublisher<User, Error> {
         authenticationRepository.signIn(email: email, password: password)
     }
 }

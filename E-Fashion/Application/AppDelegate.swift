@@ -10,16 +10,17 @@ import FirebaseCore
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
-    var appFlowCoordinator: AppFlowCoordinator?
+    var appFlowCoordinator: DefaultAppFlowCoordinator?
     
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions:
                      [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
         DependencyContainer.root.registerUseCases()
+        DependencyContainer.root.registerCoordinators()
         DependencyContainer.root.registerRepositories()
         DependencyContainer.root.registerViewModels()
-    
+  
         configureWindow()
         
         return true
@@ -28,7 +29,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func configureWindow() {
         let window = UIWindow(frame: UIScreen.main.bounds)
         
-        let appFlowCoordinator = AppFlowCoordinator(window: window)
+        let appFlowCoordinator = DefaultAppFlowCoordinator(window: window)
+        
+        DependencyContainer.root.register { Module { appFlowCoordinator as AppFlowCoordinator } }
         self.appFlowCoordinator = appFlowCoordinator
         
         appFlowCoordinator.start()

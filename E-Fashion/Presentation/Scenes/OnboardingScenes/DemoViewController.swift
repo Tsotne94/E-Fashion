@@ -4,13 +4,13 @@
 //
 //  Created by Cotne Chubinidze on 16.01.25.
 //
+
 import UIKit
 
-class DemoViewController: UIViewController {
+final class DemoViewController: UIViewController {
     private var imageView = UIImageView()
     private var titleLabel = UILabel()
     private var descriptionLabel = UILabel()
-    
     
     let imageName: String
     let titleText: String
@@ -90,6 +90,3 @@ class DemoViewController: UIViewController {
         ])
     }
 }
-
-
-

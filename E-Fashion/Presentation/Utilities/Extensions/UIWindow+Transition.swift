@@ -7,15 +7,19 @@
 import UIKit
 
 extension UIWindow {
-    
-    func setRootViewControllerWithPushTransition(_ viewController: UIViewController, duration: TimeInterval = 0.4) {
-        let transition = CATransition()
-        transition.type = .push
-        transition.subtype = .fromRight
-        transition.duration = duration
+    func setRootViewControllerWithPushTransition(_ viewController: UIViewController, duration: TimeInterval = 0.4, animated: Bool = true) {
         
-        self.layer.add(transition, forKey: kCATransition)
-        self.rootViewController = viewController
+        if animated {
+            let transition = CATransition()
+            transition.type = .push
+            transition.subtype = .fromRight
+            transition.duration = duration
+            self.layer.add(transition, forKey: kCATransition)
+            
+            self.rootViewController = viewController
+        } else {
+            self.rootViewController = viewController
+        }
     }
 }
 
