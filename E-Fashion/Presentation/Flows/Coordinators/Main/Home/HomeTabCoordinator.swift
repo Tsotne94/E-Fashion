@@ -9,25 +9,39 @@ import UIKit
 
 protocol HomeTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
+    func checkProductsUnderSale()
+    func checkNewProducts()
+    func goToProductsDetails(productId: Int)
 }
 
-class DefaultHomeTabCoordinator: HomeTabCoordinator {
-    var rootViewController: UINavigationController
+class DefaultHomeTabCoordinator: NSObject, HomeTabCoordinator {
+    var rootViewController = UINavigationController()
     
-    init() {
-        self.rootViewController = UINavigationController()
-        rootViewController.navigationBar.prefersLargeTitles = true
+    override init() {
+        super.init()
+        rootViewController.delegate = self
     }
-    
-    lazy var firstViewController: FavouritesViewController = {
-        let vc = FavouritesViewController()
-        vc.title = "haha i am the best"
-        return vc
-    }()
     
     func start() {
-        rootViewController.setViewControllers([firstViewController], animated: false)
+        let viewController = HomeViewController()
+        rootViewController.setViewControllers([viewController], animated: false)
     }
     
+    func checkProductsUnderSale() {
+        
+    }
     
+    func checkNewProducts() {
+        
+    }
+    
+    func goToProductsDetails(productId: Int) {
+        
+    }
+}
+
+extension DefaultHomeTabCoordinator: UINavigationControllerDelegate {
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        navigationController.isNavigationBarHidden = true
+    }
 }

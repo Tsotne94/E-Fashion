@@ -9,7 +9,7 @@ import SwiftUI
 
 protocol MainCoordinator: Coordinator {
     var rootViewController: UITabBarController { get }
-    
+    var childCoordinators: [Coordinator] { get }
 }
 
 final class DefaultMainCoordinator: MainCoordinator {
