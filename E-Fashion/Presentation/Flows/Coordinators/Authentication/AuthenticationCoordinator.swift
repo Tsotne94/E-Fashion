@@ -6,7 +6,6 @@
 //
 import Foundation
 import UIKit
-import Combine
 import SwiftUI
 
 protocol AuthenticationCoordinator: Coordinator {
@@ -48,7 +47,7 @@ final class DefaultAuthenticationCoordinator: NSObject, AuthenticationCoordinato
     }
     
     func successfullLogin() {
-        parentCoordinator.startMainFlow()
+        parentCoordinator.viewModel.startMainFlow()
     }
     
     func popToRoot(animated: Bool) {
