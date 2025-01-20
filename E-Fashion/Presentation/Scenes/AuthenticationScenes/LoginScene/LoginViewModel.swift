@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 17.01.25.
 //
+
 import Foundation
 import Combine
 
@@ -23,6 +24,8 @@ protocol LoginViewModelInput {
     var password: String { get set }
     var passwordIsHidden: Bool { get set }
     var isLoading: Bool { get set }
+    var showError: Bool { get set }
+    var errorMessage: String { get set }
 }
 
 protocol LoginViewModelOutput {
@@ -40,22 +43,37 @@ final class DefaultLoginViewModel: LoginViewModel, ObservableObject {
     
     @Published var email: String = ""
     @Published var password: String = ""
+    @Published var errorMessage: String = ""
     @Published var passwordIsHidden: Bool = true
     @Published var isLoading: Bool = false
+    @Published var showError: Bool = false
+    
     
     private var _output = PassthroughSubject<LoginViewModelOutputAction, Never>()
-    
-    @MainActor
     var output: AnyPublisher<LoginViewModelOutputAction, Never> {
         _output.eraseToAnyPublisher()
     }
     
     private var subscriptions = Set<AnyCancellable>()
     
-    public init() { }
+    public init() { setupBinding() }
     
     func forgotPassword() {
         
+    }
+    
+    private func setupBinding() {
+        self._output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+            switch status {
+            case .successfullLogin:
+                print("successfull lgin")
+            case .loginError(let loginError):
+                self?.errorMessage = loginError.description
+                self?.showError = true
+            }
+        }.store(in: &subscriptions)
     }
     
     func logIn() {
@@ -68,7 +86,6 @@ final class DefaultLoginViewModel: LoginViewModel, ObservableObject {
             .sink { [weak self] completion in
                 switch completion {
                 case .failure(let error):
-//                    self?._output.send(.loginError(self?.mapError(error) ?? .unknownError("")))
                     let mappedError: LoginError = ErrorMapper.map(error)
                     self?._output.send(.loginError(mappedError))
                 case .finished:
@@ -100,22 +117,4 @@ final class DefaultLoginViewModel: LoginViewModel, ObservableObject {
     func loginWithGoogle() {
         //#warning("implement if you have time!!!")
     }
-    
-//    private func mapError(_ error: Error) -> LoginError {
-//        if let nsError = error as? NSError {
-//            switch nsError.code {
-//            case 17009:
-//                return .wrongPassword
-//            case 17011:
-//                return .userNotFound
-//            case 17008:
-//                return .invalidEmail
-//            case -1009:
-//                return .networkError
-//            default:
-//                return .unknownError(nsError.localizedDescription)
-//            }
-//        }
-//        return .unknownError("An unexpected error occurred.")
-//    }
 }

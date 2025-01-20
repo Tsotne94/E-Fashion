@@ -11,6 +11,7 @@ public extension DependencyContainer {
             Module { DefaultUpdateAppStateUseCase() as UpdateAppStateUseCase }
             Module { DefaultHasSeenOnboardingUseCase() as HasSeenOnboardingUseCase }
             Module { DefaultSignInUseCase() as SignInUseCase }
+            Module { DefaultSignUpUseCase() as SignUpUseCase }
             Module { DefaultSaveUserUseCase() as SaveUserUseCase }
             Module { DefaultGetCurrentUserUseCase() as GetCurrentUserUseCase }
             Module { DefaultSaveUserUseCase() as SaveUserUseCase }

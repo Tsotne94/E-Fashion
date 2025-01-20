@@ -10,11 +10,9 @@ import Combine
 struct LoginView: View {
     @StateObject private var viewModel = DefaultLoginViewModel()
     @FocusState private var focusedField: InputField?
+    
     @State private var emailAnimation = AnimationState()
     @State private var passwordAnimation = AnimationState()
-    @State private var errorMessage = ""
-    @State private var showAlert = false
-    @State private var subscriptions = Set<AnyCancellable>()
     
     var body: some View {
         VStack(spacing: 35) {
@@ -48,21 +46,15 @@ struct LoginView: View {
         .onChange(of: focusedField) { _ in
             updateAnimations()
         }
-        .onAppear {
-            viewModel.output
-                .sink { status in
-                    handleOutput(status: status)
-                }.store(in: &subscriptions)
-        }
         .overlay {
             if viewModel.isLoading {
                 SUILoader()
             }
         }
-        .alert(isPresented: $showAlert) {
+        .alert(isPresented: $viewModel.showError) {
             Alert(
                 title: Text(SignInPageTexts.loginFail),
-                message: Text(errorMessage),
+                message: Text(viewModel.errorMessage),
                 dismissButton: .default(Text("OK"))
             )
         }
@@ -148,16 +140,6 @@ struct LoginView: View {
                 isFocused: focusedField == .password,
                 isEmpty: viewModel.password.isEmpty
             )
-        }
-    }
-    
-    private func handleOutput(status: LoginViewModelOutputAction) {
-        switch status {
-        case .successfullLogin:
-            print("Login SuccessFull")
-        case .loginError(let loginError):
-            errorMessage = loginError.description
-            showAlert = true
         }
     }
 }

@@ -9,8 +9,8 @@ import Combine
 import FirebaseAuth
 
 public struct DefaultAuthenticationRepository: AuthenticationRepository {
-    public init() { }
     
+    public init() { }
     
     func signIn(email: String, password: String) -> AnyPublisher<User, Error> {
         return Future<User, Error> { promise in
@@ -31,7 +31,19 @@ public struct DefaultAuthenticationRepository: AuthenticationRepository {
     
     func signUp(email: String, password: String) -> AnyPublisher<User, Error> {
         Future<User, Error> { promise in
-            
+            Auth.auth().createUser(withEmail: email, password: password) { result, error in
+                if let error = error {
+                    promise(.failure(error))
+                       return
+                   }
+                   
+                   guard let user = result?.user else {
+                       promise(.failure(NSError(domain: "AuthError", code: 0, userInfo: [NSLocalizedDescriptionKey: "No current user found"])))
+                       return
+                   }
+                   
+                promise(.success(UserDTO(from: user).toUser()))
+            }
         }
         .eraseToAnyPublisher()
     }
@@ -45,8 +57,6 @@ public struct DefaultAuthenticationRepository: AuthenticationRepository {
                 promise(.failure(error as! Never))
             }
         }
-        .map { _ in () }
-        .catch { _ in Just(()) }
         .eraseToAnyPublisher()
     }
 }

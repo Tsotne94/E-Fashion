@@ -86,27 +86,19 @@ final class OnboardingViewController: UIPageViewController {
             .sink { [weak self] page in
                 let newTitle = page == 2 ? "Get Started" : "Next"
                 self?.nextButton.setTitleWithAnimation(newTitle)
-            }
-            .store(in: &subscriptions)
-        
-        currentPage
-            .sink { [weak self] page in
+                
                 if page == 0 {
                     self?.previousButton.dissapearWithAnimation()
                 } else {
                     self?.previousButton.apearWithAnimation()
                 }
-            }
-            .store(in: &subscriptions)
-        
-        currentPage
-            .sink { [weak self] page in
+                
                 let pageText = "\(page + 1)/3"
                 let attributedText = NSMutableAttributedString(string: pageText)
                 attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: NSRange(location: 0, length: 1))
                 self?.currentPageLabel.attributedText = attributedText
-            }
-            .store(in: &subscriptions)
+                
+            }.store(in: &subscriptions)
     }
     
     private func setupPageControl() {
@@ -185,8 +177,6 @@ final class OnboardingViewController: UIPageViewController {
     
     @objc private func skipTapped() {
         doneRequested()
-        print("presssseeeeeddddd")
-        print()
     }
     
     private func goToNextPage() {
@@ -230,7 +220,6 @@ extension OnboardingViewController: UIPageViewControllerDelegate {
            pageControl.currentPage = currentIndex
        }
 }
-
 
 extension OnboardingViewController {
     @objc func pageControlTapped(_ sender: UIPageControl) {

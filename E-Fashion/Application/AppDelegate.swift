@@ -21,7 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DependencyContainer.root.registerRepositories()
         DependencyContainer.root.registerViewModels()
   
-    
         configureWindow()
         
         return true

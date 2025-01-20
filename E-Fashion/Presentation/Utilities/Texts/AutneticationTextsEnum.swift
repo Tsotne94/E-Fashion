@@ -15,7 +15,15 @@ enum SignInPageTexts {
 }
 
 enum SignUpPageTexts {
+    static let title = "Create an account"
+    static let passwordTextField = "Password"
+    static let signUpFail = "Couldn't Complete Registration"
     
+    static let nameTextField = "Username"
+    static let emailTextField = "email"
+    
+    static let confirmPasswordTextField = "Confirm Password"
+    static let signUpButton = "Sign Up"
 }
 
 enum ForgotPasswordPageTexts {

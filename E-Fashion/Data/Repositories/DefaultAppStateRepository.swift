@@ -4,11 +4,11 @@
 //
 //  Created by Cotne Chubinidze on 15.01.25.
 //
+
 import Combine
 import FirebaseAuth
 
 public struct DefaultAppStateRepository: AppStateRepository {
-    @Inject private var getCurrentUserUseCase: GetCurrentUserUseCase
     
     public init() { }
     

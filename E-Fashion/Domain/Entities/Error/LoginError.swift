@@ -22,6 +22,7 @@ public enum LoginError: MappableError {
     case accountDisabled
     case unknownError(String)
     
+#warning("errors usecases")
     public var description: String {
         switch self {
         case .wrongPassword:
