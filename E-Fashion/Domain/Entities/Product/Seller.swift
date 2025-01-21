@@ -9,5 +9,5 @@ struct Seller: Codable {
     let userId: Int
     let username: String
     let profile: String
-    let profilePicture: String
+    let profilePicture: String?
 }

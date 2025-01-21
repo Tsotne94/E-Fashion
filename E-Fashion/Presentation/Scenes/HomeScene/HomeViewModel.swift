@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import MyNetworkManager
 
 protocol HomeViewModel: HomeViewModelInput, HomeViewModelOutput {
 }
@@ -59,4 +60,25 @@ final class DefaultHomeViewModelOutput: HomeViewModel {
     func fetchMoreSale() {
         
     }
+    
+    
+    func temp() {
+        let search = SearchParameters(page: 1, order: .newestFirst)
+        let endpoint = APIEndpoint.search(search)
+        endpoint.request(
+            modelType: [Product].self,  
+            networkManager: NetworkManager()
+        ) { result in
+            switch result {
+            case .success(let products):
+                print("Success! Number of products: \(products.count)")
+                products.forEach { product in
+                    print("Product: \(product.title), Price: \(product.price.totalAmount) \(product.price.totalAmount.currency_code)")
+                }
+            case .failure(let error):
+                print("Failed with error: \(error)")
+            }
+        }
+    }
 }
+

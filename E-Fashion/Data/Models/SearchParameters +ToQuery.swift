@@ -12,7 +12,7 @@ extension SearchParameters {
         var items = [
             URLQueryItem(name: "country", value: "us"),
             URLQueryItem(name: "page", value: "\(page)"),
-            URLQueryItem(name: "order", value: order)
+            URLQueryItem(name: "order", value: order.rawValue)
         ]
         
         if let query = query {

@@ -6,9 +6,9 @@
 //
 
 struct Price: Codable {
-    let amount: Amount
+    let amount: PriceAmount
     let currency: String?
-    let discount: Int?
-    let fees: Fees
-    let totalAmount: Amount
+    let discount: String?
+    let fees: PriceAmount
+    let totalAmount: PriceAmount
 }

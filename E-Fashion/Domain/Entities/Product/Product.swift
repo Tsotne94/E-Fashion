@@ -12,10 +12,8 @@ struct Product: Codable {
     let image: String
     let promoted: Bool
     let favourites: Int
-    let brand: String
-    let size: String
+    let brand: String?
+    let size: String?
     let price: Price
     let seller: Seller
-    let isSold: Bool?
-    let status: String
 }

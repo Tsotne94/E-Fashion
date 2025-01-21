@@ -7,7 +7,7 @@
 
 struct SearchParameters {
     let page: Int
-    let order: String
+    let order: OrderType
     let query: String?
     let category: Category?
     let colors: [ProductColor]?
@@ -15,4 +15,16 @@ struct SearchParameters {
     let conditions: [ProductCondition]?
     let minPrice: Int?
     let maxPrice: Int?
+    
+    init(page: Int, order: OrderType, query: String? = nil, category: Category? = nil, colors: [ProductColor]? = nil, materials: [ProductMaterial]? = nil, conditions: [ProductCondition]? = nil, minPrice: Int? = nil, maxPrice: Int? = nil) {
+        self.page = page
+        self.order = order
+        self.query = query
+        self.category = category
+        self.colors = colors
+        self.materials = materials
+        self.conditions = conditions
+        self.minPrice = minPrice
+        self.maxPrice = maxPrice
+    }
 }

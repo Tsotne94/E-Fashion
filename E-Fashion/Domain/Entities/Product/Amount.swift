@@ -5,7 +5,12 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-struct Amount: Codable {
-    let value: Double
-    let currency: String
+struct PriceAmount: Codable {
+    let amount: String
+    let currency_code: String
+    
+    enum CodingKeys: String, CodingKey {
+        case amount
+        case currency_code
+    }
 }
