@@ -21,6 +21,6 @@ struct ProductDetails: Codable {
     let category: CategoryDetails
     let fullCategory: String
     let brand: Brand
-    let price: Price
+    let price: PriceDetails
     let seller: DetailSeller
 }

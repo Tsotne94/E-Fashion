@@ -19,9 +19,9 @@ struct DetailSeller: Codable {
     let itemCount: Int
     let followers: Int
     let following: Int
-    let feedback: Feedback
+    let feedback: Feedback?
     let banned: Bool
     let online: Bool
     let lastSeen: String
-    let bundleDiscounts: [BundleDiscount]
+    let bundleDiscounts: [BundleDiscount]?
 }

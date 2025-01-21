@@ -10,5 +10,5 @@ import Foundation
 
 protocol ProductsRepository {
     func fetchProducts(params: SearchParameters) -> AnyPublisher<[Product], Error>
-    func fetchSingleProduct(id: String) -> AnyPublisher<Product, Error>
+    func fetchSingleProduct(id: String) -> AnyPublisher<ProductDetails, Error>
 }

@@ -15,6 +15,8 @@ public extension DependencyContainer {
             Module { DefaultSaveUserUseCase() as SaveUserUseCase }
             Module { DefaultGetCurrentUserUseCase() as GetCurrentUserUseCase }
             Module { DefaultSaveUserUseCase() as SaveUserUseCase }
+            Module { DefaultFetchProductsUseCase() as FetchProductsUseCase }
+            Module { DefaultFetchSingleProductUseCase() as FetchSingleProductUseCase }
         }
     }
 }

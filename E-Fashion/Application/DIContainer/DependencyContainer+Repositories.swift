@@ -10,6 +10,7 @@ public extension DependencyContainer {
             Module { DefaultAppStateRepository() as AppStateRepository }
             Module { DefaultAuthenticationRepository() as AuthenticationRepository }
             Module { DefaultUserRepository() as UserRepository }
+            Module { DefaultProductsRepository() as ProductsRepository }
         }
     }
 }

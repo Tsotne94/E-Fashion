@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 protocol FetchSingleProductUseCase {
-    func execute(id: String) -> AnyPublisher<Product, Error>
+    func execute(id: String) -> AnyPublisher<ProductDetails, Error>
 }
 
 struct DefaultFetchSingleProductUseCase: FetchSingleProductUseCase {
@@ -17,7 +17,7 @@ struct DefaultFetchSingleProductUseCase: FetchSingleProductUseCase {
 
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<Product, any Error> {
+    func execute(id: String) -> AnyPublisher<ProductDetails, any Error> {
         productsRepository.fetchSingleProduct(id: id)
     }
 }
