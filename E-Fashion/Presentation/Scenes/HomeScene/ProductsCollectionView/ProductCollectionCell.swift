@@ -8,10 +8,10 @@
 import UIKit
 
 class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
+    var product: Product?
     
     private let discountBadge: UILabel = {
         let label = UILabel()
-        label.text = "-20%"
         label.textColor = .white
         label.backgroundColor = .red
         label.font = .systemFont(ofSize: 12, weight: .bold)
@@ -24,7 +24,7 @@ class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     private let productImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "photo")
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -39,14 +39,12 @@ class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     
     private let brandNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Brand Name"
         label.font = .systemFont(ofSize: 14, weight: .bold)
         return label
     }()
     
     private let productNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Product Name"
         label.font = .systemFont(ofSize: 12, weight: .regular)
         label.textColor = .darkGray
         return label
@@ -54,7 +52,6 @@ class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     
     private let priceLabel: UILabel = {
         let label = UILabel()
-        label.text = "$49.99"
         label.font = .systemFont(ofSize: 14, weight: .bold)
         return label
     }()
@@ -79,7 +76,6 @@ class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         return button
     }()
     
-    // Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -89,9 +85,7 @@ class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // Layout the UI
     private func setupViews() {
-        // Add subviews
         contentView.addSubview(discountBadge)
         contentView.addSubview(productImageView)
         contentView.addSubview(ratingLabel)
@@ -101,7 +95,6 @@ class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         contentView.addSubview(originalPriceLabel)
         contentView.addSubview(favoriteButton)
         
-        // Set constraints
         discountBadge.translatesAutoresizingMaskIntoConstraints = false
         productImageView.translatesAutoresizingMaskIntoConstraints = false
         ratingLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -142,6 +135,18 @@ class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
             favoriteButton.widthAnchor.constraint(equalToConstant: 24),
             favoriteButton.heightAnchor.constraint(equalToConstant: 24),
         ])
+    }
+    
+    func configureCell(with product: Product) {
+        self.product = product
+        discountBadge.text = product.price.discount
+        if let imageUrl = URL(string: product.image) {
+            productImageView.load(url: imageUrl)
+        }
+        brandNameLabel.text = product.brand
+        productNameLabel.text = product.title
+        priceLabel.text = "$\(product.price.totalAmount.amount)"
+        contentView.layoutIfNeeded()
     }
 }
 

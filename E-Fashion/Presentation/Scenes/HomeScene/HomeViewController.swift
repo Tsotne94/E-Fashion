@@ -7,7 +7,7 @@
 import Combine
 import UIKit
 
-class HomeViewController: UIViewController {
+final class HomeViewController: UIViewController {
     private enum Section: Int, CaseIterable {
          case banner = 0
          case hot

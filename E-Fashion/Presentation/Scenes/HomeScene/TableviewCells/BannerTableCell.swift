@@ -66,7 +66,6 @@ class BannerTableCell: UITableViewCell, IdentifiableProtocol {
             
             titleLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
             titleLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 20)
-            
         ])
     }
 }

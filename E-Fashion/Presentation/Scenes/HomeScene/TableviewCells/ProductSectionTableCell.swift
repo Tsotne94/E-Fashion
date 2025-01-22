@@ -145,12 +145,12 @@ extension ProductSectionTableCell: UICollectionViewDelegate, UICollectionViewDat
         
         switch items {
         case .new:
+            cell.configureCell(with: viewModel.newItems[indexPath.row])
             return cell
         case .hot:
+            cell.configureCell(with: viewModel.hotItems[indexPath.row])
             return cell
         }
-        
-        
     }
 }
 
