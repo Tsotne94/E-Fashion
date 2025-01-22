@@ -28,6 +28,7 @@ enum Icons {
     static let successfulPurchase = "successfullPurchase"
     static let eye = "eye"
     static let eyeSlashed = "eye.slash"
+    static let banner = "banner"
 }
 
 enum GreetingImages {

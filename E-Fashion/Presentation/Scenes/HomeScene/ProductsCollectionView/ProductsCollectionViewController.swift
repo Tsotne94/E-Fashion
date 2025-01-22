@@ -8,6 +8,7 @@
 import UIKit
 
 class ProductsCollectionViewController: UICollectionViewController {
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,7 +18,6 @@ class ProductsCollectionViewController: UICollectionViewController {
     }
 
     // MARK: UICollectionViewDataSource
-#warning("mkvetriaaaaaaa signup chamowrilia")
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
@@ -33,7 +33,6 @@ class ProductsCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductsCollectionViewCell.reuseIdentifier, for: indexPath)
     
-        // Configure the cell
     
         return cell
     }

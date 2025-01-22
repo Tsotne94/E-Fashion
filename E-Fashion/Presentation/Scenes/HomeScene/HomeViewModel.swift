@@ -100,4 +100,3 @@ final class DefaultHomeViewModelOutput: HomeViewModel {
             }.store(in: &subscriptions)
     }
 }
-
