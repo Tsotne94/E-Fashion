@@ -16,4 +16,11 @@ struct Category: Codable, Identifiable {
         case parentId = "parent_id"
         case parent
     }
+    
+    init(id: Int, title: String = "", parentId: Int = 0, parent: String = "") {
+        self.id = id
+        self.title = title
+        self.parentId = parentId
+        self.parent = parent
+    }
 }

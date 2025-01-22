@@ -15,13 +15,15 @@ protocol HomeViewModel: HomeViewModelInput, HomeViewModelOutput {
 protocol HomeViewModelInput {
     func viewDidLoad()
     func productTapped(productId: Int)
-    func fetchMoreNew()
-    func fetchMoreSale()
+    func fetchNew()
+    func fetchSale()
 }
 
 protocol HomeViewModelOutput {
     var newItems: [Product] { get }
-    var saleItems: [Product] { get }
+    var hotItems: [Product] { get }
+    var newItemsPage: Int { get }
+    var hotItemsPage: Int { get }
     var isLoadingMore: CurrentValueSubject<Bool, Never> { get }
     var output: AnyPublisher<HomeViewModelOutputAction, Never> { get }
 }
@@ -32,8 +34,12 @@ enum HomeViewModelOutputAction {
 }
 
 final class DefaultHomeViewModelOutput: HomeViewModel {
+    @Inject private var mainCoordinator: MainCoordinator
+    @Inject private var fetchProductsUseCase: FetchProductsUseCase
     var newItems: [Product] = []
-    var saleItems: [Product] = []
+    var hotItems: [Product] = []
+    var newItemsPage: Int = 0
+    var hotItemsPage: Int = 0
     
     var isLoadingMore = CurrentValueSubject<Bool, Never>(false)
     
@@ -42,43 +48,56 @@ final class DefaultHomeViewModelOutput: HomeViewModel {
         _output.eraseToAnyPublisher()
     }
     
-    public init() {
-    }
+    private var subscriptions = Set<AnyCancellable>()
+    
+    public init() { }
     
     func viewDidLoad() {
-        
+        fetchNew()
+        fetchSale()
     }
     
     func productTapped(productId: Int) {
         
     }
     
-    func fetchMoreNew() {
+    func fetchNew() {
+        newItemsPage += 1
+        let category = Category(id: Categories.menId)
+        let params = SearchParameters(page: newItemsPage, order: .newestFirst, category: category)
         
-    }
-    
-    func fetchMoreSale() {
-        
-    }
-    
-    
-    func temp() {
-        let search = SearchParameters(page: 1, order: .newestFirst)
-        let endpoint = APIEndpoint.search(search)
-        endpoint.request(
-            modelType: [Product].self,  
-            networkManager: NetworkManager()
-        ) { result in
-            switch result {
-            case .success(let products):
-                print("Success! Number of products: \(products.count)")
-                products.forEach { product in
-                    print("Product: \(product.title), Price: \(product.price.totalAmount) \(product.price.totalAmount.currency_code)")
+        fetchProductsUseCase.execute(params: params)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    print("successfully fetched new items")
+                case .failure(let error):
+                    print("error: \(error.localizedDescription)")
                 }
-            case .failure(let error):
-                print("Failed with error: \(error)")
-            }
-        }
+            } receiveValue: { [weak self] products in
+                self?.newItems += products
+            }.store(in: &subscriptions)
+
+    }
+    
+    func fetchSale() {
+        hotItemsPage += 1
+        let category = Category(id: Categories.womanId)
+        let params = SearchParameters(page: hotItemsPage, order: .relevance, category: category)
+        
+        fetchProductsUseCase.execute(params: params)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    print("successfully fetched new items")
+                case .failure(let error):
+                    print("error: \(error.localizedDescription)")
+                }
+            } receiveValue: { [weak self] products in
+                self?.hotItems += products.sorted(by: { $0.promoted && !$1.promoted })
+            }.store(in: &subscriptions)
     }
 }
 

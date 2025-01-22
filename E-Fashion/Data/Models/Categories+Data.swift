@@ -6,6 +6,10 @@
 //
 
 extension Categories {
+    static let menId = 2050
+    static let womanId = 4
+    static let kidsId = 28
+    
     static let allCategories = Categories(
         men: [
             Category(id: 32, title: "Suits & Blazers", parentId: 2050, parent: "Clothes"),

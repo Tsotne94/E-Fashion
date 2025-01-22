@@ -15,7 +15,6 @@ public extension DependencyContainer {
         let favouritesCoordinator = DefaultFavouritesTabCoordinator()
         let profileCoordinator = DefaultProfileTabCoordinator()
     
-        
         DependencyContainer.root.register {
             Module { DefaultOnboardingCoordinator() as OnboardingCoordinator }
             Module { authCoordinator as AuthenticationCoordinator }

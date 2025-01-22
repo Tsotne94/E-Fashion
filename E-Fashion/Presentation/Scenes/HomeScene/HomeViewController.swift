@@ -8,6 +8,7 @@ import Combine
 import UIKit
 
 class HomeViewController: UIViewController {
+    private let productsTableView = ProductsTableViewController()
 
     override func viewDidLoad() {
         super.viewDidLoad()
