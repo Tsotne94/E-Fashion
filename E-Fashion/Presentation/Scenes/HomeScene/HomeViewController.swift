@@ -18,7 +18,7 @@ class HomeViewController: UIViewController {
         let table = UITableView(frame: .zero, style: .plain)
         table.separatorStyle = .none
         table.showsVerticalScrollIndicator = false
-        table.backgroundColor = .white
+        table.backgroundColor = .clear
         return table
     }()
     
@@ -64,7 +64,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             cell.configure(
                 title: "Hot",
                 subtitle: "What's making waves today",
-                items: .new
+                items: .hot
             )
             return cell
             
@@ -73,7 +73,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             cell.configure(
                 title: "New",
                 subtitle: "You've never seen it before!",
-                items: .new 
+                items: .new
             )
             return cell
             

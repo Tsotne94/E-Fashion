@@ -9,14 +9,13 @@ import Foundation
 import Combine
 import MyNetworkManager
 
-protocol HomeViewModel: HomeViewModelInput, HomeViewModelOutput {
+protocol HomeViewModel: AnyObject, HomeViewModelInput, HomeViewModelOutput {
 }
 
 protocol HomeViewModelInput {
-    func viewDidLoad()
     func productTapped(productId: Int)
     func fetchNew()
-    func fetchSale()
+    func fetchHot()
 }
 
 protocol HomeViewModelOutput {
@@ -29,17 +28,26 @@ protocol HomeViewModelOutput {
 }
 
 enum HomeViewModelOutputAction {
+    case productsFetched
     case showProductDetails(Product)
     case showError(String)
 }
 
-final class DefaultHomeViewModelOutput: HomeViewModel {
+final class DefaultHomeViewModel: HomeViewModel {
     @Inject private var mainCoordinator: MainCoordinator
     @Inject private var fetchProductsUseCase: FetchProductsUseCase
-    var newItems: [Product] = []
-    var hotItems: [Product] = []
-    var newItemsPage: Int = 0
-    var hotItemsPage: Int = 0
+    var newItems: [Product] = [] {
+        didSet {
+            _output.send(.productsFetched)
+        }
+    }
+    var hotItems: [Product] = [] {
+        didSet {
+            _output.send(.productsFetched)
+        }
+    }
+    var newItemsPage: Int = 1
+    var hotItemsPage: Int = 1
     
     var isLoadingMore = CurrentValueSubject<Bool, Never>(false)
     
@@ -52,17 +60,11 @@ final class DefaultHomeViewModelOutput: HomeViewModel {
     
     public init() { }
     
-    func viewDidLoad() {
-        fetchNew()
-        fetchSale()
-    }
-    
     func productTapped(productId: Int) {
         
     }
     
     func fetchNew() {
-        newItemsPage += 1
         let category = Category(id: Categories.menId)
         let params = SearchParameters(page: newItemsPage, order: .newestFirst, category: category)
         
@@ -71,7 +73,7 @@ final class DefaultHomeViewModelOutput: HomeViewModel {
             .sink { completion in
                 switch completion {
                 case .finished:
-                    print("successfully fetched new items")
+                    print("successfully fetched hot items")
                 case .failure(let error):
                     print("error: \(error.localizedDescription)")
                 }
@@ -81,8 +83,7 @@ final class DefaultHomeViewModelOutput: HomeViewModel {
 
     }
     
-    func fetchSale() {
-        hotItemsPage += 1
+    func fetchHot() {
         let category = Category(id: Categories.womanId)
         let params = SearchParameters(page: hotItemsPage, order: .relevance, category: category)
         

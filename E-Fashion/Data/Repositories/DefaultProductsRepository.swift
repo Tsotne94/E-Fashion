@@ -12,35 +12,36 @@ public struct DefaultProductsRepository: ProductsRepository {
     public init() { }
     
     func fetchProducts(params: SearchParameters) -> AnyPublisher<[Product], Error> {
-        let endpoint = APIEndpoint.search(params)
+        let endpoint = APIEndpoint.shared.search(parameters: params)
         
         return Future { promise in
-            endpoint.request(
+            APIEndpoint.shared.request(
+                urlString: endpoint,
                 modelType: [Product].self,
                 networkManager: NetworkManager()) { result in
                     switch result {
-                    case .success(let products):
-                        promise(.success(products))
-                    case .failure(let error):
-                        promise(.failure(error))
+                    case .success(let success):
+                        promise(.success(success))
+                    case .failure(let failure):
+                        promise(.failure(failure))
                     }
                 }
         }.eraseToAnyPublisher()
     }
     
     func fetchSingleProduct(id: String) -> AnyPublisher<ProductDetails, Error> {
-        let endpoint = APIEndpoint.getProduct(productId: id)
+        let endpoint = APIEndpoint.shared.getProduct(productId: id)
         
         return Future { promise in
-            endpoint.request(
+            APIEndpoint.shared.request(
+                urlString: endpoint,
                 modelType: ProductDetails.self,
                 networkManager: NetworkManager()) { result in
                     switch result {
-                    case .success(let product):
-                        promise(.success(product))
-                    case .failure(let error):
-                        promise(.failure(error))
-                        print(error.localizedDescription)
+                    case .success(let success):
+                        promise(.success(success))
+                    case .failure(let failure):
+                        promise(.failure(failure))
                     }
                 }
         }.eraseToAnyPublisher()

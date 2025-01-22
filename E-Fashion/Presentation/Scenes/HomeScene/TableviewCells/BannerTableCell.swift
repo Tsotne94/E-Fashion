@@ -37,6 +37,7 @@ class BannerTableCell: UITableViewCell, IdentifiableProtocol {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.isUserInteractionEnabled = false
         setupBanner()
         setupConstraints()
     }
