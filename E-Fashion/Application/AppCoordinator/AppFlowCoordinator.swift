@@ -26,6 +26,7 @@ final class DefaultAppFlowCoordinator: AppFlowCoordinator {
     
     @Inject private var onboardingCoordinator: OnboardingCoordinator
     @Inject private var authenticationCoordinator: AuthenticationCoordinator
+    @Inject private var mainCoordinator: MainCoordinator
 
     init(window: UIWindow) {
         self.window = window
@@ -65,12 +66,9 @@ final class DefaultAppFlowCoordinator: AppFlowCoordinator {
     }
     
     func startMainFlow() {
-        let mainCoordinator = MainCoordinator()
         mainCoordinator.start()
         self.childCoordinators = [mainCoordinator]
-        
         self.window.setRootViewControllerWithPushTransition(mainCoordinator.rootViewController, animated: animatedTransition)
     }
 }
 
-#warning("add aplicaition logoooo")

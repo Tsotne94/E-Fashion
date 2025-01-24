@@ -15,7 +15,6 @@ enum Icons {
     static let mail = "Mail"
     static let masterCard = "mastercard"
     static let pencil = "pencil"
-    static let profile = "profile"
     static let rectangle2 = "Rectangle 2"
     static let rectangle3 = "Rectangle 3"
     static let search = "search"
@@ -29,6 +28,7 @@ enum Icons {
     static let successfulPurchase = "successfullPurchase"
     static let eye = "eye"
     static let eyeSlashed = "eye.slash"
+    static let banner = "banner"
 }
 
 enum GreetingImages {
@@ -48,8 +48,15 @@ enum LoginSignup {
 
 enum TabBar {
     static let bag = "bag"
-    static let cart = "cart"
-    static let favourites = "favourites"
+    static let cart = "shopping_cart"
+    static let favourites = "heart"
     static let home = "home"
+    static let profile = "account_circle"
+    
+    static let bagSelected = "bagSelected"
+    static let cartSelected = "cartSelected"
+    static let favouritesSelected = "heartSelected"
+    static let homeSelected = "homeSelected"
+    static let profileSelected = "profileSellected"
 }
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F6FC8012D3EBECD00810270 /* MyNetworkManager in Frameworks */ = {isa = PBXBuildFile; productRef = 1F6FC8002D3EBECD00810270 /* MyNetworkManager */; };
 		1FDB08FE2D31665200435A22 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 1FDB08FD2D31665200435A22 /* Lottie */; };
 		1FDB09022D3180F900435A22 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 1FDB09012D3180F900435A22 /* FirebaseAuth */; };
 		1FDB09042D3180F900435A22 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1FDB09032D3180F900435A22 /* FirebaseCore */; };
@@ -78,6 +79,7 @@
 				1FDB090A2D3180F900435A22 /* FirebaseMessaging in Frameworks */,
 				1FDB08FE2D31665200435A22 /* Lottie in Frameworks */,
 				1FDB09042D3180F900435A22 /* FirebaseCore in Frameworks */,
+				1F6FC8012D3EBECD00810270 /* MyNetworkManager in Frameworks */,
 				1FDB09062D3180F900435A22 /* FirebaseDatabase in Frameworks */,
 				1FDB090C2D3180F900435A22 /* FirebaseStorage in Frameworks */,
 				1FDB09082D3180F900435A22 /* FirebaseFirestore in Frameworks */,
@@ -149,6 +151,7 @@
 				1FDB09072D3180F900435A22 /* FirebaseFirestore */,
 				1FDB09092D3180F900435A22 /* FirebaseMessaging */,
 				1FDB090B2D3180F900435A22 /* FirebaseStorage */,
+				1F6FC8002D3EBECD00810270 /* MyNetworkManager */,
 			);
 			productName = "E-Fashion";
 			productReference = 1FC435E22D301A7A0048EB5C /* E-Fashion.app */;
@@ -235,6 +238,7 @@
 			packageReferences = (
 				1FDB08FC2D31665200435A22 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				1FDB09002D3180F900435A22 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				1F6FC7FF2D3EBECD00810270 /* XCRemoteSwiftPackageReference "NetworkManager" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1FC435E32D301A7A0048EB5C /* Products */;
@@ -609,6 +613,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		1F6FC7FF2D3EBECD00810270 /* XCRemoteSwiftPackageReference "NetworkManager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Tsotne94/NetworkManager.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		1FDB08FC2D31665200435A22 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
@@ -628,6 +640,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1F6FC8002D3EBECD00810270 /* MyNetworkManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1F6FC7FF2D3EBECD00810270 /* XCRemoteSwiftPackageReference "NetworkManager" */;
+			productName = MyNetworkManager;
+		};
 		1FDB08FD2D31665200435A22 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1FDB08FC2D31665200435A22 /* XCRemoteSwiftPackageReference "lottie-ios" */;

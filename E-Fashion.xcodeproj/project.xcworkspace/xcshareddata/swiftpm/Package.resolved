@@ -1,5 +1,5 @@
 {
-  "originHash" : "47f9177f63e0789cab06c1b7d9bc8a441b700066de149a6bb03f3232804c52e2",
+  "originHash" : "371275f436a21c816e929f8f2b5b17aa1e4cb3416a2436d3d2d2d9680bc491fd",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -107,6 +107,15 @@
       "state" : {
         "revision" : "b7e1104502eca3a213b46303391ca4d3bc8ddec1",
         "version" : "2.30910.0"
+      }
+    },
+    {
+      "identity" : "networkmanager",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Tsotne94/NetworkManager.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "628fe9e5fc77fabac661cdf3f37eeaebb12acd6d"
       }
     },
     {

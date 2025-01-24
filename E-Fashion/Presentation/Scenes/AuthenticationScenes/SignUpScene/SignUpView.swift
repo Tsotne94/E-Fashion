@@ -30,11 +30,12 @@ struct SignUpView: View {
                         
                     }
                 }
-                Spacer()
+                Spacer(minLength: 20)
             }
+            .padding(.horizontal)
         }
         .scrollIndicators(.hidden)
-        .padding()
+    
         .background(Color.customWhite, ignoresSafeAreaEdges: .all)
         .onChange(of: focusedField) { _ in
             updateAnimations()
@@ -56,9 +57,13 @@ struct SignUpView: View {
     private var inputFieldsGroup: some View {
         Group {
             nameField
+                .padding(.horizontal, 5)
             emailField
+                .padding(.horizontal, 5)
             passwordField
+                .padding(.horizontal, 5)
             confirmPasswordField
+                .padding(.horizontal, 5)
         }
     }
     

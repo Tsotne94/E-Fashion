@@ -17,13 +17,13 @@ struct SUICustomTextFieldStyle: ViewModifier {
                 ZStack {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
                         .stroke(lineWidth: 2.5)
-                        .foregroundStyle(.accentRed)
+                        .foregroundStyle(.customGray)
                     
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .frame(width: width, height: 27)
                             .padding(.leading, 12)
-                            .foregroundStyle(.accentRed)
+                            .foregroundStyle(.customGray)
                         
                         Text(text)
                             .bold()

@@ -23,7 +23,7 @@ public struct DefaultUserRepository: UserRepository {
         .eraseToAnyPublisher()
     }
     
-    func saveUser(user: User) -> AnyPublisher<Void, any Error> {
+    func saveUser(user: User) -> AnyPublisher<Void, Error> {
         let userDTO = UserDTO(from: user)
         return Future { promise in
             db.collection("Users").addDocument(data: userDTO.toDictionary()) { error in

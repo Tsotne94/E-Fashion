@@ -8,19 +8,16 @@
 import UIKit
 
 class MainTabBarController: UITabBarController {
-    var mainCoordinator: MainCoordinator?
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        tabBar.backgroundColor = .white
         
-
+        let tintColor: UIColor = .accentRed
+        tabBar.tintColor = tintColor
+        tabBar.unselectedItemTintColor = .gray
+        
+        let attributes: [NSAttributedString.Key: Any] = [ .foregroundColor: tintColor ]
+        UITabBarItem.appearance().setTitleTextAttributes(attributes, for: .selected)
+        
+        tabBar.backgroundColor = .white
     }
 }
-
-
-
-
-
-
-

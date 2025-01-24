@@ -5,9 +5,21 @@
 //  Created by Cotne Chubinidze on 14.01.25.
 //
 import UIKit
+import SwiftUI
 
-final class MainCoordinator: Coordinator {
+protocol MainCoordinator: Coordinator {
+    var rootViewController: UITabBarController { get }
+    var childCoordinators: [Coordinator] { get }
+}
+
+final class DefaultMainCoordinator: MainCoordinator {
     @Inject private var parentCoordinator: AppFlowCoordinator
+    
+    @Inject private var homeCoordinator: HomeTabCoordinator
+    @Inject private var shopCoordinator: ShopTabCoordinator
+    @Inject private var bagCoordinator: BagTabCoordinator
+    @Inject private var favouriteseCoordinator: FavouritesTabCoordinator
+    @Inject private var profileeCoordinator: ProfileTabCoordinator
     
     var rootViewController: UITabBarController
     var childCoordinators = [Coordinator]()
@@ -16,24 +28,54 @@ final class MainCoordinator: Coordinator {
         self.rootViewController = MainTabBarController()
     }
     
-    func start() {
-        let firstCoordinator = FirstTabCoordinator()
-        firstCoordinator.start()
-        self.childCoordinators.append(firstCoordinator)
-        let firstController = firstCoordinator.rootViewController
-        firstController.tabBarItem = UITabBarItem(tabBarSystemItem: .bookmarks, tag: 0)
+    func start() {        
+        homeCoordinator.start()
+        self.childCoordinators.append(homeCoordinator)
+        homeCoordinator.rootViewController.tabBarItem = UITabBarItem(
+            title: "Home",
+            image: UIImage(named: TabBar.home),
+            selectedImage: UIImage(named: TabBar.homeSelected)
+        )
         
-        let secondCoordinator = SecondTabCoordinator()
-        secondCoordinator.start()
-        self.childCoordinators.append(secondCoordinator)
-        let secondController = secondCoordinator.rootViewController
-        secondController.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 1)
+        shopCoordinator.start()
+        self.childCoordinators.append(shopCoordinator)
+        shopCoordinator.rootViewController.tabBarItem = UITabBarItem(
+            title: "Shop",
+            image: UIImage(named: TabBar.cart),
+            selectedImage: UIImage(named: TabBar.cartSelected)
+        )
+        
+        bagCoordinator.start()
+        self.childCoordinators.append(bagCoordinator)
+        bagCoordinator.rootViewController.tabBarItem = UITabBarItem(
+            title: "Bag",
+            image: UIImage(named: TabBar.bag),
+            selectedImage: UIImage(named: TabBar.bagSelected)
+        )
+        
+        favouriteseCoordinator.start()
+        self.childCoordinators.append(favouriteseCoordinator)
+        favouriteseCoordinator.rootViewController.tabBarItem = UITabBarItem(
+            title: "Favourites",
+            image: UIImage(named: TabBar.favourites),
+            selectedImage: UIImage(named: TabBar.favouritesSelected)
+        )
+        
+        profileeCoordinator.start()
+        self.childCoordinators.append(profileeCoordinator)
+        profileeCoordinator.rootViewController.tabBarItem = UITabBarItem(
+            title: "Profile",
+            image: UIImage(named: TabBar.profile),
+            selectedImage: UIImage(named: TabBar.profileSelected)
+        )
         
         self.rootViewController.viewControllers = [
-            firstCoordinator.rootViewController,
-            secondCoordinator.rootViewController
+            homeCoordinator.rootViewController,
+            shopCoordinator.rootViewController,
+            bagCoordinator.rootViewController,
+            favouriteseCoordinator.rootViewController,
+            profileeCoordinator.rootViewController
         ]
-        
     }
 }
 
