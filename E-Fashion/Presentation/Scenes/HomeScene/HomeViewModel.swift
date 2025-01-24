@@ -23,7 +23,6 @@ protocol HomeViewModelOutput {
     var hotItems: [Product] { get }
     var newItemsPage: Int { get }
     var hotItemsPage: Int { get }
-    var isLoadingMore: CurrentValueSubject<Bool, Never> { get }
     var output: AnyPublisher<HomeViewModelOutputAction, Never> { get }
 }
 
@@ -36,7 +35,7 @@ enum HomeViewModelOutputAction {
 final class DefaultHomeViewModel: HomeViewModel {
     @Inject private var mainCoordinator: MainCoordinator
     @Inject private var fetchProductsUseCase: FetchProductsUseCase
-    @Inject private var fetchImageUseCase: FetchImageUseCase
+    
     var newItems: [Product] = [] {
         didSet {
             _output.send(.productsFetched)
@@ -49,8 +48,6 @@ final class DefaultHomeViewModel: HomeViewModel {
     }
     var newItemsPage: Int = 1
     var hotItemsPage: Int = 1
-    
-    var isLoadingMore = CurrentValueSubject<Bool, Never>(false)
     
     private var _output = PassthroughSubject<HomeViewModelOutputAction, Never>()
     var output: AnyPublisher<HomeViewModelOutputAction, Never> {
