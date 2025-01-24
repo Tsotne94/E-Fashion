@@ -60,3 +60,23 @@ enum TabBar {
     static let profileSelected = "profileSellected"
 }
 
+enum KidsAssets {
+    static let accessories = "kidAccessories"
+    static let clothes = "kidClothes"
+    static let new = "kidNew"
+    static let shoes = "kidShoes"
+}
+
+enum MenAssets {
+    static let accessories = "manAccessories"
+    static let clothes = "manClothes"
+    static let new = "manNew"
+    static let shoes = "manShoes"
+}
+
+enum WomenAssets {
+    static let accessories = "womanAccessories"
+    static let clothes = "womanClothes"
+    static let new = "womanNew"
+    static let shoes = "womanShoes"
+}

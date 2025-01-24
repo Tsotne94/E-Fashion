@@ -11,23 +11,26 @@ protocol ShopTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
 }
 
-class DefaultShopTabCoordinator: ShopTabCoordinator {
+class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
     var rootViewController: UINavigationController
     
-    init() {
+    override init() {
         self.rootViewController = UINavigationController()
         rootViewController.navigationBar.prefersLargeTitles = true
     }
     
-    lazy var firstViewController: FavouritesViewController = {
-        let vc = FavouritesViewController()
-        vc.title = "haha i am the best"
+    lazy var firstViewController: ShopViewController = {
+        let vc = ShopViewController()
         return vc
     }()
     
     func start() {
         rootViewController.setViewControllers([firstViewController], animated: false)
     }
-    
-    
+}
+
+extension DefaultShopTabCoordinator: UINavigationControllerDelegate {
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        navigationController.isNavigationBarHidden = true
+    }
 }
