@@ -11,6 +11,7 @@ public extension DependencyContainer {
             Module { DefaultAuthenticationRepository() as AuthenticationRepository }
             Module { DefaultUserRepository() as UserRepository }
             Module { DefaultProductsRepository() as ProductsRepository }
+            Module { DefaultCashRepository() as CacheRepository }
         }
     }
 }

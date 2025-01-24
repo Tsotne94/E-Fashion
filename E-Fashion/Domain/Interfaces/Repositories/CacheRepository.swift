@@ -8,8 +8,8 @@ import Foundation
 import Combine
 
 protocol CacheRepository {
-    func cashImage(id: String, image: Data) -> AnyPublisher<Void, Error>
-    func getImage(id: String) -> AnyPublisher<Data, ImageCacheError>
-    func clearCash()
-    func removeimage(id: String)
+    func cacheImage(url: String, image: Data) -> AnyPublisher<Void, Error>
+    func getImage(url: String) -> AnyPublisher<Data, ImageCacheError>
+    func clearCache()
+    func removeImage(url: String)
 }

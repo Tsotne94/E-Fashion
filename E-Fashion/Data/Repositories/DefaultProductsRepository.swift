@@ -9,6 +9,8 @@ import Combine
 import MyNetworkManager
 
 public struct DefaultProductsRepository: ProductsRepository {
+    @Inject private var cacheRepository: CacheRepository
+    
     public init() { }
     
     func fetchProducts(params: SearchParameters) -> AnyPublisher<[Product], Error> {
@@ -45,5 +47,17 @@ public struct DefaultProductsRepository: ProductsRepository {
                     }
                 }
         }.eraseToAnyPublisher()
+    }
+    
+    func fetchImage(for urlString: String) -> AnyPublisher<Data?, Never> {
+        guard let url = URL(string: urlString) else {
+            return Just(nil).eraseToAnyPublisher()
+        }
+        
+        return URLSession.shared.dataTaskPublisher(for: url)
+            .map { data, _ in data }
+            .map { $0.isEmpty ? nil : $0 }
+            .replaceError(with: nil)
+            .eraseToAnyPublisher()
     }
 }

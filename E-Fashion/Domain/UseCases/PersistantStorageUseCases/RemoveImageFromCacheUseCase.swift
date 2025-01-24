@@ -7,7 +7,7 @@
 import Foundation
 
 protocol RemoveImageFromCacheUseCase {
-    func execute(id: String)
+    func execute(url: String)
 }
 
 struct DefaultRemoveImageFromCacheUseCase: RemoveImageFromCacheUseCase {
@@ -15,7 +15,7 @@ struct DefaultRemoveImageFromCacheUseCase: RemoveImageFromCacheUseCase {
     
     public init() { }
     
-    func execute(id: String) {
-        cacheRepository.removeimage(id: id)
+    func execute(url: String) {
+        cacheRepository.removeImage(url: url)
     }
 }

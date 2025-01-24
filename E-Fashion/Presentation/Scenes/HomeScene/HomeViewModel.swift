@@ -36,6 +36,7 @@ enum HomeViewModelOutputAction {
 final class DefaultHomeViewModel: HomeViewModel {
     @Inject private var mainCoordinator: MainCoordinator
     @Inject private var fetchProductsUseCase: FetchProductsUseCase
+    @Inject private var fetchImageUseCase: FetchImageUseCase
     var newItems: [Product] = [] {
         didSet {
             _output.send(.productsFetched)
@@ -65,7 +66,7 @@ final class DefaultHomeViewModel: HomeViewModel {
     }
     
     func fetchNew() {
-        let category = Category(id: Categories.menId)
+        let category = Category(id: Categories.allMenIds[Int.random(in: 0...9)])
         let params = SearchParameters(page: newItemsPage, order: .newestFirst, category: category)
         
         fetchProductsUseCase.execute(params: params)
@@ -84,7 +85,7 @@ final class DefaultHomeViewModel: HomeViewModel {
     }
     
     func fetchHot() {
-        let category = Category(id: Categories.womanId)
+        let category = Category(id: Categories.allMenIds[Int.random(in: 0...9)])
         let params = SearchParameters(page: hotItemsPage, order: .relevance, category: category)
         
         fetchProductsUseCase.execute(params: params)

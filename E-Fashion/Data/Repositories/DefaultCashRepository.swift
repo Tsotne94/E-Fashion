@@ -13,13 +13,13 @@ public struct DefaultCashRepository: CacheRepository {
     public init() {
         self.cache = NSCache<NSString, NSData>()
         self.cache.name = "ImageCache"
-        
     }
     
-    func cashImage(id: String, image: Data) -> AnyPublisher<Void, any Error> {
+    func cacheImage(url: String, image: Data) -> AnyPublisher<Void, any Error> {
         Just(())
             .tryMap { _ in
-                self.cache.setObject(image as NSData, forKey: id as NSString)
+                self.cache.setObject(image as NSData, forKey: url as NSString)
+                print("cahsed for url: " + url)
             }
             .mapError { _ in
                 ImageCacheError.saveFailed
@@ -27,10 +27,10 @@ public struct DefaultCashRepository: CacheRepository {
             .eraseToAnyPublisher()
     }
     
-    func getImage(id: String) -> AnyPublisher<Data, ImageCacheError> {
-        Just(id)
-            .tryMap { id -> Data in
-                guard let data = self.cache.object(forKey: id as NSString) as Data? else {
+    func getImage(url: String) -> AnyPublisher<Data, ImageCacheError> {
+        Just(url)
+            .tryMap { url -> Data in
+                guard let data = self.cache.object(forKey: url as NSString) as Data? else {
                     throw ImageCacheError.notFound
                 }
                 return data
@@ -44,12 +44,12 @@ public struct DefaultCashRepository: CacheRepository {
             .eraseToAnyPublisher()
     }
     
-    func clearCash() {
+    func clearCache() {
         cache.removeAllObjects()
     }
     
-    func removeimage(id: String) {
-        cache.removeObject(forKey: id as NSString)
+    func removeImage(url: String) {
+        cache.removeObject(forKey: url as NSString)
     }
 }
 

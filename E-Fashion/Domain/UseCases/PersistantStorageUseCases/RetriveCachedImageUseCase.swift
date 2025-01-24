@@ -8,7 +8,7 @@ import Foundation
 import Combine
 
 protocol RetriveCachedImageUseCase {
-    func execute(id: String) -> AnyPublisher<Data, ImageCacheError>
+    func execute(url: String) -> AnyPublisher<Data, ImageCacheError>
 }
 
 struct DefaultRetriveCachedImageUseCase: RetriveCachedImageUseCase {
@@ -16,7 +16,7 @@ struct DefaultRetriveCachedImageUseCase: RetriveCachedImageUseCase {
     
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<Data, ImageCacheError> {
-        cacheRepository.getImage(id: id)
+    func execute(url: String) -> AnyPublisher<Data, ImageCacheError> {
+        cacheRepository.getImage(url: url)
     }
 }

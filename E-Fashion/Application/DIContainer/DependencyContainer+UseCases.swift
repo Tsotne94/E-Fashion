@@ -17,6 +17,8 @@ public extension DependencyContainer {
             Module { DefaultSaveUserUseCase() as SaveUserUseCase }
             Module { DefaultFetchProductsUseCase() as FetchProductsUseCase }
             Module { DefaultFetchSingleProductUseCase() as FetchSingleProductUseCase }
+            Module { DefaultFetchImageUseCase() as FetchImageUseCase }
+            Module { DefaultRetriveCachedImageUseCase() as RetriveCachedImageUseCase }
         }
     }
 }

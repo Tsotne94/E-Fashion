@@ -21,11 +21,10 @@ final class APIEndpoint {
         ]
     }
     
-    // A serial dispatch queue for request throttling
     private let requestQueue = DispatchQueue(label: "com.apiEndpoint.requestQueue")
     private var lastRequestTime: Date = .distantPast
     
-    private let throttleInterval: TimeInterval = 1.0 // 1 request per second
+    private let throttleInterval: TimeInterval = 2.0
 
     func search(parameters: SearchParameters) -> String {
         var components = URLComponents(string: baseURL + "/getSearch")!
@@ -54,13 +53,12 @@ final class APIEndpoint {
             let now = Date()
             let timeSinceLastRequest = now.timeIntervalSince(self.lastRequestTime)
             
-            // If we need to wait to respect the throttle interval
             if timeSinceLastRequest < self.throttleInterval {
                 let delay = self.throttleInterval - timeSinceLastRequest
                 Thread.sleep(forTimeInterval: delay)
             }
             
-            self.lastRequestTime = Date() // Update the last request time
+            self.lastRequestTime = Date()
             
             networkManager.makeRequest(
                 urlString: urlString,

@@ -16,6 +16,6 @@ struct DefaultClearCacheUseCase: ClearCacheUseCase {
     public init() { }
     
     func execute() {
-        cacheRepository.clearCash()
+        cacheRepository.clearCache()
     }
 }

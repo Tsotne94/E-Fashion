@@ -6,41 +6,50 @@
 //
 
 extension Categories {
-    static let menId = 2050
-    static let womanId = 4
-    static let kidsId = 28
+    static let menId = 5
+    static let womenId = 4
+    static let kidsId = 1193
+    
+    static let allMenIds = [183, 34, 221, 536, 2052, 532, 80, 79, 2051, 1231]
+    static let allWomenIds = [257, 12, 9, 11, 1908, 8, 15, 13, 1907, 16]
+    static let allKidsIds = [1198, 1696, 1200, 1197, 1199, 1247, 1248, 1255, 1258, 1201]
     
     static let allCategories = Categories(
         men: [
-            Category(id: 32, title: "Suits & Blazers", parentId: 2050, parent: "Clothes"),
-            Category(id: 34, title: "Pants", parentId: 2050, parent: "Clothes"),
-            Category(id: 80, title: "Shorts", parentId: 2050, parent: "Clothes"),
-            Category(id: 79, title: "Jumpers & Sweaters", parentId: 2050, parent: "Clothes"),
-            Category(id: 84, title: "Swimwear", parentId: 2050, parent: "Clothes"),
-            Category(id: 85, title: "Socks & Underwear", parentId: 2050, parent: "Clothes"),
-            Category(id: 76, title: "Tops & T-Shirts", parentId: 2050, parent: "Clothes"),
-            Category(id: 257, title: "Jeans", parentId: 2050, parent: "Clothes"),
-            Category(id: 83, title: "Other Men's Clothing", parentId: 2050, parent: "Clothes"),
-            Category(id: 92, title: "Costumes & Special Outfits", parentId: 2050, parent: "Clothes")
+            Category(id: 183, title: "Jeans", parentId: 5, parent: "Men"),
+            Category(id: 34, title: "Pants", parentId: 5, parent: "Men"),
+            Category(id: 221, title: "T-shirts", parentId: 5, parent: "Men"),
+            Category(id: 536, title: "Shirts", parentId: 5, parent: "Men"),
+            Category(id: 2052, title: "Jackets", parentId: 5, parent: "Men"),
+            Category(id: 532, title: "Blazers", parentId: 5, parent: "Men"),
+            Category(id: 80, title: "Shorts", parentId: 5, parent: "Men"),
+            Category(id: 79, title: "Sweaters", parentId: 5, parent: "Men"),
+            Category(id: 2051, title: "Coats", parentId: 5, parent: "Men"),
+            Category(id: 1231, title: "Shoes", parentId: 5, parent: "Men")
         ],
         women: [
-            Category(id: 8, title: "Suits & Blazers", parentId: 4, parent: "Clothes"),
-            Category(id: 9, title: "Pants & Leggings", parentId: 4, parent: "Clothes"),
-            Category(id: 10, title: "Dresses", parentId: 4, parent: "Clothes"),
-            Category(id: 11, title: "Skirts", parentId: 4, parent: "Clothes"),
-            Category(id: 12, title: "Tops & T-Shirts", parentId: 4, parent: "Clothes"),
-            Category(id: 13, title: "Jumpers & Sweaters", parentId: 4, parent: "Clothes"),
-            Category(id: 28, title: "Swimwear", parentId: 4, parent: "Clothes"),
-            Category(id: 29, title: "Lingerie & Nightwear", parentId: 4, parent: "Clothes"),
-            Category(id: 15, title: "Shorts & Cropped Pants", parentId: 4, parent: "Clothes"),
-            Category(id: 73, title: "Activewear", parentId: 4, parent: "Clothes")
+            Category(id: 257, title: "Jeans", parentId: 4, parent: "Women"),
+            Category(id: 12, title: "Tops & T-shirts", parentId: 4, parent: "Women"),
+            Category(id: 9, title: "Pants & Leggings", parentId: 4, parent: "Women"),
+            Category(id: 11, title: "Skirts", parentId: 4, parent: "Women"),
+            Category(id: 1908, title: "Jackets", parentId: 4, parent: "Women"),
+            Category(id: 8, title: "Blazers", parentId: 4, parent: "Women"),
+            Category(id: 15, title: "Shorts", parentId: 4, parent: "Women"),
+            Category(id: 13, title: "Sweaters", parentId: 4, parent: "Women"),
+            Category(id: 1907, title: "Coats", parentId: 4, parent: "Women"),
+            Category(id: 16, title: "Shoes", parentId: 4, parent: "Women")
         ],
         kids: [
-            Category(id: 218, title: "One-pieces", parentId: 28, parent: "Swimwear"),
-            Category(id: 219, title: "Bikinis & Tankinis", parentId: 28, parent: "Swimwear"),
-            Category(id: 220, title: "Other Swimwear & Beachwear", parentId: 28, parent: "Swimwear"),
-            Category(id: 287, title: "Caps", parentId: 86, parent: "Hats & Caps"),
-            Category(id: 289, title: "Winter Hats", parentId: 86, parent: "Hats & Caps")
+            Category(id: 1198, title: "Tops & T-shirts", parentId: 1193, parent: "Kids"),
+            Category(id: 1696, title: "Jeans", parentId: 1193, parent: "Kids"),
+            Category(id: 1200, title: "Pants & Shorts", parentId: 1193, parent: "Kids"),
+            Category(id: 1197, title: "Outerwear", parentId: 1193, parent: "Kids"),
+            Category(id: 1199, title: "Sweaters & Hoodies", parentId: 1193, parent: "Kids"),
+            Category(id: 1247, title: "Dresses", parentId: 1193, parent: "Kids"),
+            Category(id: 1248, title: "Skirts", parentId: 1193, parent: "Kids"),
+            Category(id: 1255, title: "Shoes", parentId: 1193, parent: "Kids"),
+            Category(id: 1258, title: "Bags & Backpacks", parentId: 1193, parent: "Kids"),
+            Category(id: 1201, title: "Shorts & Cropped Pants", parentId: 1193, parent: "Kids")
         ]
     )
 }

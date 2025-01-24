@@ -9,6 +9,7 @@ public extension DependencyContainer {
         DependencyContainer.root.register {
             Module { DefaultAppFlowViewModel() as AppFlowViewModel }
             Module { DefaultLoginViewModel() as LoginViewModel }
+            Module { DefaultHomeViewModel() as HomeViewModel }
         }
     }
 }
