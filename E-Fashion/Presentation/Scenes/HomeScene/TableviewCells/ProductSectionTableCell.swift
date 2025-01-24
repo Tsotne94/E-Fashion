@@ -6,10 +6,20 @@
 //
 import Combine
 import UIKit
+import Lottie
 
 class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
     private let viewModel = DefaultHomeViewModel()
     private var subscriptions = Set<AnyCancellable>()
+    
+    private let loaderView: LottieAnimationView = {
+        let loader = LottieAnimationView(name: "loader")
+        loader.translatesAutoresizingMaskIntoConstraints = false
+        loader.loopMode = .loop
+        loader.contentMode = .scaleAspectFit
+        loader.isHidden = true
+        return loader
+    }()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -74,11 +84,14 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
             .sink { [weak self] action in
                 switch action {
                 case .productsFetched:
+                    self?.loaderView.stop()
+                    self?.loaderView.isHidden = true
                     self?.collectionView.reloadData()
                 case .showProductDetails(_):
                     print("cool")
                 case .showError(_):
-                    print("cool")
+                    self?.loaderView.stop()
+                    self?.loaderView.isHidden = true
                 }
             }.store(in: &subscriptions)
     }
@@ -88,6 +101,7 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
         contentView.addSubview(subtitleLabel)
         contentView.addSubview(viewAllButton)
         contentView.addSubview(collectionView)
+        contentView.addSubview(loaderView)
     }
     
     private func setupConstraints() {
@@ -101,10 +115,15 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
             viewAllButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             viewAllButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            collectionView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 20),
+            collectionView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 8),
             collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
+            loaderView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            loaderView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            loaderView.widthAnchor.constraint(equalToConstant: 100),
+            loaderView.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
     
@@ -119,13 +138,15 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
         titleLabel.text = title
         subtitleLabel.text = subtitle
         
+        loaderView.isHidden = false
+        loaderView.play()
+        
         switch self.items {
         case .new:
             viewModel.fetchNew()
         case .hot:
             viewModel.fetchHot()
         }
-        collectionView.reloadData()
     }
 }
 

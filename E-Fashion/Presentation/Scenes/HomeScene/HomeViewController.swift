@@ -87,7 +87,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case .banner:
             return 200
         case .hot, .new:
-            return 350
+            return 340
         default:
             return 0
         }
