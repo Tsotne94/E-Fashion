@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 26.01.25.
 //
+
 import Combine
 import FirebaseFirestore
 
@@ -21,7 +22,6 @@ final class DefaultFirestoreCartRepository: FirestoreCartRepository {
                         .document(user.uid)
                         .collection("items")
                         .document(product.id)
-                    
                     do {
                         try cartRef.setData(from: product) { error in
                             if let error = error {
@@ -47,7 +47,7 @@ final class DefaultFirestoreCartRepository: FirestoreCartRepository {
                         .document(user.uid)
                         .collection("items")
                     
-                    let listener = cartRef.addSnapshotListener { snapshot, error in
+                    _ = cartRef.addSnapshotListener { snapshot, error in
                         guard let snapshot = snapshot else {
                             promise(.success([]))
                             return

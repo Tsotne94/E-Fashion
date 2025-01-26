@@ -7,7 +7,7 @@
 import Combine
 
 protocol RemoveFromFavouritesUseCase {
-    func execute(id: String) -> AnyPublisher<Void, Never>
+    func execute(id: String) -> AnyPublisher<Void, Error>
 }
 
 public struct DefaultRemoveFromFavouritesUseCase: RemoveFromFavouritesUseCase {
@@ -15,7 +15,7 @@ public struct DefaultRemoveFromFavouritesUseCase: RemoveFromFavouritesUseCase {
     
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<Void, Never> {
+    func execute(id: String) -> AnyPublisher<Void, Error> {
         favouritesRepository.removeFromFavourites(id: id)
     }
 }

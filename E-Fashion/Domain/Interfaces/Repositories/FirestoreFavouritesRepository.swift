@@ -9,5 +9,5 @@ import Combine
 protocol FirestoreFavouritesRepository {
     func addItemToFavourites(product: ProductDetails) -> AnyPublisher<Void, Error>
     func fetchFavourites() -> AnyPublisher<[ProductDetails], Error>
-    func removeFromFavourites(id: String) -> AnyPublisher<Void, Never>
+    func removeFromFavourites(id: String) -> AnyPublisher<Void, Error>
 }
