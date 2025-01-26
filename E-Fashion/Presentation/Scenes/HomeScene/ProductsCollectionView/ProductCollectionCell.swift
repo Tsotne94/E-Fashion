@@ -9,7 +9,7 @@ import UIKit
 import Combine
 
 final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
-    private let imageViewModel = DefaultProductImageViewModel()
+    private let imageViewModel = DefaultProductCollectionCellViewModel()
     
     private var imageCancellable: AnyCancellable?
     
@@ -23,6 +23,20 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         imageView.layer.cornerRadius = 10
         imageView.clipsToBounds = true
         return imageView
+    }()
+    
+    private lazy var favoriteButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "heart"), for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        button.layer.cornerRadius = 15
+        button.clipsToBounds = true
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 1)
+        button.layer.shadowOpacity = 0.8
+        button.layer.shadowRadius = 2
+        return button
     }()
     
     private lazy var saleBadgeView: UIView = {
@@ -72,17 +86,19 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     
     private func setupViews() {
         contentView.addSubview(productImageView)
+        productImageView.addSubview(favoriteButton)
+        contentView.addSubview(saleBadgeView)
+        saleBadgeView.addSubview(saleBadgeLabel)
         contentView.addSubview(brandNameLabel)
         contentView.addSubview(productNameLabel)
         contentView.addSubview(priceLabel)
-        contentView.addSubview(saleBadgeView)
-        saleBadgeView.addSubview(saleBadgeLabel)
         
         setupConstraints()
     }
     
     private func setupConstraints() {
-        [productImageView, brandNameLabel, productNameLabel, priceLabel, saleBadgeView, saleBadgeLabel].forEach {
+        [productImageView, brandNameLabel, productNameLabel, priceLabel,
+         saleBadgeView, saleBadgeLabel, favoriteButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         
@@ -91,6 +107,11 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
             productImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             productImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             productImageView.heightAnchor.constraint(equalTo: contentView.widthAnchor),
+            
+            favoriteButton.bottomAnchor.constraint(equalTo: productImageView.bottomAnchor, constant: -8),
+            favoriteButton.trailingAnchor.constraint(equalTo: productImageView.trailingAnchor, constant: -8),
+            favoriteButton.widthAnchor.constraint(equalToConstant: 30),
+            favoriteButton.heightAnchor.constraint(equalToConstant: 30),
             
             saleBadgeView.topAnchor.constraint(equalTo: productImageView.topAnchor, constant: 12),
             saleBadgeView.leadingAnchor.constraint(equalTo: productImageView.leadingAnchor, constant: 4),
@@ -135,12 +156,24 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         productNameLabel.text = product.title
         priceLabel.text = "$\(product.price.totalAmount.amount)"
         
+        favoriteButton.setImage(
+            UIImage(systemName: false ? "heart.fill" : "heart"),
+            for: .normal
+        )
+        favoriteButton.tintColor = false ? .red : .white
+        
+        favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
+        
         if product.discountPercentage > 0 {
             saleBadgeView.isHidden = false
             saleBadgeLabel.text = "\(Int(product.discountPercentage))%"
         } else {
             saleBadgeView.isHidden = true
         }
+    }
+    
+    @objc private func toggleFavorite() {
+        guard var product = product else { return }
     }
     
     override func prepareForReuse() {
@@ -154,5 +187,8 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         productImageView.image = UIImage(systemName: "photo")
         productImageView.tintColor = .systemGray3
         saleBadgeView.isHidden = true
+        
+        favoriteButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        favoriteButton.tintColor = .white
     }
 }

@@ -8,13 +8,24 @@
 import UIKit
 import Combine
 
-protocol ProductImageViewModel {
-    var imagePublisher: AnyPublisher<UIImage?, Never> { get }
+protocol ProductCollectionCellViewModel: ProductCollectionCellViewModelInput, ProductCollectionCellViewModelOutput {
+}
+
+protocol ProductCollectionCellViewModelInput {
     func loadImage(urlString: String, size: CGSize)
     func cancelLoading()
 }
 
-final class DefaultProductImageViewModel: ProductImageViewModel {
+protocol ProductCollectionCellViewModelOutput {
+    var imagePublisher: AnyPublisher<UIImage?, Never> { get }
+}
+
+enum ProductCollectionCellViewModelAction {
+    case loadImage(urlString: String, size: CGSize)
+    case cancelLoading
+}
+
+final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewModel {
     @Inject private var fetchImageUseCase: FetchImageUseCase
     @Inject private var retrieveCachedImageUseCase: RetriveCachedImageUseCase
     
@@ -49,5 +60,14 @@ final class DefaultProductImageViewModel: ProductImageViewModel {
     func cancelLoading() {
         cancellables.forEach { $0.cancel() }
         cancellables.removeAll()
+    }
+    
+    func handle(_ action: ProductCollectionCellViewModelAction) {
+        switch action {
+        case .loadImage(let urlString, let size):
+            loadImage(urlString: urlString, size: size)
+        case .cancelLoading:
+            cancelLoading()
+        }
     }
 }

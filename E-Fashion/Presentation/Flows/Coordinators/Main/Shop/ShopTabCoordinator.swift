@@ -9,6 +9,8 @@ import UIKit
 
 protocol ShopTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
+    func goToProducts(id: Int)
+    func goBack(animated: Bool)
 }
 
 class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
@@ -26,6 +28,14 @@ class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
     
     func start() {
         rootViewController.setViewControllers([firstViewController], animated: false)
+    }
+    
+    func goToProducts(id: Int) {
+        rootViewController.pushViewController(ProductsCatalogViewController(), animated: true)
+    }
+    
+    func goBack(animated: Bool) {
+        rootViewController.popViewController(animated: animated)
     }
 }
 

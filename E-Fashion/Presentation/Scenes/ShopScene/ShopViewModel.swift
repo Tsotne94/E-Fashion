@@ -39,6 +39,6 @@ final class DefaultShopViewModel: ShopViewModel {
     }
     
     func goToCategory(id: Int) {
-#warning("implement in future")
+        shopCoordinator.goToProducts(id: id)
     }
 }
