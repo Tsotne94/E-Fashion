@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 24.01.25.
 //
+
 import UIKit
 
 extension UIImage {
@@ -44,4 +45,3 @@ extension UIImage {
         return resultImage
     }
 }
-

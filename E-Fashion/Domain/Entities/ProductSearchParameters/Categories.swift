@@ -10,4 +10,3 @@ struct Categories: Codable {
     let women: [Category]
     let kids: [Category]
 }
-

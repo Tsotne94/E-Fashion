@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 14.01.25.
 //
+
 public struct Module {
     let name: String
     let resolve: () -> Any

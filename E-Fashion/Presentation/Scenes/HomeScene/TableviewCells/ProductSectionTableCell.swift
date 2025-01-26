@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 22.01.25.
 //
+
 import Combine
 import UIKit
 import Lottie
@@ -174,4 +175,3 @@ extension ProductSectionTableCell: UICollectionViewDelegate, UICollectionViewDat
         }
     }
 }
-

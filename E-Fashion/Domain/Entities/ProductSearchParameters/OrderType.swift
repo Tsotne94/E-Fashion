@@ -4,7 +4,6 @@
 //
 //  Created by Cotne Chubinidze on 21.01.25.
 //
-import Foundation
 
 enum OrderType: String, Codable {
     case relevance = "relevance"

@@ -4,7 +4,6 @@
 //
 //  Created by Cotne Chubinidze on 22.01.25.
 //
-import Foundation
 
 protocol RemoveImageFromCacheUseCase {
     func execute(url: String)

@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 14.01.25.
 //
+
 import Foundation
 import UIKit
 import Combine
@@ -26,4 +27,3 @@ final class DefaultOnboardingCoordinator: OnboardingCoordinator {
         })
     }
 }
- 
