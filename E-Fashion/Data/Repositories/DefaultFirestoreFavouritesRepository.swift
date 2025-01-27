@@ -10,12 +10,13 @@ import FirebaseFirestore
 
 final class DefaultFirestoreFavouritesRepository: FirestoreFavouritesRepository {
     @Inject private var getCurrentUserUseCase: GetCurrentUserUseCase
+    private var favouritesListener: ListenerRegistration?
     
     private let db = Firestore.firestore()
     
     public init() { }
     
-    func addItemToFavourites(product: ProductDetails) -> AnyPublisher<Void, any Error> {
+    func addItemToFavourites(product: Product) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in
@@ -40,23 +41,27 @@ final class DefaultFirestoreFavouritesRepository: FirestoreFavouritesRepository 
             }.eraseToAnyPublisher()
     }
     
-    func fetchFavourites() -> AnyPublisher<[ProductDetails], any Error> {
+    func fetchFavourites() -> AnyPublisher<[Product], any Error> {
         getCurrentUserUseCase.execute()
-            .flatMap { user -> AnyPublisher<[ProductDetails], Error> in
-                Future<[ProductDetails], Error> { promise in
+            .flatMap { user -> AnyPublisher<[Product], Error> in
+                Future<[Product], Error> { [weak self] promise in
+                    guard let self = self else { return }
+                    
+                    self.favouritesListener?.remove()
+                    
                     let favouritesRef = Firestore.firestore()
                         .collection("Favourites")
                         .document(user.uid)
                         .collection("items")
                     
-                    let listener = favouritesRef.addSnapshotListener { snapshot, error in
+                    self.favouritesListener = favouritesRef.addSnapshotListener { snapshot, error in
                         if let error = error {
                             promise(.failure(error))
                             return
                         }
                         
-                        let favourites = snapshot?.documents.compactMap { doc -> ProductDetails? in
-                            try? doc.data(as: ProductDetails.self)
+                        let favourites = snapshot?.documents.compactMap { doc -> Product? in
+                            try? doc.data(as: Product.self)
                         } ?? []
                         
                         promise(.success(favourites))
@@ -91,5 +96,33 @@ final class DefaultFirestoreFavouritesRepository: FirestoreFavouritesRepository 
                 .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
+    }
+    
+    func isFavourite(id: String) -> AnyPublisher<Bool, Error> {
+        getCurrentUserUseCase.execute()
+            .flatMap { user in
+                Future<Bool, Error> { promise in
+                    let favouritesRef = Firestore.firestore()
+                        .collection("Favourites")
+                        .document(user.uid)
+                        .collection("items")
+                        .document(id)
+                    
+                    favouritesRef.getDocument { snapshot, error in
+                        if let error = error {
+                            promise(.failure(error))
+                            return
+                        }
+                        
+                        promise(.success(snapshot?.exists ?? false))
+                    }
+                }
+                .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    deinit {
+        favouritesListener?.remove()
     }
 }

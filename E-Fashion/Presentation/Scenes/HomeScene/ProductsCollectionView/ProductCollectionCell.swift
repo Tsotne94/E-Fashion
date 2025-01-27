@@ -9,11 +9,9 @@ import UIKit
 import Combine
 
 final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
-    private let imageViewModel = DefaultProductCollectionCellViewModel()
+    private let viewModel = DefaultProductCollectionCellViewModel()
     
-    private var imageCancellable: AnyCancellable?
-    
-    var product: Product?
+    private var subscriptions = Set<AnyCancellable>()
     
     private lazy var productImageView: UIImageView = {
         let imageView = UIImageView()
@@ -86,7 +84,8 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     
     private func setupViews() {
         contentView.addSubview(productImageView)
-        productImageView.addSubview(favoriteButton)
+        
+        contentView.addSubview(favoriteButton)
         contentView.addSubview(saleBadgeView)
         saleBadgeView.addSubview(saleBadgeLabel)
         contentView.addSubview(brandNameLabel)
@@ -136,59 +135,65 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     }
     
     func configureCell(with product: Product) {
-        self.product = product
+        viewModel.product = product
+        
         let imageSize = CGSize(width: bounds.width / 2.5, height: bounds.height / 2.5)
         
-        imageViewModel.loadImage(urlString: product.image, size: imageSize)
+        viewModel.loadImage(urlString: product.image, size: imageSize)
+        viewModel.loadFavouritesState()
         
-        imageCancellable = imageViewModel.imagePublisher
+        viewModel.output
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] image in
-                guard self?.product?.image == product.image else { return }
-                self?.productImageView.image = image ?? UIImage(systemName: "photo")
-            }
+            .sink { [weak self] action in
+                guard let self = self else { return }
+                switch action {
+                case .imageLoaded(let image):
+                    guard self.viewModel.product?.image == product.image else { return }
+                    self.productImageView.image = image ?? UIImage(systemName: "photo")
+                case .favouriteStatusChanged:
+                    self.updateFavouriteButton()
+                case .showError(let errorMessage):
+                    print("Image load error: \(errorMessage)")
+                }
+            }.store(in: &subscriptions)
         
-        if product.brand?.isEmpty == true {
-            brandNameLabel.text = "Not Branded"
-        } else {
-            brandNameLabel.text = product.brand
-        }
+        brandNameLabel.text = product.brand?.isEmpty == true ? "Not Branded" : product.brand
         productNameLabel.text = product.title
         priceLabel.text = "$\(product.price.totalAmount.amount)"
         
-        favoriteButton.setImage(
-            UIImage(systemName: false ? "heart.fill" : "heart"),
-            for: .normal
-        )
-        favoriteButton.tintColor = false ? .red : .white
-        
+        updateFavouriteButton()
         favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
         
-        if product.discountPercentage > 0 {
-            saleBadgeView.isHidden = false
-            saleBadgeLabel.text = "\(Int(product.discountPercentage))%"
-        } else {
-            saleBadgeView.isHidden = true
-        }
+        saleBadgeView.isHidden = product.discountPercentage <= 0
+        saleBadgeLabel.text = product.discountPercentage > 0 ? "\(Int(product.discountPercentage))%" : nil
+    }
+    
+    private func updateFavouriteButton() {
+        favoriteButton.setImage(
+            UIImage(systemName: viewModel.isFavourite ? "heart.fill" : "heart"),
+            for: .normal
+        )
+        favoriteButton.tintColor = viewModel.isFavourite ? .red : .white
     }
     
     @objc private func toggleFavorite() {
-        guard var product = product else { return }
+        guard viewModel.product != nil else { return }
+        viewModel.favouritesTapped()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        imageViewModel.cancelLoading()
-        imageCancellable?.cancel()
-        imageCancellable = nil
+//        viewModel.cancelLoading()
+//        subscriptions.forEach { cancellable in
+//            cancellable.cancel()
+//        }
         
-        product = nil
         productImageView.image = UIImage(systemName: "photo")
         productImageView.tintColor = .systemGray3
         saleBadgeView.isHidden = true
+        viewModel.product = nil
         
-        favoriteButton.setImage(UIImage(systemName: "heart"), for: .normal)
-        favoriteButton.tintColor = .white
+        updateFavouriteButton()
     }
 }

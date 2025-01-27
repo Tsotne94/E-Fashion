@@ -13,7 +13,7 @@ public extension DependencyContainer {
             Module { DefaultUserRepository() as UserRepository }
             Module { DefaultProductsRepository() as ProductsRepository }
             Module { DefaultCashRepository() as CacheRepository }
-            Module { DefaultFirestoreCartRepository as FirestoreCartRepository }
+            Module { DefaultFirestoreCartRepository() as FirestoreCartRepository }
             Module { DefaultFirestoreFavouritesRepository() as FirestoreFavouritesRepository }
         }
     }
