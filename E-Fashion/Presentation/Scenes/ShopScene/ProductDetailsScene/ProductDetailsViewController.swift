@@ -118,6 +118,7 @@ class ProductDetailsViewController: UIViewController {
         collection.delegate = self
         collection.dataSource = self
         collection.register(ImageUICollectionViewCell.self, forCellWithReuseIdentifier: ImageUICollectionViewCell.reuseIdentifier)
+        collection.addShadow()
         return collection
     }()
     
