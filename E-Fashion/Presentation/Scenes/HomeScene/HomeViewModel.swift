@@ -33,7 +33,7 @@ enum HomeViewModelOutputAction {
 }
 
 final class DefaultHomeViewModel: HomeViewModel {
-    @Inject private var mainCoordinator: MainCoordinator
+    @Inject private var homeCoordinator: HomeTabCoordinator
     @Inject private var fetchProductsUseCase: FetchProductsUseCase
     
     var newItems: [Product] = [] {
@@ -59,7 +59,7 @@ final class DefaultHomeViewModel: HomeViewModel {
     public init() { }
     
     func productTapped(productId: Int) {
-        
+        homeCoordinator.goToProductsDetails(productId: productId)
     }
     
     func fetchNew() {

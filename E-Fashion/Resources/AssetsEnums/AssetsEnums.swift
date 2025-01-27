@@ -13,6 +13,7 @@ enum Icons {
     static let dualColumn = "dualColumn"
     static let filter = "filter"
     static let heart = "heart"
+    static let heartFilled = "heartSelected"
     static let mail = "Mail"
     static let masterCard = "mastercard"
     static let pencil = "pencil"

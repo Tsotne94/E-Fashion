@@ -194,28 +194,10 @@ extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionV
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == categoriesCollectionView {
-            //            viewModel.selectCategory(at: indexPath.row)
+            
         } else {
-            //            viewModel.selectProduct(at: indexPath.row)
+            let id = viewModel.products[indexPath.row].productId
+            viewModel.productTappedAt(index: id)
         }
-    }
-}
-
-import SwiftUI
-
-struct SampleViewControllerPreview: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> ProductsCatalogViewController {
-        return ProductsCatalogViewController()
-    }
-
-    func updateUIViewController(_ uiViewController: ProductsCatalogViewController, context: Context) {
-        
-    }
-}
-
-struct SampleViewControllerPreview_Previews: PreviewProvider {
-    static var previews: some View {
-        SampleViewControllerPreview()
-            .edgesIgnoringSafeArea(.all)
     }
 }

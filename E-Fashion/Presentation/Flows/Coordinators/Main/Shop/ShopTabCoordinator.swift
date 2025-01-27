@@ -10,10 +10,14 @@ import UIKit
 protocol ShopTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
     func goToProducts(id: Int)
+    func goToProductDetail(id: Int)
     func goBack(animated: Bool)
+    func goToHomePage()
 }
 
 class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
+    @Inject private var parentCoordinator: MainCoordinator
+    
     var rootViewController: UINavigationController
     
     override init() {
@@ -34,8 +38,17 @@ class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
         rootViewController.pushViewController(ProductsCatalogViewController(), animated: true)
     }
     
+    func goToProductDetail(id: Int) {
+        let viewControler = ProductDetailsViewController(id: id)
+        rootViewController.pushViewController(viewControler, animated: true)
+    }
+    
     func goBack(animated: Bool) {
         rootViewController.popViewController(animated: animated)
+    }
+    
+    func goToHomePage() {
+        parentCoordinator.goToHomePage()
     }
 }
 

@@ -9,6 +9,7 @@ import UIKit
 import SwiftUI
 
 protocol MainCoordinator: Coordinator {
+    func goToHomePage()
     var rootViewController: UITabBarController { get }
     var childCoordinators: [Coordinator] { get }
 }
@@ -77,5 +78,9 @@ final class DefaultMainCoordinator: MainCoordinator {
             favouriteseCoordinator.rootViewController,
             profileeCoordinator.rootViewController
         ]
+    }
+    
+    func goToHomePage() {
+        rootViewController.selectedIndex = 0
     }
 }

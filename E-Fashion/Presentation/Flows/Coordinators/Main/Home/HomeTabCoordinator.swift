@@ -10,9 +10,8 @@ import UIKit
 
 protocol HomeTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
-    func checkProductsUnderSale()
-    func checkNewProducts()
     func goToProductsDetails(productId: Int)
+    func goBack()
 }
 
 class DefaultHomeTabCoordinator: NSObject, HomeTabCoordinator {
@@ -28,16 +27,13 @@ class DefaultHomeTabCoordinator: NSObject, HomeTabCoordinator {
         rootViewController.setViewControllers([viewController], animated: false)
     }
     
-    func checkProductsUnderSale() {
-        
-    }
-    
-    func checkNewProducts() {
-        
-    }
-    
     func goToProductsDetails(productId: Int) {
-        
+        let viewController = ProductDetailsViewController(id: productId)
+        rootViewController.pushViewController(viewController, animated: true)
+    }
+    
+    func goBack() {
+        rootViewController.popViewController(animated: true)
     }
 }
 

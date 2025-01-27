@@ -174,4 +174,15 @@ extension ProductSectionTableCell: UICollectionViewDelegate, UICollectionViewDat
             return cell
         }
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch items {
+        case .new:
+            let id = viewModel.newItems[indexPath.row].productId
+            viewModel.productTapped(productId: id)
+        case .hot:
+            let id = viewModel.hotItems[indexPath.row].productId
+            viewModel.productTapped(productId: id)
+        }
+    }
 }

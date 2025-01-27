@@ -14,7 +14,7 @@ struct ProductDetails: Codable {
     let createdAt: String
     let lastUpdated: String
     let favourites: Int
-    let size: Size
+    let size: Size?
     let condition: ConditionDetails
     let color: ColorDetails
     let images: [String]

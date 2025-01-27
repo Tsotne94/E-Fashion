@@ -114,6 +114,29 @@ final class DefaultFirestoreCartRepository: FirestoreCartRepository {
             .eraseToAnyPublisher()
     }
     
+    func isInCart(id: String) -> AnyPublisher<Bool, any Error> {
+        getCurrentUserUseCase.execute()
+            .flatMap { user in
+                Future { promise in
+                    let cartRef = Firestore.firestore()
+                        .collection("Carts")
+                        .document(user.uid)
+                        .collection("items")
+                        .document(id)
+                    
+                    cartRef.getDocument { (document, error) in
+                        if let error = error {
+                            promise(.failure(error))
+                            return
+                        }
+                        
+                        let exists = document?.exists ?? false
+                        promise(.success(exists))
+                    }
+                }
+            }.eraseToAnyPublisher()
+    }
+    
     deinit {
         cartListener?.remove()
     }

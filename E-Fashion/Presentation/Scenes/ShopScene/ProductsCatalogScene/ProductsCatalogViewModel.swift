@@ -80,7 +80,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     }
     
     func productTappedAt(index: Int) {
-        
+        shopCorrdinator.goToProductDetail(id: index)
     }
     
     func categoryTapped(category: CategoryType) {

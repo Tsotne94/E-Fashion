@@ -184,7 +184,7 @@ class ShopViewController: UIViewController {
     }
     
     private func navigateBack() {
-        
+        viewModel.goBack()
     }
     
     private func updateCategoryImages(for category: CategoryType) {

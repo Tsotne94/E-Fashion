@@ -7,5 +7,5 @@
 
 struct CategoryDetails: Codable {
     let categoryId: Int
-    let categoryName: String
+    let categoryName: String?
 }
