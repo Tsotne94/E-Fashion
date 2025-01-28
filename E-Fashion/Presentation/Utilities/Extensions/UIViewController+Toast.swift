@@ -8,9 +8,9 @@
 import UIKit
 
 extension UIViewController {
-    func showToast(message: String, duration: TimeInterval = 1.5, backgroundColor: UIColor = .customGreen.withAlphaComponent(0.7), textColor: UIColor = .white, font: UIFont = UIFont(name: CustomFonts.nutinoBold, size: 14) ?? .systemFont(ofSize: 14)) {
+    func showToast(message: String, duration: TimeInterval = 1.5, backgroundColor: UIColor = .customGreen, textColor: UIColor = .white, font: UIFont = UIFont(name: CustomFonts.nutinoBold, size: 14) ?? .systemFont(ofSize: 14)) {
         
-        let toast = UILabel()
+        let toast = PaddedLabel()
         toast.backgroundColor = backgroundColor
         toast.textColor = textColor
         toast.textAlignment = .center
@@ -21,12 +21,12 @@ extension UIViewController {
         toast.clipsToBounds = true
         toast.translatesAutoresizingMaskIntoConstraints = false
         toast.numberOfLines = 0
-        toast.padding = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
+        toast.contentInsets = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
         
         view.addSubview(toast)
         NSLayoutConstraint.activate([
             toast.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            toast.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
+            toast.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -250),
             toast.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 20),
             toast.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -20),
             toast.heightAnchor.constraint(greaterThanOrEqualToConstant: 34)
@@ -44,22 +44,27 @@ extension UIViewController {
     }
 }
 
-private extension UILabel {
-    var padding: UIEdgeInsets {
-        get {
-            return UIEdgeInsets.zero
-        }
-        set {
-            let paddingView = UIView()
-            paddingView.translatesAutoresizingMaskIntoConstraints = false
-            self.addSubview(paddingView)
-            
-            NSLayoutConstraint.activate([
-                paddingView.topAnchor.constraint(equalTo: self.topAnchor, constant: newValue.top),
-                paddingView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -newValue.bottom),
-                paddingView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: newValue.left),
-                paddingView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -newValue.right)
-            ])
-        }
+class PaddedLabel: UILabel {
+    var contentInsets = UIEdgeInsets.zero
+    
+    override func drawText(in rect: CGRect) {
+        let insetRect = rect.inset(by: contentInsets)
+        super.drawText(in: insetRect)
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(
+            width: size.width + contentInsets.left + contentInsets.right,
+            height: size.height + contentInsets.top + contentInsets.bottom
+        )
+    }
+    
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        let superSize = super.sizeThatFits(size)
+        return CGSize(
+            width: superSize.width + contentInsets.left + contentInsets.right,
+            height: superSize.height + contentInsets.top + contentInsets.bottom
+        )
     }
 }

@@ -13,6 +13,9 @@ protocol ShopTabCoordinator: Coordinator {
     func goToProductDetail(id: Int)
     func goBack(animated: Bool)
     func goToHomePage()
+    func dismissPresented()
+    func presentSortingViewController(nowSelected: OrderType, viewModel: DefaultProductsCatalogViewModel)
+    func presentFilterViewController(nowSelectedParameters: SearchParameters, viewModel: DefaultProductsCatalogViewModel)
 }
 
 class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
@@ -49,6 +52,24 @@ class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
     
     func goToHomePage() {
         parentCoordinator.goToHomePage()
+    }
+    
+    func presentSortingViewController(nowSelected: OrderType, viewModel: DefaultProductsCatalogViewModel) {
+        let sortMenuVC = SortMenuViewController(selected: nowSelected, viewModel: viewModel)
+        if let sheet = sortMenuVC.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false 
+        }
+        rootViewController.present(sortMenuVC, animated: true)
+    }
+    
+    func presentFilterViewController(nowSelectedParameters: SearchParameters, viewModel: DefaultProductsCatalogViewModel) {
+        
+    }
+    
+    func dismissPresented() {
+        rootViewController.dismiss(animated: true)
     }
 }
 

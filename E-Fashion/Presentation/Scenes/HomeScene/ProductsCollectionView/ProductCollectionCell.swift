@@ -75,6 +75,7 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.contentView.addShadow()
         setupViews()
     }
     

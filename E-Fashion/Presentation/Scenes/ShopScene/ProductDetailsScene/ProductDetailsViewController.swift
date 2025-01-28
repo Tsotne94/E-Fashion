@@ -243,7 +243,7 @@ class ProductDetailsViewController: UIViewController {
             collectionView.topAnchor.constraint(equalTo: contentView.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            collectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.3),
+            collectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4),
             
             pageControl.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 8),
             pageControl.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
@@ -268,7 +268,7 @@ class ProductDetailsViewController: UIViewController {
             
             descriptionLabel.topAnchor.constraint(equalTo: sizeLabel.bottomAnchor, constant: standardSpacing),
             descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: standardSpacing),
-            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -standardSpacing),
+            descriptionLabel.trailingAnchor.constraint(equalTo: priceLabel.leadingAnchor, constant: -standardSpacing),
             
             longDescriptionLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: standardSpacing),
             longDescriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: standardSpacing),

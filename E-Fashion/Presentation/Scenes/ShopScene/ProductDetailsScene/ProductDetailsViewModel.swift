@@ -15,7 +15,6 @@ protocol ProductDetailsViewModelInput {
     func viewDidLoad(productId: Int)
     func addToFavourites()
     func addToCart()
-    func goToNewProduct()
     func shareButtonTapped()
     func goBack()
     var inCart: Bool { get set }
@@ -72,7 +71,7 @@ final class DefaultProductDetailsViewModel: ProductDetailsViewModel {
                 }
             } receiveValue: { [weak self] product in
                 self?.product = product
-                self?.fetchimages()
+                self?.fetchImages()
                 self?._output.send(.infoFetched)
                 self?._output.send(.isLoading(false))
             }.store(in: &subscriptions)
@@ -91,47 +90,24 @@ final class DefaultProductDetailsViewModel: ProductDetailsViewModel {
             }.store(in: &subscriptions)
     }
     
-    private func fetchimages() {
+    private func fetchImages() {
         guard let product = product else { return }
         
-        Task {
-            let imageData = await fetchImagesWithTaskGroup(urls: product.images)
-            self.images = imageData
-            self._output.send(.imagesFetched)
-        }
-    }
-    
-    private func fetchImagesWithTaskGroup(urls: [String]) async -> [Data] {
-        let limitedUrls = Array(urls.prefix(3))
+        let limitedUrls = Array(product.images.prefix(3))
         
-        return await withTaskGroup(of: (index: Int, data: Data?).self) { group in
-            var imagesData: [Data] = Array(repeating: Data(), count: limitedUrls.count)
-            
-            for (index, url) in limitedUrls.enumerated() {
-                group.addTask {
-                    let data = await self.fetchSingleImage(urlString: url)
-                    return (index, data)
-                }
-            }
-            
-            for await result in group {
-                if let data = result.data {
-                    imagesData[result.index] = data
-                }
-            }
-            
-            return imagesData
+        let publishers = limitedUrls.map { url in
+            fetchImageUseCase.execute(urlString: url)
+                .eraseToAnyPublisher()
         }
-    }
-    
-    private func fetchSingleImage(urlString: String) async -> Data? {
-        return await withCheckedContinuation { continuation in
-            fetchImageUseCase.execute(urlString: urlString)
-                .sink { data in
-                    continuation.resume(returning: data)
-                }
-                .store(in: &subscriptions)
-        }
+        
+        Publishers.MergeMany(publishers)
+            .collect()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] imageDataArray in
+                self?.images = imageDataArray.compactMap({ $0 }).filter { !$0.isEmpty }
+                self?._output.send(.imagesFetched)
+            }
+            .store(in: &subscriptions)
     }
     
     func addToFavourites() {
@@ -175,10 +151,6 @@ final class DefaultProductDetailsViewModel: ProductDetailsViewModel {
                 self?.inCart = true
                 self?._output.send(.isInCartFetched)
             }.store(in: &subscriptions)
-    }
-    
-    func goToNewProduct() {
-        
     }
     
     func shareButtonTapped() {
