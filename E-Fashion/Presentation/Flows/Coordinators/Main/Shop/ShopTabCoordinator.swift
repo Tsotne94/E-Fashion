@@ -6,6 +6,7 @@
 //
 import Foundation
 import UIKit
+import SwiftUI
 
 protocol ShopTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
@@ -65,7 +66,9 @@ class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
     }
     
     func presentFilterViewController(nowSelectedParameters: SearchParameters, viewModel: DefaultProductsCatalogViewModel) {
-        
+        let viewController = UIHostingController(rootView: FilterView())
+        viewController.modalPresentationStyle = .fullScreen
+        rootViewController.present(viewController, animated: true)
     }
     
     func dismissPresented() {

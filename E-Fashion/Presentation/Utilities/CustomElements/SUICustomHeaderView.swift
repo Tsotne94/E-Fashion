@@ -36,6 +36,7 @@ struct SUICustomHeaderView: View {
                 .padding(.bottom, 15)
             }
         }
+        .background(ignoresSafeAreaEdges: .all)
         .frame(height: CustomHeaderView.headerHeight())
         .clipped()
     }
