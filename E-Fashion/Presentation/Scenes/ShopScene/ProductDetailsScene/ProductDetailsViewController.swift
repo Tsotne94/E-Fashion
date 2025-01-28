@@ -131,15 +131,6 @@ class ProductDetailsViewController: UIViewController {
         return control
     }()
     
-    private lazy var blurView: UIVisualEffectView = {
-        let blurEffect = UIBlurEffect(style: .dark)
-        let view = UIVisualEffectView(effect: blurEffect)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.alpha = 0.7
-        view.isHidden = true
-        return view
-    }()
-    
     private lazy var loadingIndicator: LottieAnimationView = {
         let animation = LottieAnimationView(name: "loader")
         animation.translatesAutoresizingMaskIntoConstraints = false
@@ -200,7 +191,6 @@ class ProductDetailsViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .customWhite
         
-        view.addSubview(blurView)
         view.addSubview(headerView)
         view.addSubview(scrollView)
         view.addSubview(loadingIndicator)
@@ -223,11 +213,6 @@ class ProductDetailsViewController: UIViewController {
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            blurView.topAnchor.constraint(equalTo: view.topAnchor),
-            blurView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            blurView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            blurView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -340,11 +325,9 @@ class ProductDetailsViewController: UIViewController {
     
     private func updateLoadingState(_ isLoading: Bool) {
         if isLoading {
-            blurView.isHidden = false
             loadingIndicator.isHidden = false
             loadingIndicator.play()
         } else {
-            blurView.isHidden = true
             loadingIndicator.isHidden = true
             loadingIndicator.stop()
         }

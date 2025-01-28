@@ -94,6 +94,21 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         contentView.addSubview(priceLabel)
         
         setupConstraints()
+        
+        viewModel.output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] action in
+                guard let self = self else { return }
+                switch action {
+                case .imageLoaded(let image):
+//                    guard self.viewModel.product?.image == product.image else { return }
+                    self.productImageView.image = image ?? UIImage(systemName: "photo")
+                case .favouriteStatusChanged:
+                    self.updateFavouriteButton()
+                case .showError(let errorMessage):
+                    print("Image load error: \(errorMessage)")
+                }
+            }.store(in: &subscriptions)
     }
     
     private func setupConstraints() {
@@ -143,20 +158,8 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         viewModel.loadImage(urlString: product.image, size: imageSize)
         viewModel.loadFavouritesState()
         
-        viewModel.output
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] action in
-                guard let self = self else { return }
-                switch action {
-                case .imageLoaded(let image):
-                    guard self.viewModel.product?.image == product.image else { return }
-                    self.productImageView.image = image ?? UIImage(systemName: "photo")
-                case .favouriteStatusChanged:
-                    self.updateFavouriteButton()
-                case .showError(let errorMessage):
-                    print("Image load error: \(errorMessage)")
-                }
-            }.store(in: &subscriptions)
+#warning("es bevrjer gamoidzaxeba")
+
         
         brandNameLabel.text = product.brand?.isEmpty == true ? "Not Branded" : product.brand
         productNameLabel.text = product.title

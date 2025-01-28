@@ -106,15 +106,6 @@ class ProductsCatalogViewController: UIViewController {
         return collection
     }()
     
-    private lazy var blurView: UIVisualEffectView = {
-        let blurEffect = UIBlurEffect(style: .dark)
-        let view = UIVisualEffectView(effect: blurEffect)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.alpha = 0.7
-        view.isHidden = true
-        return view
-    }()
-    
     private lazy var loadingIndicator: LottieAnimationView = {
         let animation = LottieAnimationView(name: "loader")
         animation.translatesAutoresizingMaskIntoConstraints = false
@@ -142,7 +133,6 @@ class ProductsCatalogViewController: UIViewController {
         view.addSubview(buttonStackView)
         view.addSubview(productsCollectionView)
         
-        view.addSubview(blurView)
         view.addSubview(loadingIndicator)
         
         setupCategoriesCollectionView()
@@ -205,11 +195,6 @@ class ProductsCatalogViewController: UIViewController {
             productsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             productsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             
-            blurView.topAnchor.constraint(equalTo: view.topAnchor),
-            blurView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            blurView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            blurView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             loadingIndicator.widthAnchor.constraint(equalToConstant: 100),
@@ -226,11 +211,9 @@ class ProductsCatalogViewController: UIViewController {
     
     private func updateLoadingState(_ isLoading: Bool) {
         if isLoading {
-            blurView.isHidden = false
             loadingIndicator.isHidden = false
             loadingIndicator.play()
         } else {
-            blurView.isHidden = true
             loadingIndicator.isHidden = true
             loadingIndicator.stop()
         }
@@ -294,4 +277,3 @@ extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionV
         }
     }
 }
-

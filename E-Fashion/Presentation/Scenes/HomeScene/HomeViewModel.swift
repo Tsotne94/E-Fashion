@@ -9,8 +9,7 @@ import Foundation
 import Combine
 import MyNetworkManager
 
-protocol HomeViewModel: AnyObject, HomeViewModelInput, HomeViewModelOutput {
-}
+protocol HomeViewModel: AnyObject, HomeViewModelInput, HomeViewModelOutput {}
 
 protocol HomeViewModelInput {
     func productTapped(productId: Int)
@@ -36,6 +35,8 @@ final class DefaultHomeViewModel: HomeViewModel {
     @Inject private var homeCoordinator: HomeTabCoordinator
     @Inject private var fetchProductsUseCase: FetchProductsUseCase
     
+    private let categories = Categories()
+    
     var newItems: [Product] = [] {
         didSet {
             _output.send(.productsFetched)
@@ -56,14 +57,16 @@ final class DefaultHomeViewModel: HomeViewModel {
     
     private var subscriptions = Set<AnyCancellable>()
     
-    public init() { }
+    public init() {}
     
     func productTapped(productId: Int) {
         homeCoordinator.goToProductsDetails(productId: productId)
     }
     
     func fetchNew() {
-        let category = Category(id: Categories.allMenIds[Int.random(in: 0...9)])
+        guard let newSection = categories.getSection(for: .men, sectionType: .new) else { return }
+        
+        let category = Category(id: newSection.id, title: newSection.title, parentId: newSection.parentId)
         let params = SearchParameters(page: newItemsPage, order: .newestFirst, category: category)
         
         fetchProductsUseCase.execute(params: params)
@@ -71,19 +74,21 @@ final class DefaultHomeViewModel: HomeViewModel {
             .sink { completion in
                 switch completion {
                 case .finished:
-                    print("successfully fetched hot items")
+                    print("successfully fetched new items")
                 case .failure(let error):
                     print("error: \(error.localizedDescription)")
                 }
             } receiveValue: { [weak self] products in
                 self?.newItems += products
-            }.store(in: &subscriptions)
-
+            }
+            .store(in: &subscriptions)
     }
     
     func fetchHot() {
-        let category = Category(id: Categories.allMenIds[Int.random(in: 0...9)])
-        let params = SearchParameters(page: hotItemsPage, order: .relevance, category: category)
+        guard let clothesSection = categories.getSection(for: .men, sectionType: .clothes),
+              let randomItem = clothesSection.items.randomElement() else { return }
+        
+        let params = SearchParameters(page: hotItemsPage, order: .relevance, category: randomItem)
         
         fetchProductsUseCase.execute(params: params)
             .receive(on: DispatchQueue.main)
@@ -96,6 +101,7 @@ final class DefaultHomeViewModel: HomeViewModel {
                 }
             } receiveValue: { [weak self] products in
                 self?.hotItems += products.sorted(by: { $0.promoted && !$1.promoted })
-            }.store(in: &subscriptions)
+            }
+            .store(in: &subscriptions)
     }
 }

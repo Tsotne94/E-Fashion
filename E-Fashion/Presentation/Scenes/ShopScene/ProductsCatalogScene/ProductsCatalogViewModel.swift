@@ -76,7 +76,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     
     func viewDidLoad() {
         _output.send(.isLoading(true))
-        let category = Category(id: Categories.allMenIds[Int.random(in: 0...9)])
+        let category = Category(id: Categories().getCategories(for: .men).getItems(.shoes)[0].id)
         parameters = SearchParameters(page: currentPage, order: orederType, category: category)
         
         fetchProductsUseCase.execute(params: parameters)
