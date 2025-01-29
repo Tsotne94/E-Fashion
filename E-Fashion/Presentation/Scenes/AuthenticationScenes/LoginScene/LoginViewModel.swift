@@ -29,7 +29,7 @@ protocol LoginViewModelInput {
 }
 
 protocol LoginViewModelOutput {
-    var output: AnyPublisher<LoginViewModelOutputAction, Never> { get }
+//    var output: AnyPublisher<LoginViewModelOutputAction, Never> { get }
 }
 
 enum LoginViewModelOutputAction {
