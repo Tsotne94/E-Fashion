@@ -11,6 +11,7 @@ import SwiftUI
 
 protocol FavouritesTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
+    func goToProductsDetails(productId: Int)
 }
 
 final class DefaultFavouritesTabCoordinator: NSObject, FavouritesTabCoordinator {
@@ -24,6 +25,11 @@ final class DefaultFavouritesTabCoordinator: NSObject, FavouritesTabCoordinator 
     func start() {
         let hostingView = UIHostingController(rootView: FavoritesView())
         rootViewController.setViewControllers([hostingView], animated: false)
+    }
+    
+    func goToProductsDetails(productId: Int) {
+        let viewController = ProductDetailsViewController(id: productId)
+        rootViewController.pushViewController(viewController, animated: true)
     }
 }
 

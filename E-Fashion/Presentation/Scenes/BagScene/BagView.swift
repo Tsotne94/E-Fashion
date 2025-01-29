@@ -38,6 +38,11 @@ struct BagView: View {
                                     viewModel.deleteProduct(id: product.product.productId)
                                 }
                             )
+                            .onTapGesture {
+                                if let id = Int(product.id) {
+                                    viewModel.goToProductDetail(id: id)
+                                }
+                            }
                         }
                     }
                     .padding(.top, 5)
@@ -67,6 +72,7 @@ struct BagView: View {
                             .frame(height: 50)
                             .background(.accentRed)
                             .cornerRadius(25)
+                            .shadow(radius: 5)
                     }
                     .padding(.horizontal)
                 }

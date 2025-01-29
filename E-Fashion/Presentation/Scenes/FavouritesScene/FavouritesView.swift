@@ -41,6 +41,9 @@ struct FavoritesView: View {
                                     viewModel.addToCart(id: product.productId)
                                 }
                             )
+                            .onTapGesture {
+                                viewModel.goToProductDetail(id: product.productId)
+                            }
                         }
                     }
                     .padding()

@@ -104,7 +104,7 @@ class DefaultFavouritesViewModel: ObservableObject, FavouritesViewModel, Favouri
     }
     
     func goToProductDetail(id: Int) {
-        
+        favouritesCoordinator.goToProductsDetails(productId: id)
     }
     
     func deleteProduct(id: Int) {

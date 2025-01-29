@@ -11,6 +11,7 @@ import SwiftUI
 
 protocol BagTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
+    func goToProductsDetails(productId: Int)
 }
 
 final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
@@ -24,6 +25,11 @@ final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
     func start() {
         let hostingView = UIHostingController(rootView: BagView())
         rootViewController.setViewControllers([hostingView], animated: false)
+    }
+    
+    func goToProductsDetails(productId: Int) {
+        let viewController = ProductDetailsViewController(id: productId)
+        rootViewController.pushViewController(viewController, animated: true)
     }
 }
 

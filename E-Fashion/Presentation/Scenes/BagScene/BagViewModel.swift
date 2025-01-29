@@ -107,6 +107,7 @@ class DefaultBagViewModel: ObservableObject, BagViewModel {
     }
     
     func goToProductDetail(id: Int) {
+        bagCoordinator.goToProductsDetails(productId: id)
     }
     
     func deleteProduct(id: Int) {
