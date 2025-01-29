@@ -59,5 +59,6 @@ final class DefaultAuthenticationCoordinator: NSObject, AuthenticationCoordinato
 extension DefaultAuthenticationCoordinator: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         navigationController.isNavigationBarHidden = true
+        navigationController.navigationBar.isHidden = true
     }
 }

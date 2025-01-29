@@ -7,11 +7,21 @@
 
 import Combine
 import UIKit
+import Lottie
 
 class ProductsCatalogViewController: UIViewController {
     private let viewModel = DefaultProductsCatalogViewModel()
     private var subscriptions = Set<AnyCancellable>()
-    private lazy var productCellwidth = view.bounds.width / 2.4
+    private var id: Int? = nil
+    private var isWideLayout = false
+    
+    private var productCellWidth: CGFloat {
+        return isWideLayout ? view.bounds.width / 1.2 : view.bounds.width / 2.4
+    }
+    
+    private var productCellHeight: CGFloat {
+        return isWideLayout ? productCellWidth * 1.3 : productCellWidth * 1.55
+    }
     
     private let headerView: CustomHeaderView = {
         let view = CustomHeaderView()
@@ -68,7 +78,7 @@ class ProductsCatalogViewController: UIViewController {
         config.imagePadding = 8
         let button = UIButton(configuration: config)
         button.setImage(UIImage(named: Icons.sort), for: .normal)
-        button.setTitle("Price: \(viewModel.sortLabel)", for: .normal)
+        button.setTitle("\(viewModel.sortLabel)", for: .normal)
         button.setTitleColor(.accentBlack, for: .normal)
         return button
     }()
@@ -86,7 +96,7 @@ class ProductsCatalogViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 16
-        layout.itemSize = CGSize(width: productCellwidth, height: productCellwidth * 1.55)
+        layout.itemSize = CGSize(width: productCellWidth, height: productCellHeight)
         layout.estimatedItemSize = .zero
         
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -97,23 +107,42 @@ class ProductsCatalogViewController: UIViewController {
         return collection
     }()
     
+    private lazy var loadingIndicator: LottieAnimationView = {
+        let animation = LottieAnimationView(name: "loader")
+        animation.translatesAutoresizingMaskIntoConstraints = false
+        animation.loopMode = .loop
+        animation.contentMode = .scaleAspectFit
+        animation.isHidden = true
+        return animation
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.viewDidLoad()
         setupUI()
         setupBinding()
         setupConstraints()
+        setupTargets()
+    }
+    
+    func fetchProducts(id: Int) {
+        viewModel.viewDidLoad(id: id)
+        self.id = id
     }
     
     private func setupUI() {
         view.backgroundColor = .customWhite
-        headerView.addSubview(searchButton)
+        
         view.addSubview(headerView)
+        headerView.addSubview(searchButton)
         view.addSubview(categoriesCollectionView)
         view.addSubview(buttonStackView)
         view.addSubview(productsCollectionView)
+        
+        view.addSubview(loadingIndicator)
+        
         setupCategoriesCollectionView()
         setupProductsCollectionView()
+        
         headerView.backButtonTapped = { [weak self] in
             self?.viewModel.backButtonTapped()
         }
@@ -128,6 +157,9 @@ class ProductsCatalogViewController: UIViewController {
                     self?.productsCollectionView.reloadData()
                 case .sortingChanged:
                     self?.productsCollectionView.reloadData()
+                    self?.sortButton.setTitle(self?.viewModel.sortLabel, for: .normal)
+                case .isLoading(let isLoading):
+                    self?.updateLoadingState(isLoading)
                 }
             }.store(in: &subscriptions)
     }
@@ -166,8 +198,57 @@ class ProductsCatalogViewController: UIViewController {
             productsCollectionView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor, constant: 8),
             productsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             productsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            productsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+            productsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loadingIndicator.widthAnchor.constraint(equalToConstant: 100),
+            loadingIndicator.heightAnchor.constraint(equalToConstant: 100)
         ])
+    }
+    
+    private func setupTargets() {
+        searchButton.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
+        filterButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
+        sortButton.addTarget(self, action: #selector(sortButtonTapped), for: .touchUpInside)
+        layoutButton.addTarget(self, action: #selector(layoutButtonTapped), for: .touchUpInside)
+    }
+    
+    private func updateLoadingState(_ isLoading: Bool) {
+        if isLoading {
+            loadingIndicator.isHidden = false
+            loadingIndicator.play()
+        } else {
+            loadingIndicator.isHidden = true
+            loadingIndicator.stop()
+        }
+    }
+    
+    @objc private func searchButtonTapped() {
+        print("Search button tapped")
+    }
+    
+    @objc private func filterButtonTapped() {
+        viewModel.presentFilterView()
+    }
+    
+    @objc private func sortButtonTapped() {
+        viewModel.presentSortingView()
+    }
+    
+    @objc private func layoutButtonTapped() {
+        isWideLayout.toggle()
+        
+        if let layout = productsCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.itemSize = CGSize(width: productCellWidth, height: productCellHeight)
+        }
+        
+        let imageName = isWideLayout ? Icons.dualColumn : Icons.singleColumn
+        layoutButton.setImage(UIImage(named: imageName), for: .normal)
+        
+        UIView.animate(withDuration: 0.3) {
+            self.productsCollectionView.performBatchUpdates(nil)
+        }
     }
 }
 
@@ -194,28 +275,10 @@ extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionV
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == categoriesCollectionView {
-            //            viewModel.selectCategory(at: indexPath.row)
+            
         } else {
-            //            viewModel.selectProduct(at: indexPath.row)
+            let id = viewModel.products[indexPath.row].productId
+            viewModel.productTappedAt(index: id)
         }
-    }
-}
-
-import SwiftUI
-
-struct SampleViewControllerPreview: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> ProductsCatalogViewController {
-        return ProductsCatalogViewController()
-    }
-
-    func updateUIViewController(_ uiViewController: ProductsCatalogViewController, context: Context) {
-        
-    }
-}
-
-struct SampleViewControllerPreview_Previews: PreviewProvider {
-    static var previews: some View {
-        SampleViewControllerPreview()
-            .edgesIgnoringSafeArea(.all)
     }
 }

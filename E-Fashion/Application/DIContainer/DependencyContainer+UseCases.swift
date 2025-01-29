@@ -28,6 +28,7 @@ public extension DependencyContainer {
             Module { DefaultFetchFavouriteItemsUseCase() as FetchFavouriteItemsUseCase }
             Module { DefaultRemoveFromFavouritesUseCase() as RemoveFromFavouritesUseCase }
             Module { DefaultIsFavouriteUseCase() as IsFavouriteUseCase }
+            Module { DefaultIsInCartUseCase() as IsInCartUseCase }
         }
     }
 }

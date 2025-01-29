@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-extension ProductColor {
+extension ProductColor: Hashable {
     static let allColors: [ProductColor] = [
         ProductColor(id: 9, title: "Blue"),
         ProductColor(id: 27, title: "Navy"),
@@ -21,4 +21,12 @@ extension ProductColor {
         ProductColor(id: 30, title: "Mint"),
         ProductColor(id: 8, title: "Yellow")
     ]
+    
+    static func == (lhs: ProductColor, rhs: ProductColor) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }

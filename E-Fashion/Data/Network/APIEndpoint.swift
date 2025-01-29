@@ -30,7 +30,9 @@ final class APIEndpoint {
     func search(parameters: SearchParameters) -> String {
         var components = URLComponents(string: baseURL + "/getSearch")!
         components.queryItems = parameters.toQueryItems()
-        return components.url?.absoluteString ?? ""
+        let urlString = components.url?.absoluteString ?? ""
+        print("Generated URL: \(urlString)")
+        return urlString
     }
     
     func getProduct(productId: String, country: String = "us") -> String {

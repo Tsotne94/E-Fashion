@@ -10,6 +10,7 @@ import Combine
 
 class ShopViewController: UIViewController {
     private var viewModel = DefaultShopViewModel()
+    private let categories = Categories()
     
     private var highlightCenterXConstraint: NSLayoutConstraint?
     private var highlightWidthConstraint: NSLayoutConstraint?
@@ -184,7 +185,7 @@ class ShopViewController: UIViewController {
     }
     
     private func navigateBack() {
-        
+        viewModel.goBack()
     }
     
     private func updateCategoryImages(for category: CategoryType) {
@@ -244,13 +245,17 @@ class ShopViewController: UIViewController {
         
         switch view {
         case categoryNew:
-            viewModel.goToCategory(id: 1)
-        case categoryClothes: break
-
-        case categoryShoes: break
-
-        case categoryAcceories: break
-            
+            guard let id = categories.women.getSection(.new)?.id else { return }
+            viewModel.goToCategory(id: id)
+        case categoryClothes:
+            guard let id = categories.women.getSection(.clothes)?.id else { return }
+            viewModel.goToCategory(id: id)
+        case categoryShoes:
+            guard let id = categories.women.getSection(.shoes)?.id else { return }
+            viewModel.goToCategory(id: id)
+        case categoryAcceories:
+            guard let id = categories.women.getSection(.accessories)?.id else { return }
+            viewModel.goToCategory(id: id)
         default:
             break
         }

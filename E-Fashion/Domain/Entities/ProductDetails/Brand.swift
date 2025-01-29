@@ -7,7 +7,7 @@
 
 struct Brand: Codable {
     let brandId: Int
-    let name: String
+    let name: String?
     let favourites: Int
     let itemCount: Int
     let luxury: Bool

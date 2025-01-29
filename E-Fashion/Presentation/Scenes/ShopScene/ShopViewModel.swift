@@ -12,6 +12,7 @@ protocol ShopViewModel: ShopViewModelInput, ShopViewModelOutput {
 }
 
 protocol ShopViewModelInput {
+    func goBack()
     func goToCategory(id: Int)
     var currentCategory: CategoryType { get set }
 }
@@ -40,5 +41,9 @@ final class DefaultShopViewModel: ShopViewModel {
     
     func goToCategory(id: Int) {
         shopCoordinator.goToProducts(id: id)
+    }
+    
+    func goBack() {
+        shopCoordinator.goToHomePage()
     }
 }

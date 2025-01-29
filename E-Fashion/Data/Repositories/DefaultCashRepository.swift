@@ -14,6 +14,7 @@ public struct DefaultCashRepository: CacheRepository {
     public init() {
         self.cache = NSCache<NSString, NSData>()
         self.cache.name = "ImageCache"
+        self.cache.countLimit = 100
     }
     
     func cacheImage(url: String, image: Data) -> AnyPublisher<Void, any Error> {

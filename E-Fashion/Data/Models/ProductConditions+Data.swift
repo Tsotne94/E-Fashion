@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-extension ProductCondition {
+extension ProductCondition: Hashable {
     static let allConditions: [ProductCondition] = [
         ProductCondition(id: 6, title: "New with tags",
                         description: "A brand-new, unused item with tags attached or in the original packaging."),
@@ -18,4 +18,12 @@ extension ProductCondition {
         ProductCondition(id: 4, title: "Satisfactory",
                         description: "A frequently used item with imperfections and signs of wear. Include photos and descriptions of flaws in your listing.")
     ]
+    
+    static func == (lhs: ProductCondition, rhs: ProductCondition) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
