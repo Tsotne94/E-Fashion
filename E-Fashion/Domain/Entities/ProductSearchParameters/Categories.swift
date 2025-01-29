@@ -86,6 +86,13 @@ class Categories {
             id: 1904,
             title: "Women",
             sections: [
+                .new: SubcategorySection(
+                    id: 1904,
+                    title: "New Items",
+                    parentId: 1904,
+                    type: .new,
+                    items: []
+                ),
                 .clothes: SubcategorySection(
                     id: 4,
                     title: "Clothes",

@@ -245,53 +245,17 @@ class ShopViewController: UIViewController {
         
         switch view {
         case categoryNew:
-            switch viewModel.currentCategory {
-            case .men:
-                guard let id = categories.men.getSection(.new)?.id else { return }
-                viewModel.goToCategory(id: id)
-            case .women:
-                guard let id = categories.women.getSection(.new)?.id else { return }
-                viewModel.goToCategory(id: id)
-            case .kids:
-                guard let id = categories.kids.getSection(.new)?.id else { return }
-                viewModel.goToCategory(id: id)
-            }
+            guard let id = categories.women.getSection(.new)?.id else { return }
+            viewModel.goToCategory(id: id)
         case categoryClothes:
-            switch viewModel.currentCategory {
-            case .men:
-                guard let id = categories.men.getSection(.clothes)?.id else { return }
-                viewModel.goToCategory(id: id)
-            case .women:
-                guard let id = categories.women.getSection(.clothes)?.id else { return }
-                viewModel.goToCategory(id: id)
-            case .kids:
-                guard let id = categories.kids.getSection(.clothes)?.id else { return }
-                viewModel.goToCategory(id: id)
-            }
+            guard let id = categories.women.getSection(.clothes)?.id else { return }
+            viewModel.goToCategory(id: id)
         case categoryShoes:
-            switch viewModel.currentCategory {
-            case .men:
-                guard let id = categories.men.getSection(.shoes)?.id else { return }
-                viewModel.goToCategory(id: id)
-            case .women:
-                guard let id = categories.women.getSection(.shoes)?.id else { return }
-                viewModel.goToCategory(id: id)
-            case .kids:
-                guard let id = categories.kids.getSection(.shoes)?.id else { return }
-                viewModel.goToCategory(id: id)
-            }
+            guard let id = categories.women.getSection(.shoes)?.id else { return }
+            viewModel.goToCategory(id: id)
         case categoryAcceories:
-            switch viewModel.currentCategory {
-            case .men:
-                guard let id = categories.men.getSection(.accessories)?.id else { return }
-                viewModel.goToCategory(id: id)
-            case .women:
-                guard let id = categories.women.getSection(.accessories)?.id else { return }
-                viewModel.goToCategory(id: id)
-            case .kids:
-                guard let id = categories.kids.getSection(.accessories)?.id else { return }
-                viewModel.goToCategory(id: id)
-            }
+            guard let id = categories.women.getSection(.accessories)?.id else { return }
+            viewModel.goToCategory(id: id)
         default:
             break
         }

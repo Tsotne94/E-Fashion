@@ -64,7 +64,7 @@ final class DefaultHomeViewModel: HomeViewModel {
     }
     
     func fetchNew() {
-        guard let newSection = categories.getSection(for: .men, sectionType: .new) else { return }
+        guard let newSection = categories.getSection(for: .women, sectionType: .accessories) else { return }
         
         let category = Category(id: newSection.id, title: newSection.title, parentId: newSection.parentId)
         let params = SearchParameters(page: newItemsPage, order: .newestFirst, category: category)
@@ -85,7 +85,7 @@ final class DefaultHomeViewModel: HomeViewModel {
     }
     
     func fetchHot() {
-        guard let clothesSection = categories.getSection(for: .men, sectionType: .clothes),
+        guard let clothesSection = categories.getSection(for: .women, sectionType: .clothes),
               let randomItem = clothesSection.items.randomElement() else { return }
         
         let params = SearchParameters(page: hotItemsPage, order: .relevance, category: randomItem)
