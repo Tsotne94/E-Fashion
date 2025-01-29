@@ -8,7 +8,7 @@
 struct MainCategory {
     let id: Int
     let title: String
-    private let sections: [SectionType: SubcategorySection]
+    var sections: [SectionType: SubcategorySection]
     
     init(id: Int, title: String, sections: [SectionType: SubcategorySection]) {
         self.id = id
@@ -36,104 +36,88 @@ class Categories {
             id: 5,
             title: "Men",
             sections: [
-                .new: SubcategorySection(
-                    id: 101,
-                    title: "New",
-                    parentId: 5,
-                    type: .new,
-                    items: []
-                ),
                 .clothes: SubcategorySection(
-                    id: 102,
+                    id: 2050,
                     title: "Clothes",
                     parentId: 5,
                     type: .clothes,
                     items: [
-                        Category(id: 183, title: "Jeans", parentId: 2050),
-                        Category(id: 34, title: "Pants", parentId: 2050),
-                        Category(id: 221, title: "T-shirts", parentId: 2050),
-                        Category(id: 536, title: "Shirts", parentId: 2050),
-                        Category(id: 2052, title: "Jackets", parentId: 2050),
-                        Category(id: 532, title: "Blazers", parentId: 8),
-                        Category(id: 80, title: "Shorts", parentId: 2050),
-                        Category(id: 79, title: "Sweaters", parentId: 2050),
-                        Category(id: 2051, title: "Coats", parentId: 2050)
+                        Category(id: 1201, title: "Jeans", parentId: 1100),
+                        Category(id: 1202, title: "Pants", parentId: 1100),
+                        Category(id: 1203, title: "T-Shirts", parentId: 1100),
+                        Category(id: 1204, title: "Shirts", parentId: 1100),
+                        Category(id: 1205, title: "Jackets", parentId: 1100),
+                        Category(id: 1206, title: "Blazers", parentId: 1100),
+                        Category(id: 1207, title: "Shorts", parentId: 1100),
+                        Category(id: 1208, title: "Sweaters", parentId: 1100),
+                        Category(id: 1209, title: "Coats", parentId: 1100)
                     ]
                 ),
                 .shoes: SubcategorySection(
-                    id: 103,
+                    id: 1232,
                     title: "Shoes",
                     parentId: 5,
                     type: .shoes,
                     items: [
-                        Category(id: 1231, title: "Shoes", parentId: 5),
-                        Category(id: 1242, title: "Sneakers", parentId: 1231),
-                        Category(id: 1238, title: "Formal Shoes", parentId: 1231),
-                        Category(id: 1233, title: "Boots", parentId: 1231)
+                        Category(id: 1660, title: "Sneakers", parentId: 1232),
+                        Category(id: 1302, title: "Running Shoes", parentId: 1110),
+                        Category(id: 1303, title: "Basketball Shoes", parentId: 1110),
+                        Category(id: 1304, title: "Boots", parentId: 1110),
+                        Category(id: 1305, title: "Hiking Boots", parentId: 1110),
+                        Category(id: 1306, title: "Snow Boots", parentId: 1110)
                     ]
                 ),
                 .accessories: SubcategorySection(
-                    id: 104,
+                    id: 82,
                     title: "Accessories",
                     parentId: 5,
                     type: .accessories,
                     items: [
-                        Category(id: 20, title: "Belts", parentId: 1187),
-                        Category(id: 22, title: "Watches", parentId: 1187),
-                        Category(id: 21, title: "Jewelry", parentId: 1187),
-                        Category(id: 26, title: "Sunglasses", parentId: 1187)
+                        Category(id: 1501, title: "Belts", parentId: 1120),
+                        Category(id: 1502, title: "Watches", parentId: 1120),
+                        Category(id: 1503, title: "Jewelry", parentId: 1120),
+                        Category(id: 1504, title: "Sunglasses", parentId: 1120)
                     ]
                 )
             ]
         )
         
         self.women = MainCategory(
-            id: 4,
+            id: 1904,
             title: "Women",
             sections: [
-                .new: SubcategorySection(
-                    id: 105,
-                    title: "New",
-                    parentId: 4,
-                    type: .new,
-                    items: []
-                ),
                 .clothes: SubcategorySection(
-                    id: 106,
+                    id: 4,
                     title: "Clothes",
-                    parentId: 4,
+                    parentId: 1904,
                     type: .clothes,
                     items: [
-                        Category(id: 257, title: "Jeans", parentId: 4),
-                        Category(id: 12, title: "Tops & T-shirts", parentId: 4),
-                        Category(id: 9, title: "Pants & Leggings", parentId: 4),
+                        Category(id: 12, title: "Tops & T-Shirts", parentId: 4),
                         Category(id: 11, title: "Skirts", parentId: 4),
-                        Category(id: 1908, title: "Jackets", parentId: 4),
-                        Category(id: 8, title: "Blazers", parentId: 4),
+                        Category(id: 10, title: "Dresses", parentId: 4),
+                        Category(id: 8, title: "Suits & Blazers", parentId: 4),
                         Category(id: 15, title: "Shorts", parentId: 4),
                         Category(id: 13, title: "Sweaters", parentId: 4),
-                        Category(id: 1907, title: "Coats", parentId: 4)
                     ]
                 ),
                 .shoes: SubcategorySection(
-                    id: 107,
+                    id: 16,
                     title: "Shoes",
-                    parentId: 4,
+                    parentId: 1904,
                     type: .shoes,
                     items: [
-                        Category(id: 16, title: "Shoes", parentId: 4),
-                        Category(id: 1909, title: "Flats", parentId: 4),
-                        Category(id: 543, title: "Heels", parentId: 4),
-                        Category(id: 1049, title: "Boots", parentId: 4)
+                        Category(id: 215, title: "Slippers", parentId: 16),
+                        Category(id: 543, title: "Heels", parentId: 16),
+                        Category(id: 1049, title: "Boots", parentId: 16)
                     ]
                 ),
                 .accessories: SubcategorySection(
-                    id: 108,
+                    id: 1187,
                     title: "Accessories",
-                    parentId: 4,
+                    parentId: 1904,
                     type: .accessories,
                     items: [
-                        Category(id: 19, title: "Bags", parentId: 4),
+                        Category(id: 19, title: "Bags", parentId: 1187),
                         Category(id: 20, title: "Belts", parentId: 1187),
                         Category(id: 21, title: "Jewelry", parentId: 1187),
                         Category(id: 22, title: "Watches", parentId: 1187),
@@ -144,49 +128,41 @@ class Categories {
         )
         
         self.kids = MainCategory(
-            id: 1193,
+            id: 3000,
             title: "Kids",
             sections: [
-                .new: SubcategorySection(
-                    id: 109,
-                    title: "New",
-                    parentId: 1193,
-                    type: .new,
-                    items: []
-                ),
                 .clothes: SubcategorySection(
-                    id: 110,
+                    id: 3100,
                     title: "Clothes",
-                    parentId: 1193,
+                    parentId: 3000,
                     type: .clothes,
                     items: [
-                        Category(id: 1198, title: "Tops & T-shirts", parentId: 1193),
-                        Category(id: 1696, title: "Jeans", parentId: 1193),
-                        Category(id: 1200, title: "Pants & Shorts", parentId: 1193),
-                        Category(id: 1197, title: "Outerwear", parentId: 1193),
-                        Category(id: 1199, title: "Sweaters & Hoodies", parentId: 1193),
-                        Category(id: 1247, title: "Dresses", parentId: 1193),
-                        Category(id: 1248, title: "Skirts", parentId: 1193)
+                        Category(id: 3201, title: "Tops & T-Shirts", parentId: 3100),
+                        Category(id: 3202, title: "Jeans", parentId: 3100),
+                        Category(id: 3203, title: "Pants & Shorts", parentId: 3100),
+                        Category(id: 3204, title: "Outerwear", parentId: 3100),
+                        Category(id: 3205, title: "Dresses", parentId: 3100),
+                        Category(id: 3206, title: "Skirts", parentId: 3100)
                     ]
                 ),
                 .shoes: SubcategorySection(
-                    id: 111,
+                    id: 3110,
                     title: "Shoes",
-                    parentId: 1193,
+                    parentId: 3000,
                     type: .shoes,
                     items: [
-                        Category(id: 1255, title: "Shoes", parentId: 1193),
-                        Category(id: 1201, title: "Shorts & Cropped Pants", parentId: 1193)
+                        Category(id: 3301, title: "Sneakers", parentId: 3110),
+                        Category(id: 3302, title: "Boots", parentId: 3110)
                     ]
                 ),
                 .accessories: SubcategorySection(
-                    id: 112,
+                    id: 3120,
                     title: "Accessories",
-                    parentId: 1193,
+                    parentId: 3000,
                     type: .accessories,
                     items: [
-                        Category(id: 1258, title: "Bags & Backpacks", parentId: 1193),
-                        Category(id: 1574, title: "Accessories", parentId: 1195)
+                        Category(id: 3401, title: "Bags & Backpacks", parentId: 3120),
+                        Category(id: 3402, title: "Accessories", parentId: 3120)
                     ]
                 )
             ]
@@ -202,10 +178,27 @@ class Categories {
     }
     
     func getSection(for categoryType: CategoryType, sectionType: SectionType) -> SubcategorySection? {
-        return getCategories(for: categoryType).getSection(sectionType)
+        let mainCategory = getCategories(for: categoryType)
+        
+        guard let section = mainCategory.sections[sectionType] else {
+            debugPrint("⚠️ Warning: Section not found - Category: \(categoryType), Section: \(sectionType)")
+            return nil
+        }
+        
+        return section
     }
     
     func getItems(for categoryType: CategoryType, sectionType: SectionType) -> [Category] {
-        return getCategories(for: categoryType).getItems(sectionType)
+        guard let section = getSection(for: categoryType, sectionType: sectionType) else {
+            debugPrint("⚠️ Warning: No items found - Category: \(categoryType), Section: \(sectionType)")
+            return []
+        }
+        
+        return section.items
+    }
+    
+    func getItem(id: Int, categoryType: CategoryType, sectionType: SectionType) -> Category? {
+        let items = getItems(for: categoryType, sectionType: sectionType)
+        return items.first { $0.id == id }
     }
 }

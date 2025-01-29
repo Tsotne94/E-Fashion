@@ -10,6 +10,7 @@ import Combine
 
 class ShopViewController: UIViewController {
     private var viewModel = DefaultShopViewModel()
+    private let categories = Categories()
     
     private var highlightCenterXConstraint: NSLayoutConstraint?
     private var highlightWidthConstraint: NSLayoutConstraint?
@@ -246,49 +247,49 @@ class ShopViewController: UIViewController {
         case categoryNew:
             switch viewModel.currentCategory {
             case .men:
-                guard let id = Categories().men.getSection(.new)?.id else { return }
+                guard let id = categories.men.getSection(.new)?.id else { return }
                 viewModel.goToCategory(id: id)
             case .women:
-                guard let id = Categories().women.getSection(.new)?.id else { return }
+                guard let id = categories.women.getSection(.new)?.id else { return }
                 viewModel.goToCategory(id: id)
             case .kids:
-                guard let id = Categories().kids.getSection(.new)?.id else { return }
+                guard let id = categories.kids.getSection(.new)?.id else { return }
                 viewModel.goToCategory(id: id)
             }
         case categoryClothes:
             switch viewModel.currentCategory {
             case .men:
-                guard let id = Categories().men.getSection(.clothes)?.id else { return }
+                guard let id = categories.men.getSection(.clothes)?.id else { return }
                 viewModel.goToCategory(id: id)
             case .women:
-                guard let id = Categories().women.getSection(.clothes)?.id else { return }
+                guard let id = categories.women.getSection(.clothes)?.id else { return }
                 viewModel.goToCategory(id: id)
             case .kids:
-                guard let id = Categories().kids.getSection(.clothes)?.id else { return }
+                guard let id = categories.kids.getSection(.clothes)?.id else { return }
                 viewModel.goToCategory(id: id)
             }
         case categoryShoes:
             switch viewModel.currentCategory {
             case .men:
-                guard let id = Categories().men.getSection(.shoes)?.id else { return }
+                guard let id = categories.men.getSection(.shoes)?.id else { return }
                 viewModel.goToCategory(id: id)
             case .women:
-                guard let id = Categories().women.getSection(.shoes)?.id else { return }
+                guard let id = categories.women.getSection(.shoes)?.id else { return }
                 viewModel.goToCategory(id: id)
             case .kids:
-                guard let id = Categories().kids.getSection(.shoes)?.id else { return }
+                guard let id = categories.kids.getSection(.shoes)?.id else { return }
                 viewModel.goToCategory(id: id)
             }
         case categoryAcceories:
             switch viewModel.currentCategory {
             case .men:
-                guard let id = Categories().men.getSection(.accessories)?.id else { return }
+                guard let id = categories.men.getSection(.accessories)?.id else { return }
                 viewModel.goToCategory(id: id)
             case .women:
-                guard let id = Categories().women.getSection(.accessories)?.id else { return }
+                guard let id = categories.women.getSection(.accessories)?.id else { return }
                 viewModel.goToCategory(id: id)
             case .kids:
-                guard let id = Categories().kids.getSection(.accessories)?.id else { return }
+                guard let id = categories.kids.getSection(.accessories)?.id else { return }
                 viewModel.goToCategory(id: id)
             }
         default:

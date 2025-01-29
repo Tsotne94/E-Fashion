@@ -12,7 +12,7 @@ protocol ProductsCatalogViewModel: ProductsCatalogViewModelInput, ProductsCatalo
 }
 
 protocol ProductsCatalogViewModelInput{
-    func viewDidLoad()
+    func viewDidLoad(id: Int)
     func backButtonTapped()
     func productTappedAt(index: Int)
     func categoryTapped(category: CategoryType)
@@ -20,6 +20,7 @@ protocol ProductsCatalogViewModelInput{
     func presentFilterView()
     func dismissPresented()
     var currentPage: Int { get }
+    var id: Int? { get set }
     var orederType: OrderType { get set }
     var sortLabel: String { get }
     var products: [Product] { get }
@@ -42,13 +43,16 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     @Inject private var fetchProductsUseCase: FetchProductsUseCase
     @Inject private var shopCorrdinator: ShopTabCoordinator
     
-    var orederType: OrderType = .newestFirst {
+    lazy var orederType: OrderType = .newestFirst {
         didSet {
-            viewDidLoad()
+            if let id = id {
+                viewDidLoad(id: id)
+            }
             _output.send(.sortingChanged)
         }
     }
     var currentPage: Int = 1
+    var id: Int? = nil
     lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orederType)
     
     var products: [Product] = []
@@ -73,10 +77,12 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     private var subscriptions = Set<AnyCancellable>()
     
     public init() { }
-    
-    func viewDidLoad() {
+   
+    func viewDidLoad(id: Int) {
+        self.id = id
         _output.send(.isLoading(true))
-        let category = Category(id: Categories().getCategories(for: .men).getItems(.shoes)[0].id)
+        
+        let category = Category(id: id)
         parameters = SearchParameters(page: currentPage, order: orederType, category: category)
         
         fetchProductsUseCase.execute(params: parameters)

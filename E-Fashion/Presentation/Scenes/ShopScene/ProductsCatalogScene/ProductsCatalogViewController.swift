@@ -12,6 +12,7 @@ import Lottie
 class ProductsCatalogViewController: UIViewController {
     private let viewModel = DefaultProductsCatalogViewModel()
     private var subscriptions = Set<AnyCancellable>()
+    private var id: Int? = nil
     private var isWideLayout = false
     
     private var productCellWidth: CGFloat {
@@ -121,7 +122,11 @@ class ProductsCatalogViewController: UIViewController {
         setupBinding()
         setupConstraints()
         setupTargets()
-        viewModel.viewDidLoad()
+    }
+    
+    func fetchProducts(id: Int) {
+        viewModel.viewDidLoad(id: id)
+        self.id = id
     }
     
     private func setupUI() {

@@ -39,7 +39,9 @@ class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
     }
     
     func goToProducts(id: Int) {
-        rootViewController.pushViewController(ProductsCatalogViewController(), animated: true)
+        let vc = ProductsCatalogViewController()
+        vc.fetchProducts(id: id)
+        rootViewController.pushViewController(vc, animated: true)
     }
     
     func goToProductDetail(id: Int) {
