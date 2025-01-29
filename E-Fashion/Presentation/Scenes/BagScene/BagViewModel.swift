@@ -19,6 +19,7 @@ protocol BagViewModelInput {
     var productsInCart: [ProductInCart] { get }
     var totalPrice: Double? { get }
     var images: [String: Data] { get }
+    var isLoading: Bool { get }
 }
 
 protocol BagViewModelOutput {
@@ -41,6 +42,7 @@ class DefaultBagViewModel: ObservableObject, BagViewModel {
     @Published var productsInCart: [ProductInCart] = []
     @Published var totalPrice: Double? = nil
     @Published var images: [String: Data] = [:]
+    @Published var isLoading: Bool = false
     
     private var _output = PassthroughSubject<BagViewModelOutputAction, Never>()
     var output: AnyPublisher<BagViewModelOutputAction, Never> {
@@ -65,11 +67,13 @@ class DefaultBagViewModel: ObservableObject, BagViewModel {
                         partialResult += product.product.price.totalAmount.asNumber()
                     }
                     self?.fetchImagesForProducts(products)
+                    self?.isLoading = false
                 case .productDeleted:
                     self?.fetchProducts()
                 case .imageLoaded(let url, let data):
                     self?.images[url] = data
                 case .error:
+                    self?.isLoading = false
                     break
                 }
             }
@@ -134,6 +138,7 @@ class DefaultBagViewModel: ObservableObject, BagViewModel {
     }
     
     func fetchProducts() {
+        isLoading = true
         fetchProductsInCartUseCase.execute()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] products in

@@ -301,7 +301,7 @@ class ProductDetailsViewController: UIViewController {
         descriptionLabel.text = product.title
         longDescriptionLabel.text = product.description
         sizeLabel.text = "Size: \(product.size?.name ?? "")"
-        colorLabel.text = "Color: \(product.color.name)"
+        colorLabel.text = "Color: \(product.color?.name ?? "")"
         
         pageControl.numberOfPages = product.images.count > 3 ? 3 : product.images.count
     }

@@ -18,7 +18,10 @@ struct BagView: View {
                 .foregroundStyle(.accentBlack)
                 .padding()
             
-            if viewModel.productsInCart.isEmpty {
+            if viewModel.isLoading {
+                SUILoader()
+//                    .frame(maxHeight: .infinity)
+            } else if viewModel.productsInCart.isEmpty {
                 VStack(spacing: 16) {
                     Image(Icons.cartBadge)
                         .font(.system(size: 50))
@@ -111,7 +114,7 @@ struct ProductCardView: View {
                 HStack {
                     Text("Color:")
                         .foregroundColor(.gray)
-                    Text(product.product.color.name)
+                    Text(product.product.color?.name ?? "N/A")
                 }
                 .font(.subheadline)
                 

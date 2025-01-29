@@ -16,7 +16,7 @@ struct ProductDetails: Codable {
     let favourites: Int
     let size: Size?
     let condition: ConditionDetails
-    let color: ColorDetails
+    let color: ColorDetails?
     let images: [String]
     let category: CategoryDetails
     let fullCategory: String
