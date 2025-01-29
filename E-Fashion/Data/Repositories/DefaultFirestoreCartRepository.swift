@@ -8,11 +8,8 @@
 import Combine
 import FirebaseFirestore
 
-final class DefaultFirestoreCartRepository: FirestoreCartRepository {
+public struct DefaultFirestoreCartRepository: FirestoreCartRepository {
     @Inject private var getCurrentUserUseCase: GetCurrentUserUseCase
-    private var cartListener: ListenerRegistration?
-    
-    public init() { }
     
     func addToCart(product: ProductInCart) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
@@ -42,17 +39,14 @@ final class DefaultFirestoreCartRepository: FirestoreCartRepository {
     func fetchItemsInCart() -> AnyPublisher<[ProductInCart], Never> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
-                Future<[ProductInCart], Error> { [weak self] promise in
-                    guard let self = self else { return }
-                    
-                    self.cartListener?.remove()
-                    
+                Future<[ProductInCart], Error> { promise in
                     let cartRef = Firestore.firestore()
                         .collection("Carts")
                         .document(user.uid)
                         .collection("items")
+                        .order(by: "timestamp", descending: true)
                     
-                    self.cartListener = cartRef.addSnapshotListener { snapshot, error in
+                    cartRef.getDocuments { snapshot, error in
                         guard let snapshot = snapshot else {
                             promise(.success([]))
                             return
@@ -135,9 +129,5 @@ final class DefaultFirestoreCartRepository: FirestoreCartRepository {
                     }
                 }
             }.eraseToAnyPublisher()
-    }
-    
-    deinit {
-        cartListener?.remove()
     }
 }
