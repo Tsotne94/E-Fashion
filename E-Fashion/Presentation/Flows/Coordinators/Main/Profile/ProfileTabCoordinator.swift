@@ -20,13 +20,7 @@ class DefaultProfileTabCoordinator: ProfileTabCoordinator {
         rootViewController.navigationBar.prefersLargeTitles = true
     }
     
-    lazy var firstViewController: FavouritesViewController = {
-        let vc = FavouritesViewController()
-        vc.title = "haha i am the best"
-        return vc
-    }()
-    
     func start() {
-        rootViewController.setViewControllers([firstViewController], animated: false)
+        rootViewController.setViewControllers([UIViewController()], animated: false)
     }
 }

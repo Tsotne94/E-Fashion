@@ -11,16 +11,11 @@ struct BagView: View {
     @StateObject private var viewModel = DefaultBagViewModel()
     
     var body: some View {
-        VStack(spacing: 0) {
-            Text("My Bag")
-                .font(.custom(CustomFonts.nutinoBlack, size: 40))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .foregroundStyle(.accentBlack)
-                .padding()
+        VStack() {
+            SUIAuthHeaderView(title: "MyBag")
             
             if viewModel.isLoading {
                 SUILoader()
-//                    .frame(maxHeight: .infinity)
             } else if viewModel.productsInCart.isEmpty {
                 VStack(spacing: 16) {
                     Image(Icons.cartBadge)
@@ -34,7 +29,7 @@ struct BagView: View {
                 .frame(maxHeight: .infinity)
             } else {
                 ScrollView {
-                    VStack(spacing: 16) {
+                    LazyVStack(spacing: 16) {
                         ForEach(viewModel.productsInCart, id: \.product.productId) { product in
                             ProductCardView(
                                 product: product,
@@ -45,7 +40,8 @@ struct BagView: View {
                             )
                         }
                     }
-                    .padding()
+                    .padding(.top, 5)
+                    .padding(.horizontal)
                 }
                 
                 Spacer()
@@ -79,6 +75,7 @@ struct BagView: View {
                 .shadow(color: .black.opacity(0.05), radius: 8, y: -4)
             }
         }
+        .background(ignoresSafeAreaEdges: .all)
         .onAppear(perform: {
             viewModel.fetchProducts()
         })

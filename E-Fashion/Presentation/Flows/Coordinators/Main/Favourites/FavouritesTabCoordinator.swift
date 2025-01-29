@@ -7,26 +7,30 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
 protocol FavouritesTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
 }
 
-class DefaultFavouritesTabCoordinator: FavouritesTabCoordinator {
+final class DefaultFavouritesTabCoordinator: NSObject, FavouritesTabCoordinator {
     var rootViewController: UINavigationController
     
-    init() {
+    override init() {
         self.rootViewController = UINavigationController()
-        rootViewController.navigationBar.prefersLargeTitles = true
+        rootViewController.isNavigationBarHidden = true
     }
-    
-    lazy var firstViewController: FavouritesViewController = {
-        let vc = FavouritesViewController()
-        vc.title = "haha i am the best"
-        return vc
-    }()
     
     func start() {
-        rootViewController.setViewControllers([firstViewController], animated: false)
+        let hostingView = UIHostingController(rootView: FavoritesView())
+        rootViewController.setViewControllers([hostingView], animated: false)
     }
 }
+
+extension DefaultFavouritesTabCoordinator: UINavigationControllerDelegate {
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        navigationController.isNavigationBarHidden = true
+        navigationController.navigationBar.isHidden = true
+    }
+}
+
