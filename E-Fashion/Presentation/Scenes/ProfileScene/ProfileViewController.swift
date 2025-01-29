@@ -32,6 +32,13 @@ class ProfileViewController: UIViewController {
     
     weak var navigationDelegate: ProfileNavigationDelegate?
     
+    private let header: CustomHeaderView = {
+        let header = CustomHeaderView()
+        header.translatesAutoresizingMaskIntoConstraints = false
+        header.setTitle("My Profile")
+        return header
+    }()
+    
     private let menuItems = [
         MenuItem(title: "My orders", subtitle: "Already have 12 orders", type: .orders),
         MenuItem(title: "Shipping addresses", subtitle: "3 addresses", type: .shippingAddresses),
@@ -90,10 +97,9 @@ class ProfileViewController: UIViewController {
     
 
     private func setupUI() {
-        title = "My profile"
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .customWhite
         
-    
+        view.addSubview(header)
         view.addSubview(tableView)
         profileHeaderView.addSubview(profileImageView)
         profileHeaderView.addSubview(nameLabel)
@@ -101,7 +107,12 @@ class ProfileViewController: UIViewController {
         
     
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            header.topAnchor.constraint(equalTo: view.topAnchor),
+            header.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            header.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            header.heightAnchor.constraint(equalToConstant: CustomHeaderView.headerHeight()),
+            
+            tableView.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 15),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
