@@ -16,7 +16,6 @@ public struct DefaultProductsRepository: ProductsRepository {
     
     func fetchProducts(params: SearchParameters) -> AnyPublisher<[Product], Error> {
         let endpoint = APIEndpoint.shared.search(parameters: params)
-        print("/n/n/n/n/n/n/n \(params.category?.id) \n\n\nn\nn\n\n\\n\n")
         return Future { promise in
             APIEndpoint.shared.request(
                 urlString: endpoint,

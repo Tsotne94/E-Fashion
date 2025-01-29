@@ -135,7 +135,7 @@ class DefaultBagViewModel: ObservableObject, BagViewModel {
     }
     
     func goToCheckout() {
-        
+        bagCoordinator.goToCheckout()
     }
     
     func fetchProducts() {

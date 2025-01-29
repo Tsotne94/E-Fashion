@@ -12,7 +12,7 @@ enum Icons {
     static let cross = "cross"
     static let dualColumn = "dualColumn"
     static let filter = "filter"
-    static let heart = "heart"
+    static let heart = "customHeart"
     static let heartFilled = "heartSelected"
     static let mail = "Mail"
     static let masterCard = "mastercard"
@@ -81,4 +81,10 @@ enum WomenAssets {
     static let clothes = "womanClothes"
     static let new = "womanNew"
     static let shoes = "womanShoes"
+}
+
+enum DeliveryProviders: String {
+    case dhl = "dhl"
+    case usps = "usps"
+    case fedex = "fedex"
 }

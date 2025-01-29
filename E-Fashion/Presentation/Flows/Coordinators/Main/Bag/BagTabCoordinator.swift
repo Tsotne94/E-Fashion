@@ -12,6 +12,9 @@ import SwiftUI
 protocol BagTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
     func goToProductsDetails(productId: Int)
+    func popToRoot()
+    func goToCheckout()
+    func orderPlaced()
     func goBack()
 }
 
@@ -37,6 +40,20 @@ final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
     
     func goBack() {
         rootViewController.popViewController(animated: true)
+    }
+    
+    func goToCheckout() {
+        let viewController = UIHostingController(rootView: CheckoutView())
+        rootViewController.pushViewController(viewController, animated: true)
+    }
+    
+    func orderPlaced() {
+        let viewController = GreetingViewController()
+        rootViewController.pushViewController(viewController, animated: true)
+    }
+    
+    func popToRoot() {
+        rootViewController.popToRootViewController(animated: true)
     }
 }
 
