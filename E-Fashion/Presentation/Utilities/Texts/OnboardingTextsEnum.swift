@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 16.01.25.
 //
+
 enum OnboardingTexts {
     static let firstPageTitle = "Discover Unique Finds"
     static let secondPageTitle = "Pay Securely and Easily"
@@ -15,6 +16,3 @@ enum OnboardingTexts {
     
     static let thirdPageDescription = "Your thrifted gems are on their way! Feel great knowing you're giving items a second life and supporting a more sustainable future."
 }
-
-
-

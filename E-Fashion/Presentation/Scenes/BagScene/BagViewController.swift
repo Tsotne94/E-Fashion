@@ -19,9 +19,7 @@ class BagViewController: UIViewController {
         
         viewModel.$nname
             .sink { newValue in
-                // This block will be called whenever 'nname' changes
                 print("nname updated in controller: \(newValue)")
-                // Handle the update, e.g., update the UI
             }
             .store(in: &subscriptions)
         
@@ -68,5 +66,4 @@ class BagViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
 }

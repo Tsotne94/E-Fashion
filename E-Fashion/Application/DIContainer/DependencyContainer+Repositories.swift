@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 15.01.25.
 //
+
 public extension DependencyContainer {
     func registerRepositories() {
         DependencyContainer.root.register {
@@ -12,6 +13,8 @@ public extension DependencyContainer {
             Module { DefaultUserRepository() as UserRepository }
             Module { DefaultProductsRepository() as ProductsRepository }
             Module { DefaultCashRepository() as CacheRepository }
+            Module { DefaultFirestoreCartRepository() as FirestoreCartRepository }
+            Module { DefaultFirestoreFavouritesRepository() as FirestoreFavouritesRepository }
         }
     }
 }

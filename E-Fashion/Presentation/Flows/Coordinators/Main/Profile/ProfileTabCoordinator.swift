@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 15.01.25.
 //
+
 import Foundation
 import UIKit
 
@@ -28,6 +29,4 @@ class DefaultProfileTabCoordinator: ProfileTabCoordinator {
     func start() {
         rootViewController.setViewControllers([firstViewController], animated: false)
     }
-    
-    
 }

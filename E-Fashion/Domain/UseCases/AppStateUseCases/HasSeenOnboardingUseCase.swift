@@ -4,7 +4,6 @@
 //
 //  Created by Cotne Chubinidze on 15.01.25.
 //
-import Foundation
 
 public protocol HasSeenOnboardingUseCase {
     func execute()

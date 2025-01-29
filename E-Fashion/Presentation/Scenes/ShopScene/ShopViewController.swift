@@ -15,37 +15,12 @@ class ShopViewController: UIViewController {
     private var highlightWidthConstraint: NSLayoutConstraint?
     
     private lazy var categoryHeight: CGFloat = view.bounds.height / 7
-    private lazy var headerHeight: CGFloat = {
-       return UIScreen.main.bounds.height > 667 ? 100 : 60
-    }()
     
     private var subscriptions = Set<AnyCancellable>()
     
-    private let headerView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
-        view.clipsToBounds = true
-        return view
-    }()
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Categories"
-        label.font = UIFont(name: CustomFonts.nutinoBold, size: 18)
-        label.textColor = .accentBlack
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private let backButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.clipsToBounds = true
-        button.setImage(UIImage(named: Icons.back), for: .normal)
-        button.setTitle("", for: .normal)
-        return button
+    private let headerView: CustomHeaderView = {
+        let header = CustomHeaderView(title: "Categories")
+        return header
     }()
     
     private let womanButton: UIButton = {
@@ -114,7 +89,7 @@ class ShopViewController: UIViewController {
         view.addShadow()
         return view
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -125,8 +100,16 @@ class ShopViewController: UIViewController {
     private func setupUI() {
         self.navigationController?.isNavigationBarHidden = true
         view.backgroundColor = .customWhite
-        headerView.addSubview(backButton)
-        headerView.addSubview(titleLabel)
+        
+        headerView.backButtonTapped = { [weak self] in
+            self?.navigateBack()
+        }
+        
+        categoryNew.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleCategoryTap(_:))))
+        categoryClothes.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleCategoryTap(_:))))
+        categoryShoes.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleCategoryTap(_:))))
+        categoryAcceories.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleCategoryTap(_:))))
+        
         view.addSubview(headerView)
         view.addSubview(womanButton)
         view.addSubview(manButton)
@@ -143,15 +126,7 @@ class ShopViewController: UIViewController {
             headerView.topAnchor.constraint(equalTo: view.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: headerHeight),
-            
-            backButton.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -15),
-            backButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 15),
-            backButton.widthAnchor.constraint(equalToConstant: 24),
-            backButton.heightAnchor.constraint(equalToConstant: 24),
-            
-            titleLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
-            titleLabel.centerYAnchor.constraint(equalTo: backButton.centerYAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: CustomHeaderView.headerHeight()),
             
             womanButton.topAnchor.constraint(equalTo: headerView.bottomAnchor),
             womanButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
@@ -206,7 +181,10 @@ class ShopViewController: UIViewController {
         womanButton.addTarget(self, action: #selector(womanCategoryTapped), for: .touchUpInside)
         manButton.addTarget(self, action: #selector(menCategoryTapped), for: .touchUpInside)
         kidButton.addTarget(self, action: #selector(kidCategoryTapped), for: .touchUpInside)
-        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+    }
+    
+    private func navigateBack() {
+        
     }
     
     private func updateCategoryImages(for category: CategoryType) {
@@ -259,7 +237,22 @@ class ShopViewController: UIViewController {
         updateHighlightPosition(for: kidButton)
     }
     
-    @objc private func backButtonTapped() {
+    @objc private func handleCategoryTap(_ gesture: UITapGestureRecognizer) {
+        guard let view = gesture.view as? CategoryView else {
+            return
+        }
         
+        switch view {
+        case categoryNew:
+            viewModel.goToCategory(id: 1)
+        case categoryClothes: break
+
+        case categoryShoes: break
+
+        case categoryAcceories: break
+            
+        default:
+            break
+        }
     }
 }

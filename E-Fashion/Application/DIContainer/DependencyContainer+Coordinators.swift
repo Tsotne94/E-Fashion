@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 17.01.25.
 //
+
 public extension DependencyContainer {
     func registerCoordinators() {
         let authCoordinator = DefaultAuthenticationCoordinator()

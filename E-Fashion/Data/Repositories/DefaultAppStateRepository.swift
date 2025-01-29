@@ -39,4 +39,3 @@ public struct DefaultAppStateRepository: AppStateRepository {
         UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
     }
 }
-

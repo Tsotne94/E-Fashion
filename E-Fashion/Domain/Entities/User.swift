@@ -25,5 +25,3 @@ public struct User {
         self.imageUrl = nil
     }
 }
-
-

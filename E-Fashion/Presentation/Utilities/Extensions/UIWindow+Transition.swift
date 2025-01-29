@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 16.01.25.
 //
+
 import UIKit
 
 extension UIWindow {
@@ -22,6 +23,3 @@ extension UIWindow {
         }
     }
 }
-
-
-

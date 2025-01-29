@@ -11,12 +11,12 @@ class FirstTabViewModel: ObservableObject {
     @Published var nname = "name"
     
     var subscriptions = Set<AnyCancellable>()
-       
-       init() {
-           $nname
-               .sink { newValue in
-                   print("nname updated: \(newValue)")
-               }
-               .store(in: &subscriptions)
-       }
+    
+    init() {
+        $nname
+            .sink { newValue in
+                print("nname updated: \(newValue)")
+            }
+            .store(in: &subscriptions)
+    }
 }

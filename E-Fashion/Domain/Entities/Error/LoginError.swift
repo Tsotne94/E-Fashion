@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 17.01.25.
 //
+
 import Foundation
 
 public enum LoginError: MappableError {
@@ -22,7 +23,6 @@ public enum LoginError: MappableError {
     case accountDisabled
     case unknownError(String)
     
-#warning("errors usecases")
     public var description: String {
         switch self {
         case .wrongPassword:

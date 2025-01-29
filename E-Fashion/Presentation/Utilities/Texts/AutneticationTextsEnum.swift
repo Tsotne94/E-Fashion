@@ -4,6 +4,7 @@
 //
 //  Created by Cotne Chubinidze on 17.01.25.
 //
+
 enum SignInPageTexts {
     static let tittle = "Welcome Back!"
     static let emailTextField = "Email"
