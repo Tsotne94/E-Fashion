@@ -15,6 +15,7 @@ protocol BagTabCoordinator: Coordinator {
     func popToRoot()
     func goToCheckout()
     func orderPlaced()
+    func changeCard()
     func goBack()
 }
 
@@ -54,6 +55,11 @@ final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
     
     func popToRoot() {
         rootViewController.popToRootViewController(animated: true)
+    }
+    
+    func changeCard() {
+        let viewController = UIHostingController(rootView: PaymentMethodsView())
+        rootViewController.pushViewController(viewController, animated: true)
     }
 }
 

@@ -78,7 +78,7 @@ struct CheckoutView: View {
                     .shadow(radius: 3)
                 Spacer()
                 Button {
-                    print("change pressed")
+                    shopCoordinator.changeCard()
                 } label: {
                     Text("Change")
                         .font(.custom(CustomFonts.nutinoMedium, size: 14))
