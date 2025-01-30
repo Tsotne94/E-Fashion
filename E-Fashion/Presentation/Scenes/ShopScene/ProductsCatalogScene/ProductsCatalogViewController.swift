@@ -70,6 +70,7 @@ class ProductsCatalogViewController: UIViewController {
         button.setImage(UIImage(named: Icons.filter), for: .normal)
         button.setTitle("Filters", for: .normal)
         button.setTitleColor(.accentBlack, for: .normal)
+        button.setTitleColor(.accentBlack.withAlphaComponent(0.5), for: .highlighted)
         return button
     }()
     
@@ -80,6 +81,7 @@ class ProductsCatalogViewController: UIViewController {
         button.setImage(UIImage(named: Icons.sort), for: .normal)
         button.setTitle("\(viewModel.sortLabel)", for: .normal)
         button.setTitleColor(.accentBlack, for: .normal)
+        button.setTitleColor(.accentBlack.withAlphaComponent(0.5), for: .highlighted)
         return button
     }()
     
