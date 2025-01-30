@@ -14,8 +14,8 @@ protocol ProductCollectionCellViewModelInput {
     func loadImage(urlString: String, size: CGSize)
     func cancelLoading()
     func favouritesTapped()
-    func loadFavouritesState()
-    func updateFavouriteProducts(_ products: [Product])
+    func addToFavourites(product: Product)
+    func removeFromFavourites(product: Product)
     var isFavourite: Bool { get }
     var product: Product? { get set }
 }
@@ -36,17 +36,16 @@ final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewMode
     @Inject private var addToFavouritesUseCase: AddToFavouritesUseCase
     @Inject private var removeFromFavouritesUseCase: RemoveFromFavouritesUseCase
     
-    private var favouriteProducts: [Product] = []
-    var isFavourite: Bool {
-        guard let product = product else { return false }
-        return favouriteProducts.contains(where: { $0.productId == product.productId })
-    }
-    
     var product: Product?
     
-    private lazy var productId: String = {
+    var isFavourite: Bool {
+        guard let currentProduct = product else { return false }
+        return FavouriteProducts.products.contains(where: { $0.productId == currentProduct.productId })
+    }
+    
+    private var productId: String {
         return "\(product?.productId ?? 0)"
-    }()
+    }
     
     private let outputSubject = PassthroughSubject<ProductCollectionCellViewModelOutputAction, Never>()
     private var subscriptions = Set<AnyCancellable>()
@@ -55,15 +54,63 @@ final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewMode
         outputSubject.eraseToAnyPublisher()
     }
     
-    init() {}
+    init() { }
     
     deinit {
         cancelLoading()
     }
     
-    func updateFavouriteProducts(_ products: [Product]) {
-        favouriteProducts = products
-        outputSubject.send(.favouriteStatusChanged)
+    func favouritesTapped() {
+        guard let product = product else {
+            outputSubject.send(.showError("No product available"))
+            return
+        }
+        
+        if isFavourite {
+            removeFromFavourites(product: product)
+        } else {
+            addToFavourites(product: product)
+        }
+    }
+    
+    func addToFavourites(product: Product) {
+        addToFavouritesUseCase.execute(product: product)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    self?.outputSubject.send(.showError(error.localizedDescription))
+                }
+            } receiveValue: { [weak self] _ in
+                guard let self = self else { return }
+                // Changed logic: Add if NOT already in favorites
+                if !FavouriteProducts.products.contains(where: { $0.productId == product.productId }) {
+                    FavouriteProducts.products.append(product)
+                }
+                self.outputSubject.send(.favouriteStatusChanged)
+            }.store(in: &subscriptions)
+    }
+    
+    func removeFromFavourites(product: Product) {
+        removeFromFavouritesUseCase.execute(id: productId)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    self?.outputSubject.send(.showError(error.localizedDescription))
+                }
+            } receiveValue: { [weak self] _ in
+                guard let self = self else { return }
+                FavouriteProducts.products.removeAll { $0.productId == product.productId }
+                self.outputSubject.send(.favouriteStatusChanged)
+            }.store(in: &subscriptions)
+    }
+    
+    func cancelLoading() {
+        subscriptions.forEach { $0.cancel() }
+        subscriptions.removeAll()
     }
     
     func loadImage(urlString: String, size: CGSize) {
@@ -85,63 +132,5 @@ final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewMode
                 self?.outputSubject.send(.imageLoaded(image))
             }
             .store(in: &subscriptions)
-    }
-    
-    func cancelLoading() {
-        subscriptions.forEach { $0.cancel() }
-        subscriptions.removeAll()
-    }
-    
-    func favouritesTapped() {
-        guard let product = product else {
-            outputSubject.send(.showError("No product available"))
-            return
-        }
-        
-        if isFavourite {
-            removeFromFavourites(product: product)
-        } else {
-            addToFavourites(product: product)
-        }
-    }
-    
-    private func addToFavourites(product: Product) {
-        favouriteProducts.append(product)
-        outputSubject.send(.favouriteStatusChanged)
-        
-        addToFavouritesUseCase.execute(product: product)
-            .sink { [weak self] completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    self?.favouriteProducts.removeAll(where: { $0.productId == product.productId })
-                    self?.outputSubject.send(.favouriteStatusChanged)
-                    self?.outputSubject.send(.showError(error.localizedDescription))
-                }
-            } receiveValue: { _ in }
-            .store(in: &subscriptions)
-    }
-    
-    private func removeFromFavourites(product: Product) {
-        favouriteProducts.removeAll(where: { $0.productId == product.productId })
-        outputSubject.send(.favouriteStatusChanged)
-        
-        removeFromFavouritesUseCase.execute(id: productId)
-            .sink { [weak self] completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    self?.favouriteProducts.append(product)
-                    self?.outputSubject.send(.favouriteStatusChanged)
-                    self?.outputSubject.send(.showError(error.localizedDescription))
-                }
-            } receiveValue: { _ in }
-            .store(in: &subscriptions)
-    }
-    
-    func loadFavouritesState() {
-        outputSubject.send(.favouriteStatusChanged)
     }
 }

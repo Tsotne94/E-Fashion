@@ -156,9 +156,8 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         ])
     }
     
-    func configureCell(with product: Product, favourites: [Product]) {
+    func configureCell(with product: Product) {
         viewModel.product = product
-        viewModel.updateFavouriteProducts(favourites)  
         
         let imageSize = CGSize(width: bounds.width - 16, height: bounds.width - 16)
         viewModel.loadImage(urlString: product.image, size: imageSize)
@@ -167,10 +166,10 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         productNameLabel.text = product.title
         priceLabel.text = "$\(product.price.totalAmount.amount)"
         
-        updateFavouriteButton()
-        
         saleBadgeView.isHidden = product.discountPercentage <= 0
         saleBadgeLabel.text = product.discountPercentage > 0 ? "\(Int(product.discountPercentage))%" : nil
+        
+        updateFavouriteButton()
     }
     
     private func updateFavouriteButton() {
@@ -188,11 +187,9 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        subscriptions.removeAll()
         productImageView.image = UIImage(systemName: "photo")
         productImageView.tintColor = .systemGray3
         saleBadgeView.isHidden = true
-        viewModel.product = nil
-        setupBindings()
+        viewModel.cancelLoading()
     }
 }

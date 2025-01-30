@@ -124,6 +124,7 @@ final class DefaultHomeViewModel: HomeViewModel {
                 }
             } receiveValue: { [weak self] products in
                 self?.favouriteItems = products
+                FavouriteProducts.products = products
             }
             .store(in: &subscriptions)
     }

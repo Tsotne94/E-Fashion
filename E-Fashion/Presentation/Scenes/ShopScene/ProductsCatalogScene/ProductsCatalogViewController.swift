@@ -268,7 +268,7 @@ extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionV
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCollectionCell.reuseIdentifier, for: indexPath) as! ProductCollectionCell
-            cell.configureCell(with: viewModel.products[indexPath.row], favourites: viewModel.favourites)
+            cell.configureCell(with: viewModel.products[indexPath.row])
             return cell
         }
     }
