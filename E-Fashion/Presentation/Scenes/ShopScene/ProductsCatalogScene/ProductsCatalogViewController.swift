@@ -161,7 +161,6 @@ class ProductsCatalogViewController: UIViewController {
                 case .productsFetched:
                     self?.productsCollectionView.reloadData()
                 case .sortingChanged:
-                    self?.productsCollectionView.reloadData()
                     self?.sortButton.setTitle(self?.viewModel.sortLabel, for: .normal)
                 case .isLoading(let isLoading):
                     self?.updateLoadingState(isLoading)

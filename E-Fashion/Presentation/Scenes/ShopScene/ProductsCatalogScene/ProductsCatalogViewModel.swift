@@ -21,7 +21,7 @@ protocol ProductsCatalogViewModelInput{
     func dismissPresented()
     var currentPage: Int { get }
     var id: Int? { get set }
-    var orederType: OrderType { get set }
+    var orderType: OrderType { get set }
     var sortLabel: String { get }
     var products: [Product] { get }
     var cateogries: [String] { get }
@@ -44,7 +44,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     @Inject private var shopCorrdinator: ShopTabCoordinator
     @Inject private var fetchFavouritesUseCase: FetchFavouriteItemsUseCase
     
-    lazy var orederType: OrderType = .newestFirst {
+    lazy var orderType: OrderType = .newestFirst {
         didSet {
             if let id = id {
                 viewDidLoad(id: id)
@@ -55,7 +55,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     
     var currentPage: Int = 1
     var id: Int? = nil
-    lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orederType)
+    lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orderType)
     
     var products: [Product] = []
     var cateogries: [String] = [
@@ -66,9 +66,9 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
         "Books",
         "Accessories"
     ]
-    var isLoading: Bool = false
+    var isLoading: Bool = true
     var sortLabel: String {
-        orederType.rawValue
+        orderType.name()
     }
     
     private var _output = PassthroughSubject<ProductsCatalogViewModelOutputAction, Never>()
@@ -85,7 +85,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
         _output.send(.isLoading(true))
         
         let category = Category(id: id)
-        parameters = SearchParameters(page: currentPage, order: orederType, category: category)
+        parameters = SearchParameters(page: currentPage, order: orderType, category: category)
         
         fetchProductsUseCase.execute(params: parameters)
             .receive(on: DispatchQueue.main)
@@ -116,7 +116,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     }
     
     func presentSortingView() {
-        shopCorrdinator.presentSortingViewController(nowSelected: orederType, viewModel: self)
+        shopCorrdinator.presentSortingViewController(nowSelected: orderType, viewModel: self)
     }
     
     func presentFilterView() {

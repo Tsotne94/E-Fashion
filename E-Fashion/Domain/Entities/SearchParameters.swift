@@ -5,16 +5,16 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-struct SearchParameters {
-    let page: Int
-    let order: OrderType
-    let query: String?
-    let category: Category?
-    let colors: [ProductColor]?
-    let materials: [ProductMaterial]?
-    let conditions: [ProductCondition]?
-    let minPrice: Int?
-    let maxPrice: Int?
+class SearchParameters {
+    var page: Int
+    var order: OrderType
+    var query: String?
+    var category: Category?
+    var colors: [ProductColor]?
+    var materials: [ProductMaterial]?
+    var conditions: [ProductCondition]?
+    var minPrice: Int?
+    var maxPrice: Int?
     
     init(page: Int, order: OrderType, query: String? = nil, category: Category? = nil, colors: [ProductColor]? = nil, materials: [ProductMaterial]? = nil, conditions: [ProductCondition]? = nil, minPrice: Int? = nil, maxPrice: Int? = nil) {
         self.page = page
