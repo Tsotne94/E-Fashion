@@ -166,6 +166,8 @@ class ProductsCatalogViewController: UIViewController {
                     self?.sortButton.setTitle(self?.viewModel.sortLabel, for: .normal)
                 case .isLoading(let isLoading):
                     self?.updateLoadingState(isLoading)
+                case .subCategoriesFetched:
+                    self?.categoriesCollectionView.reloadData()
                 }
             }.store(in: &subscriptions)
     }
@@ -261,6 +263,7 @@ class ProductsCatalogViewController: UIViewController {
 extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == categoriesCollectionView {
+            print("Categories count:", viewModel.cateogries.count)
             return viewModel.cateogries.count
         } else {
             return viewModel.products.count
@@ -270,7 +273,8 @@ extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionV
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == categoriesCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryCollectionViewCell.reuseIdentifier, for: indexPath) as! CategoryCollectionViewCell
-            cell.configureCell(with: viewModel.cateogries[indexPath.row])
+            let name = viewModel.cateogries[indexPath.row].title
+            cell.configureCell(with: name)
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCollectionCell.reuseIdentifier, for: indexPath) as! ProductCollectionCell
@@ -281,7 +285,7 @@ extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionV
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == categoriesCollectionView {
-            
+            viewModel.fetchProducts(for: viewModel.cateogries[indexPath.row].id)
         } else {
             let id = viewModel.products[indexPath.row].productId
             viewModel.productTappedAt(index: id)

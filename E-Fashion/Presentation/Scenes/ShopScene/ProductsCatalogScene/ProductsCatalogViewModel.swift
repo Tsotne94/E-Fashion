@@ -13,6 +13,7 @@ protocol ProductsCatalogViewModel: ProductsCatalogViewModelInput, ProductsCatalo
 
 protocol ProductsCatalogViewModelInput{
     func viewDidLoad(id: Int)
+    func fetchProducts(for id: Int)
     func backButtonTapped()
     func productTappedAt(index: Int)
     func categoryTapped(category: CategoryType)
@@ -24,7 +25,7 @@ protocol ProductsCatalogViewModelInput{
     var orderType: OrderType { get set }
     var sortLabel: String { get }
     var products: [Product] { get }
-    var cateogries: [String] { get }
+    var cateogries: [Category] { get }
     var isLoading: Bool { get }
     var parameters: SearchParameters { get }
 }
@@ -36,6 +37,7 @@ protocol ProductsCatalogViewModelOutput {
 enum ProductsCatalogViewModelOutputAction {
     case productsFetched
     case sortingChanged
+    case subCategoriesFetched
     case isLoading(Bool)
 }
 
@@ -47,7 +49,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     lazy var orderType: OrderType = .newestFirst {
         didSet {
             if let id = id {
-                viewDidLoad(id: id)
+                fetchProducts(for: id)
             }
             _output.send(.sortingChanged)
         }
@@ -58,14 +60,11 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orderType)
     
     var products: [Product] = []
-    var cateogries: [String] = [
-        "All",
-        "Electronics",
-        "Clothing",
-        "Home Decor",
-        "Books",
-        "Accessories"
-    ]
+    var cateogries: [Category] = [] {
+        didSet {
+            _output.send(.subCategoriesFetched)
+        }
+    }
     var isLoading: Bool = true
     var sortLabel: String {
         orderType.name()
@@ -75,12 +74,18 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     var output: AnyPublisher<ProductsCatalogViewModelOutputAction, Never> {
         _output.eraseToAnyPublisher()
     }
-
+    
     private var subscriptions = Set<AnyCancellable>()
     
     public init() { }
    
     func viewDidLoad(id: Int) {
+        self.id = id
+        self.cateogries = Categories().getSubcategoryItems(id: id)
+        fetchProducts(for: id)
+    }
+    
+    func fetchProducts(for id: Int) {
         self.id = id
         _output.send(.isLoading(true))
         
@@ -92,9 +97,9 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
             .sink { completion in
                 switch completion {
                 case .finished:
-                    print("successfully fetched hot items")
+                    print("Successfully fetched products")
                 case .failure(let error):
-                    print("error: \(error.localizedDescription)")
+                    print("Error: \(error.localizedDescription)")
                 }
             } receiveValue: { [weak self] products in
                 self?.products = products
