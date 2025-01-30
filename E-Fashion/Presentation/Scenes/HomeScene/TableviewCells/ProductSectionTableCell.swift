@@ -85,14 +85,17 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
             .sink { [weak self] action in
                 switch action {
                 case .productsFetched:
-                    self?.loaderView.stop()
-                    self?.loaderView.isHidden = true
                     self?.collectionView.reloadData()
-                case .showProductDetails(_):
-                    print("cool")
-                case .showError(_):
-                    self?.loaderView.stop()
-                    self?.loaderView.isHidden = true
+                case .showError(let error):
+                    print("error while loading products error: \(error)")
+                case .isLoading(let isLoading):
+                    if isLoading {
+                        self?.loaderView.stop()
+                        self?.loaderView.isHidden = true
+                    } else {
+                        self?.loaderView.stop()
+                        self?.loaderView.isHidden = true
+                    }
                 }
             }.store(in: &subscriptions)
     }

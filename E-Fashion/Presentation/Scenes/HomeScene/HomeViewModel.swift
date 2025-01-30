@@ -23,14 +23,13 @@ protocol HomeViewModelOutput {
     var hotItems: [Product] { get }
     var newItemsPage: Int { get }
     var hotItemsPage: Int { get }
-    var favouriteItems: [Product] { get }
     var output: AnyPublisher<HomeViewModelOutputAction, Never> { get }
 }
 
 enum HomeViewModelOutputAction {
     case productsFetched
-    case showProductDetails(Product)
     case showError(String)
+    case isLoading(Bool)
 }
 
 final class DefaultHomeViewModel: HomeViewModel {
@@ -51,7 +50,6 @@ final class DefaultHomeViewModel: HomeViewModel {
         }
     }
     
-    var favouriteItems: [Product] = []
     var newItemsPage: Int = 1
     var hotItemsPage: Int = 1
     
@@ -76,15 +74,17 @@ final class DefaultHomeViewModel: HomeViewModel {
         
         fetchProductsUseCase.execute(params: params)
             .receive(on: DispatchQueue.main)
-            .sink { completion in
+            .sink { [weak self] completion in
                 switch completion {
                 case .finished:
                     print("successfully fetched new items")
+                    self?._output.send(.isLoading(false))
                 case .failure(let error):
                     print("error: \(error.localizedDescription)")
+                    self?._output.send(.isLoading(false))
                 }
             } receiveValue: { [weak self] products in
-                self?.newItems += products
+                self?.newItems = products
             }
             .store(in: &subscriptions)
     }
@@ -97,15 +97,17 @@ final class DefaultHomeViewModel: HomeViewModel {
         
         fetchProductsUseCase.execute(params: params)
             .receive(on: DispatchQueue.main)
-            .sink { completion in
+            .sink { [weak self] completion in
                 switch completion {
                 case .finished:
                     print("successfully fetched new items")
+                    self?._output.send(.isLoading(false))
                 case .failure(let error):
                     print("error: \(error.localizedDescription)")
+                    self?._output.send(.isLoading(false))
                 }
             } receiveValue: { [weak self] products in
-                self?.hotItems += products.sorted(by: { $0.promoted && !$1.promoted })
+                self?.hotItems = products.sorted(by: { $0.promoted && !$1.promoted })
             }
             .store(in: &subscriptions)
     }
@@ -122,8 +124,7 @@ final class DefaultHomeViewModel: HomeViewModel {
                     print("error: \(error.localizedDescription)")
                     self?._output.send(.showError(error.localizedDescription))
                 }
-            } receiveValue: { [weak self] products in
-                self?.favouriteItems = products
+            } receiveValue: { products in
                 FavouriteProducts.products = products
             }
             .store(in: &subscriptions)

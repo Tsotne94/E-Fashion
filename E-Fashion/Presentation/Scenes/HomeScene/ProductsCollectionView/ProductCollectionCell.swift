@@ -169,6 +169,8 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         saleBadgeView.isHidden = product.discountPercentage <= 0
         saleBadgeLabel.text = product.discountPercentage > 0 ? "\(Int(product.discountPercentage))%" : nil
         
+        productImageView.image = UIImage(systemName: "photo")
+        
         updateFavouriteButton()
     }
     

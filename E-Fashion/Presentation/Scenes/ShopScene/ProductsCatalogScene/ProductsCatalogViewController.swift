@@ -124,6 +124,11 @@ class ProductsCatalogViewController: UIViewController {
         setupTargets()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        productsCollectionView.reloadData()
+    }
+    
     func fetchProducts(id: Int) {
         viewModel.viewDidLoad(id: id)
         self.id = id

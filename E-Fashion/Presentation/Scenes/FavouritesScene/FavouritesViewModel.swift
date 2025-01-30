@@ -122,6 +122,7 @@ class DefaultFavouritesViewModel: ObservableObject, FavouritesViewModel, Favouri
                 switch completion {
                 case .finished:
                     self?._output.send(.productDeleted(id))
+                    FavouriteProducts.products.removeAll(where: { $0.productId == id })
                 case .failure(let error):
                     self?._output.send(.error(error))
                 }
@@ -172,10 +173,8 @@ class DefaultFavouritesViewModel: ObservableObject, FavouritesViewModel, Favouri
                 }
             }, receiveValue: { [weak self] products in
                 self?._output.send(.productsFetched(products))
+                FavouriteProducts.products = products
             })
             .store(in: &subscriptions)
     }
 }
-
-
-

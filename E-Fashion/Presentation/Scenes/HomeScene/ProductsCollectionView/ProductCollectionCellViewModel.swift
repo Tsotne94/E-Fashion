@@ -84,7 +84,7 @@ final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewMode
                 }
             } receiveValue: { [weak self] _ in
                 guard let self = self else { return }
-                // Changed logic: Add if NOT already in favorites
+                
                 if !FavouriteProducts.products.contains(where: { $0.productId == product.productId }) {
                     FavouriteProducts.products.append(product)
                 }

@@ -30,6 +30,11 @@ final class HomeViewController: UIViewController {
         tableView.sectionHeaderTopPadding = 0
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
+    
     private func setupTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
