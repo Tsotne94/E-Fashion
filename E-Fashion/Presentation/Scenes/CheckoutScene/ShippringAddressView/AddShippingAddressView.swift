@@ -117,7 +117,3 @@ struct LabeledCustomTextField: View {
 #Preview {
     AddShippingAddressView()
 }
-
-#Preview {
-    AddShippingAddressView()
-}
