@@ -14,6 +14,8 @@ class ProductDetailsViewController: UIViewController {
     private let viewModel = DefaultProductDetailsViewModel()
     private var subscriptions = Set<AnyCancellable>()
     
+    let backButtonAction: () -> ()
+    
     private lazy var headerView: CustomHeaderView = {
         let header = CustomHeaderView()
         header.translatesAutoresizingMaskIntoConstraints = false
@@ -140,8 +142,9 @@ class ProductDetailsViewController: UIViewController {
         return animation
     }()
     
-    init(id: Int) {
+    init(id: Int, backButtonAction: @escaping () -> ()) {
         self.productId = id
+        self.backButtonAction = backButtonAction
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -301,7 +304,7 @@ class ProductDetailsViewController: UIViewController {
         descriptionLabel.text = product.title
         longDescriptionLabel.text = product.description
         sizeLabel.text = "Size: \(product.size?.name ?? "")"
-        colorLabel.text = "Color: \(product.color.name)"
+        colorLabel.text = "Color: \(product.color?.name ?? "")"
         
         pageControl.numberOfPages = product.images.count > 3 ? 3 : product.images.count
     }
@@ -334,7 +337,7 @@ class ProductDetailsViewController: UIViewController {
     }
     
     func backButtonTapped() {
-        viewModel.goBack()
+        backButtonAction()
     }
     
     @objc private func pageControlValueChanged(_ sender: UIPageControl) {

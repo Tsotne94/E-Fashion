@@ -11,14 +11,12 @@ struct BagView: View {
     @StateObject private var viewModel = DefaultBagViewModel()
     
     var body: some View {
-        VStack(spacing: 0) {
-            Text("My Bag")
-                .font(.custom(CustomFonts.nutinoBlack, size: 40))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .foregroundStyle(.accentBlack)
-                .padding()
+        VStack() {
+            SUIAuthHeaderView(title: "MyBag")
             
-            if viewModel.productsInCart.isEmpty {
+            if viewModel.isLoading {
+                SUILoader()
+            } else if viewModel.productsInCart.isEmpty {
                 VStack(spacing: 16) {
                     Image(Icons.cartBadge)
                         .font(.system(size: 50))
@@ -31,7 +29,7 @@ struct BagView: View {
                 .frame(maxHeight: .infinity)
             } else {
                 ScrollView {
-                    VStack(spacing: 16) {
+                    LazyVStack(spacing: 16) {
                         ForEach(viewModel.productsInCart, id: \.product.productId) { product in
                             ProductCardView(
                                 product: product,
@@ -40,9 +38,15 @@ struct BagView: View {
                                     viewModel.deleteProduct(id: product.product.productId)
                                 }
                             )
+                            .onTapGesture {
+                                if let id = Int(product.id) {
+                                    viewModel.goToProductDetail(id: id)
+                                }
+                            }
                         }
                     }
-                    .padding()
+                    .padding(.top, 5)
+                    .padding(.horizontal)
                 }
                 
                 Spacer()
@@ -68,6 +72,7 @@ struct BagView: View {
                             .frame(height: 50)
                             .background(.accentRed)
                             .cornerRadius(25)
+                            .shadow(radius: 5)
                     }
                     .padding(.horizontal)
                 }
@@ -76,6 +81,7 @@ struct BagView: View {
                 .shadow(color: .black.opacity(0.05), radius: 8, y: -4)
             }
         }
+        .background(ignoresSafeAreaEdges: .all)
         .onAppear(perform: {
             viewModel.fetchProducts()
         })
@@ -111,7 +117,7 @@ struct ProductCardView: View {
                 HStack {
                     Text("Color:")
                         .foregroundColor(.gray)
-                    Text(product.product.color.name)
+                    Text(product.product.color?.name ?? "N/A")
                 }
                 .font(.subheadline)
                 

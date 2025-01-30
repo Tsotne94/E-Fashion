@@ -11,6 +11,13 @@ import SwiftUI
 
 protocol BagTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
+    func goToProductsDetails(productId: Int)
+    func popToRoot()
+    func goToCheckout()
+    func orderPlaced()
+    func changeCard()
+    func goBack()
+    func addCard()
 }
 
 final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
@@ -24,6 +31,46 @@ final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
     func start() {
         let hostingView = UIHostingController(rootView: BagView())
         rootViewController.setViewControllers([hostingView], animated: false)
+    }
+    
+    func goToProductsDetails(productId: Int) {
+        let viewController = ProductDetailsViewController(id: productId) { [weak self] in
+            self?.goBack()
+        }
+        rootViewController.pushViewController(viewController, animated: true)
+    }
+    
+    func goBack() {
+        rootViewController.popViewController(animated: true)
+    }
+    
+    func goToCheckout() {
+        let viewController = UIHostingController(rootView: CheckoutView())
+        rootViewController.pushViewController(viewController, animated: true)
+    }
+    
+    func orderPlaced() {
+        let viewController = GreetingViewController()
+        rootViewController.pushViewController(viewController, animated: true)
+    }
+    
+    func popToRoot() {
+        rootViewController.popToRootViewController(animated: true)
+    }
+    
+    func changeCard() {
+        let viewController = UIHostingController(rootView: PaymentMethodsView())
+        rootViewController.pushViewController(viewController, animated: true)
+    }
+    
+    func addCard() {
+        let addCardView = UIHostingController(rootView: AddPaymentMethodView())
+        if let sheet = addCardView.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+        }
+        rootViewController.present(addCardView, animated: true)
     }
 }
 

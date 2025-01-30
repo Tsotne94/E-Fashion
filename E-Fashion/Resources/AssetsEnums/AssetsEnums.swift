@@ -12,10 +12,13 @@ enum Icons {
     static let cross = "cross"
     static let dualColumn = "dualColumn"
     static let filter = "filter"
-    static let heart = "heart"
+    static let heart = "customHeart"
     static let heartFilled = "heartSelected"
     static let mail = "Mail"
     static let masterCard = "mastercard"
+    static let visa = "Visa"
+    static let amex = "Amex"
+    static let card = "creditCard"
     static let pencil = "pencil"
     static let rectangle2 = "Rectangle 2"
     static let rectangle3 = "Rectangle 3"
@@ -31,6 +34,7 @@ enum Icons {
     static let eye = "eye"
     static let eyeSlashed = "eye.slash"
     static let banner = "banner"
+    static let chip = "chip"
 }
 
 enum GreetingImages {
@@ -81,4 +85,10 @@ enum WomenAssets {
     static let clothes = "womanClothes"
     static let new = "womanNew"
     static let shoes = "womanShoes"
+}
+
+enum DeliveryProviders: String {
+    case dhl = "dhl"
+    case usps = "usps"
+    case fedex = "fedex"
 }

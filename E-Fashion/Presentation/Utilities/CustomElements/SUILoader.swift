@@ -11,7 +11,7 @@ import Lottie
 struct SUILoader: View {
     var body: some View {
         ZStack {
-            Color.black.opacity(0.3)
+            Color.black.opacity(0.1)
                 .edgesIgnoringSafeArea(.all)
             LottieView(animation: .named("loader"))
                 .configure { lottie in

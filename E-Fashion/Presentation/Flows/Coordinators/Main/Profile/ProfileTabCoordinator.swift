@@ -12,21 +12,22 @@ protocol ProfileTabCoordinator: Coordinator {
     var rootViewController: UINavigationController { get }
 }
 
-class DefaultProfileTabCoordinator: ProfileTabCoordinator {
-    var rootViewController: UINavigationController
+class DefaultProfileTabCoordinator: NSObject, ProfileTabCoordinator {
+    var rootViewController = UINavigationController()
     
-    init() {
-        self.rootViewController = UINavigationController()
-        rootViewController.navigationBar.prefersLargeTitles = true
+    override init() {
+        super.init()
+        rootViewController.delegate = self
     }
     
-    lazy var firstViewController: FavouritesViewController = {
-        let vc = FavouritesViewController()
-        vc.title = "haha i am the best"
-        return vc
-    }()
-    
     func start() {
-        rootViewController.setViewControllers([firstViewController], animated: false)
+        rootViewController.setViewControllers([ProfileViewController()], animated: false)
+    }
+}
+
+extension DefaultProfileTabCoordinator: UINavigationControllerDelegate {
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        navigationController.isNavigationBarHidden = true
+        navigationController.navigationBar.isHidden = true
     }
 }

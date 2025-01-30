@@ -98,7 +98,7 @@ final class DefaultSignUpViewModel: SignUpViewModel, ObservableObject {
                 switch completion {
                 case .finished:
                     break
-                case .failure(let error):
+                case .failure(_):
                     self?.handleSignUp()
                 }
             } receiveValue: { [weak self] user in

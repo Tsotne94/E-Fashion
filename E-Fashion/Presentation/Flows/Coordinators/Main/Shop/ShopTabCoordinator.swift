@@ -45,7 +45,9 @@ class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
     }
     
     func goToProductDetail(id: Int) {
-        let viewControler = ProductDetailsViewController(id: id)
+        let viewControler = ProductDetailsViewController(id: id) { [weak self] in
+            self?.goBack(animated: true)
+        }
         rootViewController.pushViewController(viewControler, animated: true)
     }
     
