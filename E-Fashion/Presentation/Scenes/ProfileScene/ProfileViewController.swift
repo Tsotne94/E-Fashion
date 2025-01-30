@@ -15,21 +15,7 @@ protocol ProfileNavigationDelegate: AnyObject {
     func didSelectSettings()
 }
 
-class ProfileViewController: UIViewController {
-    struct MenuItem {
-        let title: String
-        let subtitle: String
-        let type: MenuItemType
-    }
-    
-    enum MenuItemType {
-        case orders
-        case shippingAddresses
-        case paymentMethods
-        case promocodes
-        case settings
-    }
-    
+class ProfileViewController: UIViewController {    
     weak var navigationDelegate: ProfileNavigationDelegate?
     
     private let header: CustomHeaderView = {
@@ -56,7 +42,7 @@ class ProfileViewController: UIViewController {
     
     private let profileHeaderView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 120))
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .customWhite
         return view
     }()
     
@@ -96,7 +82,6 @@ class ProfileViewController: UIViewController {
     }
 
     private func setupUI() {
-        self.title = "My Profile"
         view.backgroundColor = .customWhite
         
         view.addSubview(header)
@@ -136,6 +121,8 @@ class ProfileViewController: UIViewController {
         tableView.register(ProfileMenuCell.self, forCellReuseIdentifier: "ProfileMenuCell")
         tableView.tableHeaderView = profileHeaderView
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        tableView.backgroundColor = .customWhite
+        tableView.isScrollEnabled = false
     }
     
     private func setupGestures() {
@@ -234,6 +221,7 @@ class ProfileMenuCell: UITableViewCell {
     }
     
     private func setupCell() {
+        self.contentView.backgroundColor = .customWhite
         accessoryType = .none
         
         contentView.addSubview(titleLabel)
@@ -254,7 +242,7 @@ class ProfileMenuCell: UITableViewCell {
         ])
     }
     
-    func configure(with menuItem: ProfileViewController.MenuItem) {
+    func configure(with menuItem: MenuItem) {
         titleLabel.text = menuItem.title
         subtitleLabel.text = menuItem.subtitle
     }

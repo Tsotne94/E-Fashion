@@ -39,8 +39,7 @@ final class DefaultAuthenticationCoordinator: NSObject, AuthenticationCoordinato
     }
     
     func goToForgotPasswordView(animated: Bool) {
-        let hostingView = UIHostingController(rootView: ForgotPasswordView())
-        rootViewController.pushViewController(hostingView, animated: animated)
+        //will implement in future
     }
     
     func goBack(animated: Bool) {
