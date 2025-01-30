@@ -17,6 +17,7 @@ protocol BagTabCoordinator: Coordinator {
     func orderPlaced()
     func changeCard()
     func goBack()
+    func addCard()
 }
 
 final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
@@ -60,6 +61,16 @@ final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
     func changeCard() {
         let viewController = UIHostingController(rootView: PaymentMethodsView())
         rootViewController.pushViewController(viewController, animated: true)
+    }
+    
+    func addCard() {
+        let addCardView = UIHostingController(rootView: AddPaymentMethodView())
+        if let sheet = addCardView.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+        }
+        rootViewController.present(addCardView, animated: true)
     }
 }
 

@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PaymentMethodsView: View {
+    @Inject private var tabCoordinator: BagTabCoordinator
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
@@ -34,7 +36,7 @@ struct PaymentMethodsView: View {
             }
             
             Button {
-                print("Add payment method tapped")
+                tabCoordinator.addCard()
             } label: {
                 Image(systemName: "plus")
                     .font(.title2)
@@ -47,7 +49,7 @@ struct PaymentMethodsView: View {
                     )
             }
             .padding(.trailing, 20)
-            .padding(.bottom, 20)
+            .padding(.bottom, 90)
         }
         .background(Color.customWhite)
         .ignoresSafeArea()
