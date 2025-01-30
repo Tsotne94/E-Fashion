@@ -94,9 +94,9 @@ class ProfileViewController: UIViewController {
         configureTableView()
         setupGestures()
     }
-    
 
     private func setupUI() {
+        self.title = "My Profile"
         view.backgroundColor = .customWhite
         
         view.addSubview(header)
