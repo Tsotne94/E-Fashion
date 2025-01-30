@@ -142,6 +142,7 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
         loaderView.isHidden = false
         loaderView.play()
         
+        viewModel.fetchFavourites()
         switch self.items {
         case .new:
             viewModel.fetchNew()
@@ -167,10 +168,10 @@ extension ProductSectionTableCell: UICollectionViewDelegate, UICollectionViewDat
         
         switch items {
         case .new:
-            cell.configureCell(with: viewModel.newItems[indexPath.row])
+            cell.configureCell(with: viewModel.newItems[indexPath.row], favourites: viewModel.favouriteItems)
             return cell
         case .hot:
-            cell.configureCell(with: viewModel.hotItems[indexPath.row])
+            cell.configureCell(with: viewModel.hotItems[indexPath.row], favourites: viewModel.favouriteItems)
             return cell
         }
     }

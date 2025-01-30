@@ -13,6 +13,7 @@ protocol HomeViewModel: AnyObject, HomeViewModelInput, HomeViewModelOutput {}
 
 protocol HomeViewModelInput {
     func productTapped(productId: Int)
+    func fetchFavourites()
     func fetchNew()
     func fetchHot()
 }
@@ -22,6 +23,7 @@ protocol HomeViewModelOutput {
     var hotItems: [Product] { get }
     var newItemsPage: Int { get }
     var hotItemsPage: Int { get }
+    var favouriteItems: [Product] { get }
     var output: AnyPublisher<HomeViewModelOutputAction, Never> { get }
 }
 
@@ -34,6 +36,7 @@ enum HomeViewModelOutputAction {
 final class DefaultHomeViewModel: HomeViewModel {
     @Inject private var homeCoordinator: HomeTabCoordinator
     @Inject private var fetchProductsUseCase: FetchProductsUseCase
+    @Inject private var fetchFavouriteItemsUseCase: FetchFavouriteItemsUseCase
     
     private let categories = Categories()
     
@@ -47,6 +50,8 @@ final class DefaultHomeViewModel: HomeViewModel {
             _output.send(.productsFetched)
         }
     }
+    
+    var favouriteItems: [Product] = []
     var newItemsPage: Int = 1
     var hotItemsPage: Int = 1
     
@@ -85,7 +90,7 @@ final class DefaultHomeViewModel: HomeViewModel {
     }
     
     func fetchHot() {
-        guard let clothesSection = categories.getSection(for: .women, sectionType: .clothes),
+        guard let clothesSection = categories.getSection(for: .women, sectionType: .shoes),
               let randomItem = clothesSection.items.randomElement() else { return }
         
         let params = SearchParameters(page: hotItemsPage, order: .relevance, category: randomItem)
@@ -101,6 +106,24 @@ final class DefaultHomeViewModel: HomeViewModel {
                 }
             } receiveValue: { [weak self] products in
                 self?.hotItems += products.sorted(by: { $0.promoted && !$1.promoted })
+            }
+            .store(in: &subscriptions)
+    }
+    
+    func fetchFavourites() {
+        fetchFavouriteItemsUseCase.execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    print("successfully fetched favourite items")
+                    self?._output.send(.productsFetched)
+                case .failure(let error):
+                    print("error: \(error.localizedDescription)")
+                    self?._output.send(.showError(error.localizedDescription))
+                }
+            } receiveValue: { [weak self] products in
+                self?.favouriteItems = products
             }
             .store(in: &subscriptions)
     }

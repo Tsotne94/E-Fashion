@@ -19,6 +19,8 @@ protocol ProductsCatalogViewModelInput{
     func presentSortingView()
     func presentFilterView()
     func dismissPresented()
+    func fetchFavourites()
+    var favourites: [Product] { get }
     var currentPage: Int { get }
     var id: Int? { get set }
     var orederType: OrderType { get set }
@@ -42,6 +44,7 @@ enum ProductsCatalogViewModelOutputAction {
 final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     @Inject private var fetchProductsUseCase: FetchProductsUseCase
     @Inject private var shopCorrdinator: ShopTabCoordinator
+    @Inject private var fetchFavouritesUseCase: FetchFavouriteItemsUseCase
     
     lazy var orederType: OrderType = .newestFirst {
         didSet {
@@ -51,6 +54,9 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
             _output.send(.sortingChanged)
         }
     }
+    
+    var favourites: [Product] = []
+    
     var currentPage: Int = 1
     var id: Int? = nil
     lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orederType)
@@ -123,5 +129,22 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     
     func dismissPresented() {
         shopCorrdinator.dismissPresented()
+    }
+    
+    func fetchFavourites() {
+        fetchFavouritesUseCase.execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    print("successfully fetched favourite items")
+                    self?._output.send(.productsFetched)
+                case .failure(let error):
+                    print("error: \(error.localizedDescription)")
+                }
+            } receiveValue: { [weak self] products in
+                self?.favourites = products
+            }
+            .store(in: &subscriptions)
     }
 }

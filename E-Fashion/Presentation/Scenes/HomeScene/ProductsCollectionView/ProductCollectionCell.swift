@@ -10,7 +10,6 @@ import Combine
 
 final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     private let viewModel = DefaultProductCollectionCellViewModel()
-    
     private var subscriptions = Set<AnyCancellable>()
     
     private lazy var productImageView: UIImageView = {
@@ -34,6 +33,7 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         button.layer.shadowOffset = CGSize(width: 0, height: 1)
         button.layer.shadowOpacity = 0.8
         button.layer.shadowRadius = 2
+
         return button
     }()
     
@@ -64,6 +64,7 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
         let label = UILabel()
         label.font = UIFont(name: CustomFonts.nutinoRegular, size: 12)
         label.textColor = .darkGray
+        label.numberOfLines = 2
         return label
     }()
     
@@ -75,8 +76,9 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.contentView.addShadow()
+        contentView.addShadow()
         setupViews()
+        setupBindings()
     }
     
     required init?(coder: NSCoder) {
@@ -84,31 +86,32 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     }
     
     private func setupViews() {
-        contentView.addSubview(productImageView)
+        favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
         
-        contentView.addSubview(favoriteButton)
-        contentView.addSubview(saleBadgeView)
+        [productImageView, favoriteButton, saleBadgeView, brandNameLabel,
+         productNameLabel, priceLabel].forEach {
+            contentView.addSubview($0)
+        }
         saleBadgeView.addSubview(saleBadgeLabel)
-        contentView.addSubview(brandNameLabel)
-        contentView.addSubview(productNameLabel)
-        contentView.addSubview(priceLabel)
         
         setupConstraints()
-        
+    }
+    
+    private func setupBindings() {
         viewModel.output
             .receive(on: DispatchQueue.main)
             .sink { [weak self] action in
-                guard let self = self else { return }
                 switch action {
                 case .imageLoaded(let image):
-//                    guard self.viewModel.product?.image == product.image else { return }
-                    self.productImageView.image = image ?? UIImage(systemName: "photo")
+                    self?.productImageView.image = image ?? UIImage(systemName: "photo")
+                    self?.productImageView.tintColor = image == nil ? .systemGray3 : nil
                 case .favouriteStatusChanged:
-                    self.updateFavouriteButton()
+                    self?.updateFavouriteButton()
                 case .showError(let errorMessage):
                     print("Image load error: \(errorMessage)")
                 }
-            }.store(in: &subscriptions)
+            }
+            .store(in: &subscriptions)
     }
     
     private func setupConstraints() {
@@ -117,56 +120,54 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         
+        let padding: CGFloat = 8
+        
         NSLayoutConstraint.activate([
-            productImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            productImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            productImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            productImageView.heightAnchor.constraint(equalTo: contentView.widthAnchor),
+            productImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+            productImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            productImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            productImageView.heightAnchor.constraint(equalTo: productImageView.widthAnchor),
             
-            favoriteButton.bottomAnchor.constraint(equalTo: productImageView.bottomAnchor, constant: -8),
-            favoriteButton.trailingAnchor.constraint(equalTo: productImageView.trailingAnchor, constant: -8),
+            favoriteButton.bottomAnchor.constraint(equalTo: productImageView.bottomAnchor, constant: -padding),
+            favoriteButton.trailingAnchor.constraint(equalTo: productImageView.trailingAnchor, constant: -padding),
             favoriteButton.widthAnchor.constraint(equalToConstant: 30),
             favoriteButton.heightAnchor.constraint(equalToConstant: 30),
             
-            saleBadgeView.topAnchor.constraint(equalTo: productImageView.topAnchor, constant: 12),
-            saleBadgeView.leadingAnchor.constraint(equalTo: productImageView.leadingAnchor, constant: 4),
+            saleBadgeView.topAnchor.constraint(equalTo: productImageView.topAnchor, constant: padding + 4),
+            saleBadgeView.leadingAnchor.constraint(equalTo: productImageView.leadingAnchor, constant: padding - 4),
             saleBadgeView.widthAnchor.constraint(equalToConstant: 30),
             saleBadgeView.heightAnchor.constraint(equalToConstant: 25),
             
             saleBadgeLabel.centerXAnchor.constraint(equalTo: saleBadgeView.centerXAnchor),
             saleBadgeLabel.centerYAnchor.constraint(equalTo: saleBadgeView.centerYAnchor),
             
-            brandNameLabel.topAnchor.constraint(equalTo: productImageView.bottomAnchor, constant: 8),
-            brandNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            brandNameLabel.widthAnchor.constraint(equalToConstant: contentView.bounds.width - 25),
+            brandNameLabel.topAnchor.constraint(equalTo: productImageView.bottomAnchor, constant: padding),
+            brandNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            brandNameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             
             productNameLabel.topAnchor.constraint(equalTo: brandNameLabel.bottomAnchor, constant: 4),
-            productNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            productNameLabel.widthAnchor.constraint(equalToConstant: contentView.bounds.width - 25),
+            productNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            productNameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             
-            priceLabel.topAnchor.constraint(equalTo: productNameLabel.bottomAnchor, constant: 8),
-            priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            priceLabel.widthAnchor.constraint(equalToConstant: contentView.bounds.width - 25),
+            priceLabel.topAnchor.constraint(equalTo: productNameLabel.bottomAnchor, constant: padding),
+            priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            priceLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -padding)
         ])
     }
     
-    func configureCell(with product: Product) {
+    func configureCell(with product: Product, favourites: [Product]) {
         viewModel.product = product
+        viewModel.updateFavouriteProducts(favourites)  
         
-        let imageSize = CGSize(width: bounds.width / 2.5, height: bounds.height / 2.5)
-        
+        let imageSize = CGSize(width: bounds.width - 16, height: bounds.width - 16)
         viewModel.loadImage(urlString: product.image, size: imageSize)
-        viewModel.loadFavouritesState()
-        
-#warning("es bevrjer gamoidzaxeba")
-
         
         brandNameLabel.text = product.brand?.isEmpty == true ? "Not Branded" : product.brand
         productNameLabel.text = product.title
         priceLabel.text = "$\(product.price.totalAmount.amount)"
         
         updateFavouriteButton()
-        favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
         
         saleBadgeView.isHidden = product.discountPercentage <= 0
         saleBadgeLabel.text = product.discountPercentage > 0 ? "\(Int(product.discountPercentage))%" : nil
@@ -187,17 +188,11 @@ final class ProductCollectionCell: UICollectionViewCell, IdentifiableProtocol {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
-//        viewModel.cancelLoading()
-//        subscriptions.forEach { cancellable in
-//            cancellable.cancel()
-//        }
-        
+        subscriptions.removeAll()
         productImageView.image = UIImage(systemName: "photo")
         productImageView.tintColor = .systemGray3
         saleBadgeView.isHidden = true
         viewModel.product = nil
-        
-        updateFavouriteButton()
+        setupBindings()
     }
 }
