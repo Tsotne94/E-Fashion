@@ -62,7 +62,7 @@ struct PaymentMethodsView: View {
                 Button {
                     print("selected as primary")
                 } label: {
-                    Image(Icons.selectableBox)
+                    Image(card.isDefault ? Icons.selectedBlack : Icons.selectableBox)
                         .resizable()
                         .frame(width: 24, height: 24)
                 }
@@ -71,7 +71,6 @@ struct PaymentMethodsView: View {
                     .font(.custom(CustomFonts.nutinoRegular, size: 16))
                     .foregroundColor(.primary)
             }
-            .padding(.leading, 4)
         }
     }
     
