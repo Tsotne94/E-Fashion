@@ -64,28 +64,6 @@ public struct DefaultFirestoreCartRepository: FirestoreCartRepository {
             .eraseToAnyPublisher()
     }
     
-    func removeOneItemFromCart(id: String) -> AnyPublisher<Void, any Error> {
-        getCurrentUserUseCase.execute()
-            .flatMap { user in
-                Future { promise in
-                    let cartRef = Firestore.firestore()
-                        .collection("Carts")
-                        .document(user.uid)
-                        .collection("items")
-                        .document(id)
-                    
-                    cartRef.updateData(["quantity": FieldValue.increment(-1.0)]) { error in
-                        if let error = error {
-                            promise(.failure(error))
-                        } else {
-                            promise(.success(()))
-                        }
-                    }
-                }
-            }
-            .eraseToAnyPublisher()
-    }
-    
     func removeWholeItem(id: String) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in

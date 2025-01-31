@@ -24,29 +24,11 @@ struct AddPaymentMethodView: View {
                 expireDateTextField()
                 ccvTextField()
             }
-            
-            VStack {
-                HStack(spacing: 12) {
-                    Button {
-                        isDefault.toggle()
-                    } label: {
-                        Image(isDefault ? Icons.selectedBlack : Icons.selectableBox)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                    }
-                    
-                    Text("Use as default payment method")
-                        .font(.custom(CustomFonts.nutinoRegular, size: 16))
-                        .foregroundColor(.primary)
-                    Spacer()
-                }
-                .padding(.top, 8)
-                addCardButton()
-            }
+            addCardButton()
         }
         .padding()
     }
-    
+
     private func nameOnCardTextField() -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Name on Card")

@@ -19,9 +19,8 @@ class ProfileViewController: UIViewController {
     weak var navigationDelegate: ProfileNavigationDelegate?
     
     private let header: CustomHeaderView = {
-        let header = CustomHeaderView()
+        let header = CustomHeaderView(title: "My Profile", showBackButton: false)
         header.translatesAutoresizingMaskIntoConstraints = false
-        header.setTitle("My Profile")
         return header
     }()
     
@@ -246,20 +245,4 @@ class ProfileMenuCell: UITableViewCell {
         titleLabel.text = menuItem.title
         subtitleLabel.text = menuItem.subtitle
     }
-}
-
-import SwiftUI
-
-struct GreetingViewControllerPreview: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> ProfileViewController {
-        return ProfileViewController()
-    }
-    
-    func updateUIViewController(_ uiViewController: ProfileViewController, context: Context) {
-        
-    }
-}
-
-#Preview {
-    GreetingViewControllerPreview()
 }

@@ -85,11 +85,10 @@ struct ShippingAdressesView: View {
                 Spacer()
                 
                 Button {
-                    
+                    addresses.remove(at: index)
                 } label: {
-                    Text("Edit")
-                        .font(.custom(CustomFonts.nutinoRegular, size: 15))
-                        .foregroundStyle(.accentRed)
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
                 }
             }
             
