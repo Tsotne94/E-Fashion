@@ -163,4 +163,41 @@ public struct DefaultPaymentRepository: PaymentRepository {
             }
             .eraseToAnyPublisher()
     }
+    
+    func fetchDefaultPaymentMethod() -> AnyPublisher<CardModel, any Error> {
+        getCurrentUserUseCase.execute()
+            .flatMap { user in
+                Future { promise in
+                    let paymentMethodsRef = Firestore.firestore()
+                        .collection("Payment_Methods")
+                        .document(user.uid)
+                        .collection("methods")
+                        .whereField("isDefault", isEqualTo: true)
+                    
+                    paymentMethodsRef.getDocuments { snapshot, error in
+                        if let error = error {
+                            promise(.failure(error))
+                            return
+                        }
+                        
+                        guard let documents = snapshot?.documents, !documents.isEmpty else {
+                            promise(.failure(URLError(.resourceUnavailable)))
+                            return
+                        }
+                        
+                        do {
+                            let defaultAddress = try documents.first?.data(as: CardModel.self)
+                            
+                            if let address = defaultAddress {
+                                promise(.success(address))
+                            } else {
+                                promise(.failure(URLError(.cannotParseResponse)))
+                            }
+                        } catch {
+                            promise(.failure(error))
+                        }
+                    }
+                }
+            }.eraseToAnyPublisher()
+    }
 }

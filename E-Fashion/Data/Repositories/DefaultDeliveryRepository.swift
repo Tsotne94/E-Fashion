@@ -161,4 +161,42 @@ public struct DefaultDeliveryRepository: DeliveryRepository {
             }
             .eraseToAnyPublisher()
     }
+    
+    func fetchDefaultDelieryLocation() -> AnyPublisher<AddressModel, any Error> {
+        getCurrentUserUseCase.execute()
+            .flatMap { user in
+                Future { promise in
+                    let addressesRef = Firestore.firestore()
+                        .collection("Delivery_Locations")
+                        .document(user.uid)
+                        .collection("locations")
+                        .whereField("isDefault", isEqualTo: true)
+                    
+                    addressesRef.getDocuments { snapshot, error in
+                        if let error = error {
+                            promise(.failure(error))
+                            return
+                        }
+                        
+                        guard let documents = snapshot?.documents, !documents.isEmpty else {
+                            promise(.failure(URLError(.resourceUnavailable)))
+                            return
+                        }
+                        
+                        do {
+                            let defaultAddress = try documents.first?.data(as: AddressModel.self)
+                            
+                            if let address = defaultAddress {
+                                promise(.success(address))
+                            } else {
+                                promise(.failure(URLError(.cannotParseResponse)))
+                            }
+                        } catch {
+                            promise(.failure(error))
+                        }
+                    }
+                }
+            }
+            .eraseToAnyPublisher()
+    }
 }

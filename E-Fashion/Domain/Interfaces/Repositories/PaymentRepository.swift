@@ -12,4 +12,5 @@ protocol PaymentRepository {
     func fetchPaymentMethods() -> AnyPublisher<[CardModel], Error>
     func removePaymentMethod(id: String) -> AnyPublisher<Void, Error>
     func updateDefaultPaymentMethod(id: String) -> AnyPublisher<Void, Error>
+    func fetchDefaultPaymentMethod() -> AnyPublisher<CardModel, Error>
 }

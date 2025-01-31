@@ -12,4 +12,5 @@ protocol DeliveryRepository {
     func removeAddress(id: String) -> AnyPublisher<Void, Error>
     func updateDefaultAddress(id: String) -> AnyPublisher<Void, Error>
     func fetchAddresses() -> AnyPublisher<[AddressModel], Error>
+    func fetchDefaultDelieryLocation() -> AnyPublisher<AddressModel, Error>
 }

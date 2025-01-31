@@ -12,8 +12,8 @@ struct ShippingAdressesView: View {
     @Inject private var coordinator: BagTabCoordinator
     @StateObject private var viewModel = DefaultShippingAddressesViewModel()
     
-    @State private var addresses: [AddressModel] = []
     @State private var cancellables = Set<AnyCancellable>()
+    @State private var showDefaultAddressAlert = false
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -22,7 +22,7 @@ struct ShippingAdressesView: View {
                     coordinator.goBack()
                 }
                 
-                if addresses.isEmpty {
+                if viewModel.addresses.isEmpty {
                     emptyStateView()
                 } else {
                     Text("Your Shipping Addresses")
@@ -32,8 +32,8 @@ struct ShippingAdressesView: View {
                     
                     ScrollView {
                         VStack(spacing: 16) {
-                            ForEach(addresses.indices, id: \.self) { index in
-                                addressView(address: addresses[index], index: index)
+                            ForEach(viewModel.addresses.indices, id: \.self) { index in
+                                addressView(address: viewModel.addresses[index], index: index)
                             }
                         }
                         .padding()
@@ -60,8 +60,14 @@ struct ShippingAdressesView: View {
         }
         .background(Color.customWhite)
         .ignoresSafeArea()
+        .alert(isPresented: $showDefaultAddressAlert) {
+            Alert(
+                title: Text("Default Address"),
+                message: Text("This is already your default shipping address. To change, select another address or delete this one."),
+                dismissButton: .default(Text("OK"))
+            )
+        }
         .onAppear {
-            setupBindings()
             viewModel.fetchAddresses()
         }
     }
@@ -88,28 +94,10 @@ struct ShippingAdressesView: View {
         .padding()
     }
     
-    private func setupBindings() {
-        viewModel.output
-            .receive(on: DispatchQueue.main)
-            .sink { action in
-                switch action {
-                case .shippingAddressesFetched(let fetchedAddresses):
-                    addresses = fetchedAddresses
-                case .shippingAddressAdded(let address):
-                    addresses.append(address)
-                case .shippingAddressRemoved(let address):
-                    addresses.removeAll { $0.id == address.id }
-                case .newDefaultAddress(let address):
-                    updateDefaultAddress(address)
-                case .error(let error):
-                    print("Error: \(error)")
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
     private func updateDefaultAddress(_ newDefaultAddress: AddressModel) {
-        viewModel.setDefaultAddress(newDefaultAddress)
+        if !newDefaultAddress.isDefault {
+            viewModel.setDefaultAddress(newDefaultAddress)
+        }
     }
     
     private func addressView(address: AddressModel, index: Int) -> some View {
@@ -146,7 +134,11 @@ struct ShippingAdressesView: View {
             
             HStack(spacing: 12) {
                 Button {
-                    viewModel.setDefaultAddress(address)
+                    if address.isDefault {
+                        showDefaultAddressAlert = true
+                    } else {
+                        viewModel.setDefaultAddress(address)
+                    }
                 } label: {
                     Image(address.isDefault ? Icons.selectedBlack : Icons.selectableBox)
                         .resizable()

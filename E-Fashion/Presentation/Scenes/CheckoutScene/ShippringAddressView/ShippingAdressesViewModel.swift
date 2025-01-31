@@ -16,6 +16,7 @@ protocol ShippingAddressesViewModelInput {
     func addAddress(_ address: AddressModel)
     func removeAddress(_ address: AddressModel)
     func setDefaultAddress(_ address: AddressModel)
+    var addresses: [AddressModel] { get }
 }
 
 protocol ShippingAddressesViewModelOutput {
@@ -23,10 +24,6 @@ protocol ShippingAddressesViewModelOutput {
 }
 
 enum ShippingAddressesViewModelOutputAction {
-    case shippingAddressesFetched([AddressModel])
-    case shippingAddressAdded(AddressModel)
-    case shippingAddressRemoved(AddressModel)
-    case newDefaultAddress(AddressModel)
     case error(Error)
 }
 
@@ -40,6 +37,8 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
         outputSubject.eraseToAnyPublisher()
     }
     
+    @Published var addresses: [AddressModel] = [] 
+    
     init() { }
     
     func fetchAddresses() {
@@ -50,7 +49,7 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
                     self?.outputSubject.send(.error(error))
                 }
             }, receiveValue: { [weak self] addresses in
-                self?.outputSubject.send(.shippingAddressesFetched(addresses.sorted(by: { $0.isDefault && !$1.isDefault})))
+                self?.addresses = addresses.sorted(by: { $0.isDefault && !$1.isDefault})
             })
             .store(in: &cancellables)
     }
@@ -63,13 +62,13 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
                     self?.outputSubject.send(.error(error))
                 }
             }, receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.shippingAddressAdded(address))
                 self?.fetchAddresses()
             })
             .store(in: &cancellables)
     }
     
     func removeAddress(_ address: AddressModel) {
+        guard address.isDefault else { return }
         let addressId = address.id
         
         deliveryRepository.removeAddress(id: addressId)
@@ -79,13 +78,14 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
                     self?.outputSubject.send(.error(error))
                 }
             }, receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.shippingAddressRemoved(address))
                 self?.fetchAddresses()
             })
             .store(in: &cancellables)
     }
     
     func setDefaultAddress(_ address: AddressModel) {
+        guard !address.isDefault else { return }
+        
         let addressId = address.id
         
         deliveryRepository.updateDefaultAddress(id: addressId)
@@ -95,7 +95,6 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
                     self?.outputSubject.send(.error(error))
                 }
             }, receiveValue: { [weak self] _ in
-                self?.outputSubject.send(.newDefaultAddress(address))
                 self?.fetchAddresses()
             })
             .store(in: &cancellables)

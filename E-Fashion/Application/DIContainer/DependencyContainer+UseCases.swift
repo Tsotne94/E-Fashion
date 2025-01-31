@@ -37,6 +37,8 @@ public extension DependencyContainer {
             Module { DefaultFetchPaymentMethodsUseCase() as FetchPaymentMethodsUseCase }
             Module { DefaultRemovePaymentMethodUseCase() as RemovePaymentMethodUseCase }
             Module { DefaultUpdateDefaultPaymentMethodUseCase() as UpdateDefaultPaymentMethodUseCase }
+            Module { DefaultFetchDefaultDelieryLocationUseCase() as FetchDefaultDelieryLocationUseCase }
+            Module { DefaultFetchDefaultPaymentMethodUseCase() as FetchDefaultPaymentMethodUseCase}
         }
     }
 }
