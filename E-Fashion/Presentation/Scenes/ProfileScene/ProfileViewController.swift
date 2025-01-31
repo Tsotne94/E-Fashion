@@ -28,7 +28,6 @@ class ProfileViewController: UIViewController {
         MenuItem(title: "My orders", subtitle: "Already have 12 orders", type: .orders),
         MenuItem(title: "Shipping addresses", subtitle: "3 addresses", type: .shippingAddresses),
         MenuItem(title: "Payment methods", subtitle: "Visa **34", type: .paymentMethods),
-        MenuItem(title: "Promocodes", subtitle: "You have special promocodes", type: .promocodes),
         MenuItem(title: "Settings", subtitle: "Notifications, password", type: .settings)
     ]
     

@@ -78,7 +78,6 @@ final class DefaultPaymentMethodsViewModel: ObservableObject, PaymentMethodsView
     }
     
     func removePaymentMethod(_ method: CardModel) {
-        guard method.isDefault else { return }
         let methodId = method.id
         
         paymentRepository.removePaymentMethod(id: methodId)
