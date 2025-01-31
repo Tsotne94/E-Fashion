@@ -9,6 +9,7 @@ import UIKit
 
 class GreetingViewController: UIViewController {
     @Inject private var mainCoordinator: BagTabCoordinator
+    private let viewModel = DefaultGreetingViewModelOutput()
     
     private let greetingImage: UIImageView = {
         let image = UIImage(named: Icons.successfulPurchase)
@@ -60,6 +61,7 @@ class GreetingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.isNavigationBarHidden = true
+        viewModel.viewDidLoad()
         setupUI()
         setupConstraints()
     }

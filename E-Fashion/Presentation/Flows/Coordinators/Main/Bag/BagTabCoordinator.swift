@@ -17,7 +17,7 @@ protocol BagTabCoordinator: Coordinator {
     func orderPlaced()
     func changeCard()
     func goBack()
-    func addCard()
+    func addCard(viewModel: PaymentMethodsViewModel)
     func dismissPresented()
     func changeDeliveryLocation()
     func addDeliveryLoaction(viewmodel: ShippingAddressesViewModel)
@@ -66,8 +66,8 @@ final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
         rootViewController.pushViewController(viewController, animated: true)
     }
     
-    func addCard() {
-        let addCardView = UIHostingController(rootView: AddPaymentMethodView())
+    func addCard(viewModel: PaymentMethodsViewModel) {
+        let addCardView = UIHostingController(rootView: AddPaymentMethodView(viewModel: viewModel))
         if let sheet = addCardView.sheetPresentationController {
             sheet.detents = [.medium()]
             sheet.prefersGrabberVisible = true

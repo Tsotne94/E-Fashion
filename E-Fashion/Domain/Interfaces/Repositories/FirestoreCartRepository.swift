@@ -12,4 +12,5 @@ protocol FirestoreCartRepository {
     func fetchItemsInCart() -> AnyPublisher<[ProductInCart], Never>
     func removeWholeItem(id: String) -> AnyPublisher<Void, Error>
     func isInCart(id: String) -> AnyPublisher<Bool, Error>
+    func clearItems() -> AnyPublisher<Void, Error>
 }

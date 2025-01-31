@@ -6,37 +6,44 @@
 //
 
 import SwiftUI
+import Combine
 
 struct PaymentMethodsView: View {
-    @Inject private var tabCoordinator: BagTabCoordinator
+    @Inject private var coordinator: BagTabCoordinator
+    @StateObject private var viewModel = DefaultPaymentMethodsViewModel()
+    
+    @State private var cancellables = Set<AnyCancellable>()
+    @State private var showDefaultMethodAlert = false
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 SUICustomHeaderView(title: "Payment Methods", showBackButton: true) {
-                    tabCoordinator.goBack()
+                    coordinator.goBack()
                 }
                 
-                Text("Your Payment Methods")
-                    .font(.custom(CustomFonts.nutinoMedium, size: 18))
-                    .padding(.horizontal)
-                    .padding(.top, 16)
-                
-                ScrollView {
-                    cardSection(card: CardModel(
-                        number: "5155 5678 9012 3456",
-                        holderName: "John Doe",
-                        expiryDate: "12/28",
-                        cvv: "123",
-                        isdefault: true))
-                    .padding()
+                if viewModel.paymentMethods.isEmpty {
+                    emptyStateView()
+                } else {
+                    Text("Your Payment Methods")
+                        .font(.custom(CustomFonts.nutinoMedium, size: 18))
+                        .padding(.horizontal)
+                        .padding(.top, 16)
+                    
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            ForEach(viewModel.paymentMethods.indices, id: \.self) { index in
+                                paymentMethodView(method: viewModel.paymentMethods[index], index: index)
+                            }
+                        }
+                        .padding()
+                    }
                 }
-                
                 Spacer()
             }
             
             Button {
-                tabCoordinator.addCard()
+                coordinator.addCard(viewModel: viewModel)
             } label: {
                 Image(systemName: "plus")
                     .font(.title2)
@@ -53,6 +60,50 @@ struct PaymentMethodsView: View {
         }
         .background(Color.customWhite)
         .ignoresSafeArea()
+        .alert(isPresented: $showDefaultMethodAlert) {
+            Alert(
+                title: Text("Default Payment Method"),
+                message: Text("This is already your default payment method. To change, select another method or delete this one."),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+        .onAppear {
+            viewModel.fetchPaymentMethods()
+        }
+    }
+    
+    private func emptyStateView() -> some View {
+        VStack(spacing: 20) {
+            Image(systemName: "creditcard")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, height: 100)
+                .foregroundColor(.gray.opacity(0.5))
+            
+            Text("No Payment Methods")
+                .font(.custom(CustomFonts.nutinoMedium, size: 20))
+                .foregroundColor(.primary)
+            
+            Text("Add your first payment method to start managing your cards.")
+                .font(.custom(CustomFonts.nutinoRegular, size: 16))
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+    }
+    
+    private func paymentMethodView(method: CardModel, index: Int) -> some View {
+        VStack(alignment: .trailing, spacing: 16) {
+            Button {
+                viewModel.removePaymentMethod(method)
+            } label: {
+                Image(systemName: "trash")
+                    .foregroundColor(.red)
+            }
+            cardSection(card: method)
+        }
     }
     
     private func cardSection(card: CardModel) -> some View {
@@ -62,7 +113,11 @@ struct PaymentMethodsView: View {
             
             HStack(spacing: 12) {
                 Button {
-                    print("selected as primary")
+                    if card.isDefault {
+                        showDefaultMethodAlert = true
+                    } else {
+                        viewModel.setDefaultPaymentMethod(card)
+                    }
                 } label: {
                     Image(card.isDefault ? Icons.selectedBlack : Icons.selectableBox)
                         .resizable()
