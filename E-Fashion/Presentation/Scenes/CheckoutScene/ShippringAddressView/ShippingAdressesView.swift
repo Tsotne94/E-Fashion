@@ -9,17 +9,23 @@ import SwiftUI
 import Combine
 
 struct ShippingAdressesView: View {
+    let goBack: () -> ()
+
     @Inject private var coordinator: BagTabCoordinator
     @StateObject private var viewModel = DefaultShippingAddressesViewModel()
     
     @State private var cancellables = Set<AnyCancellable>()
     @State private var showDefaultAddressAlert = false
     
+    init(goBack: @escaping () -> Void) {
+        self.goBack = goBack
+    }
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 SUICustomHeaderView(title: "Shipping Addresses", showBackButton: true) {
-                    coordinator.goBack()
+                    goBack()
                 }
                 
                 if viewModel.addresses.isEmpty {

@@ -14,12 +14,13 @@ struct PaymentMethodsView: View {
     
     @State private var cancellables = Set<AnyCancellable>()
     @State private var showDefaultMethodAlert = false
+    let goBack: () -> ()
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 SUICustomHeaderView(title: "Payment Methods", showBackButton: true) {
-                    coordinator.goBack()
+                    goBack()
                 }
                 
                 if viewModel.paymentMethods.isEmpty {
@@ -191,8 +192,4 @@ struct PaymentMethodsView: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
-}
-
-#Preview {
-    PaymentMethodsView()
 }

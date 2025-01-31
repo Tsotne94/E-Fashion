@@ -62,7 +62,9 @@ final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
     }
     
     func changeCard() {
-        let viewController = UIHostingController(rootView: PaymentMethodsView())
+        let viewController = UIHostingController(rootView: PaymentMethodsView(goBack: { [weak self] in
+            self?.goBack()
+        }))
         rootViewController.pushViewController(viewController, animated: true)
     }
     
@@ -77,7 +79,9 @@ final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
     }
     
     func changeDeliveryLocation() {
-        let viewController = UIHostingController(rootView: ShippingAdressesView())
+        let viewController = UIHostingController(rootView: ShippingAdressesView(goBack: { [weak self] in
+            self?.goBack()
+        }))
         rootViewController.pushViewController(viewController, animated: true)
     }
     

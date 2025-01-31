@@ -9,6 +9,5 @@
         case orders
         case shippingAddresses
         case paymentMethods
-        case promocodes
         case settings
     }

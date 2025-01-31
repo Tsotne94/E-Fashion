@@ -7,16 +7,8 @@
 
 import UIKit
 
-protocol ProfileNavigationDelegate: AnyObject {
-    func didSelectOrders()
-    func didSelectShippingAddresses()
-    func didSelectPaymentMethods()
-    func didSelectPromocodes()
-    func didSelectSettings()
-}
-
-class ProfileViewController: UIViewController {    
-    weak var navigationDelegate: ProfileNavigationDelegate?
+class ProfileViewController: UIViewController {
+    let viewModel = DefautlProfileViewModel()
     
     private let header: CustomHeaderView = {
         let header = CustomHeaderView(title: "My Profile", showBackButton: false)
@@ -24,10 +16,10 @@ class ProfileViewController: UIViewController {
         return header
     }()
     
-    private let menuItems = [
-        MenuItem(title: "My orders", subtitle: "Already have 12 orders", type: .orders),
-        MenuItem(title: "Shipping addresses", subtitle: "3 addresses", type: .shippingAddresses),
-        MenuItem(title: "Payment methods", subtitle: "Visa **34", type: .paymentMethods),
+    private lazy var menuItems = [
+        MenuItem(title: "My orders", subtitle: "Already have \(viewModel.numberOfOrders ?? 0) orders", type: .orders),
+        MenuItem(title: "Shipping addresses", subtitle: "\(viewModel.numberOfAdresses ?? 0) addresses", type: .shippingAddresses),
+        MenuItem(title: "Payment methods", subtitle: "\(viewModel.paymentMethod?.type ?? .unknown)", type: .paymentMethods),
         MenuItem(title: "Settings", subtitle: "Notifications, password", type: .settings)
     ]
     
@@ -47,6 +39,8 @@ class ProfileViewController: UIViewController {
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(systemName: "person.fill")
+        imageView.tintColor = .customGray
         imageView.layer.cornerRadius = 30
         imageView.clipsToBounds = true
         imageView.backgroundColor = .systemGray5
@@ -140,15 +134,13 @@ class ProfileViewController: UIViewController {
     private func handleMenuItemTap(_ type: MenuItemType) {
         switch type {
         case .orders:
-            navigationDelegate?.didSelectOrders()
+            print("orders tapped")
         case .shippingAddresses:
-            navigationDelegate?.didSelectShippingAddresses()
+            viewModel.goToAddresses()
         case .paymentMethods:
-            navigationDelegate?.didSelectPaymentMethods()
-        case .promocodes:
-            navigationDelegate?.didSelectPromocodes()
+            viewModel.goToPaymentMethods()
         case .settings:
-            navigationDelegate?.didSelectSettings()
+            viewModel.goToSettings()
         }
     }
 }
@@ -185,63 +177,8 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
     }
 }
 
-class ProfileMenuCell: UITableViewCell {
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 17)
-        return label
-    }()
-    
-    private let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 14)
-        label.textColor = .systemGray
-        return label
-    }()
-    
-    private let chevronImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(systemName: "chevron.right")
-        imageView.tintColor = .systemGray3
-        return imageView
-    }()
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupCell()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func setupCell() {
-        self.contentView.backgroundColor = .customWhite
-        accessoryType = .none
-        
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(subtitleLabel)
-        contentView.addSubview(chevronImageView)
-        
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14),
-            
-            subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            
-            chevronImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            chevronImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            chevronImageView.widthAnchor.constraint(equalToConstant: 13),
-            chevronImageView.heightAnchor.constraint(equalToConstant: 20)
-        ])
-    }
-    
-    func configure(with menuItem: MenuItem) {
-        titleLabel.text = menuItem.title
-        subtitleLabel.text = menuItem.subtitle
-    }
-}
+/*
+ if let image = UIImage(named: "example") {
+     let data = image.jpegData(compressionQuality: 0.8) // 0.0 to 1.0, where 1.0 is highest quality
+ }
+ */

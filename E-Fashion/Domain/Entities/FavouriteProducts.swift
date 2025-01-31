@@ -8,7 +8,3 @@
 final class FavouriteProducts {
     static var products: [Product] = []
 }
-
-final class ProductsInCart {
-    static var products: [ProductInCart] = []
-}
