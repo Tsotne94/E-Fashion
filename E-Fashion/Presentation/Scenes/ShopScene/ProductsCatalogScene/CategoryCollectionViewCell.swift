@@ -43,7 +43,7 @@ class CategoryCollectionViewCell: UICollectionViewCell, IdentifiableProtocol {
             tagButton.leftAnchor.constraint(equalTo: contentView.leftAnchor),
             tagButton.rightAnchor.constraint(equalTo: contentView.rightAnchor),
             tagButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            tagButton.heightAnchor.constraint(equalToConstant: 24),
+            tagButton.heightAnchor.constraint(equalToConstant: 30),
         ])
     }
     

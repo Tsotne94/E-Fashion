@@ -8,23 +8,24 @@
 import Foundation
 import Combine
 
-protocol ProductsCatalogViewModel: ProductsCatalogViewModelInput, ProductsCatalogViewModelOutput {
-}
+protocol ProductsCatalogViewModel: ProductsCatalogViewModelInput, ProductsCatalogViewModelOutput {}
 
-protocol ProductsCatalogViewModelInput{
+protocol ProductsCatalogViewModelInput {
     func viewDidLoad(id: Int)
+    func fetchProducts(for id: Int, isRetry: Bool)
+    func searchProduct(query: String)
     func backButtonTapped()
     func productTappedAt(index: Int)
-    func categoryTapped(category: CategoryType)
     func presentSortingView()
     func presentFilterView()
     func dismissPresented()
+    func applyFilters(minPrice: Int?, maxPrice: Int?, selectedColors: [ProductColor]?, selectedMaterials: [ProductMaterial]?, selectedConditions: [ProductCondition]?)
     var currentPage: Int { get }
     var id: Int? { get set }
-    var orederType: OrderType { get set }
+    var orderType: OrderType { get set }
     var sortLabel: String { get }
     var products: [Product] { get }
-    var cateogries: [String] { get }
+    var cateogries: [Category] { get }
     var isLoading: Bool { get }
     var parameters: SearchParameters { get }
 }
@@ -36,77 +37,135 @@ protocol ProductsCatalogViewModelOutput {
 enum ProductsCatalogViewModelOutputAction {
     case productsFetched
     case sortingChanged
+    case subCategoriesFetched
     case isLoading(Bool)
+    case nothingFound
 }
 
 final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     @Inject private var fetchProductsUseCase: FetchProductsUseCase
     @Inject private var shopCorrdinator: ShopTabCoordinator
-    
-    lazy var orederType: OrderType = .newestFirst {
-        didSet {
-            if let id = id {
-                viewDidLoad(id: id)
-            }
-            _output.send(.sortingChanged)
-        }
-    }
-    var currentPage: Int = 1
-    var id: Int? = nil
-    lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orederType)
-    
-    var products: [Product] = []
-    var cateogries: [String] = [
-        "All",
-        "Electronics",
-        "Clothing",
-        "Home Decor",
-        "Books",
-        "Accessories"
-    ]
-    var isLoading: Bool = false
-    var sortLabel: String {
-        orederType.rawValue
-    }
+    @Inject private var fetchFavouritesUseCase: FetchFavouriteItemsUseCase
     
     private var _output = PassthroughSubject<ProductsCatalogViewModelOutputAction, Never>()
     var output: AnyPublisher<ProductsCatalogViewModelOutputAction, Never> {
         _output.eraseToAnyPublisher()
     }
-
-    private var subscriptions = Set<AnyCancellable>()
     
-    public init() { }
-   
+    lazy var orderType: OrderType = .newestFirst {
+        didSet {
+            parameters = SearchParameters(
+                page: currentPage,
+                order: orderType,
+                query: parameters.query,
+                category: parameters.category,
+                colors: parameters.colors,
+                materials: parameters.materials,
+                conditions: parameters.conditions,
+                minPrice: parameters.minPrice,
+                maxPrice: parameters.maxPrice
+            )
+            if let id = id {
+                fetchProducts(for: id)
+            }
+            _output.send(.sortingChanged)
+        }
+    }
+    
+    var currentPage: Int = 1
+    var id: Int? = nil
+    
+    lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orderType) {
+        didSet {
+            if let id = id {
+                fetchProducts(for: id)
+            }
+        }
+    }
+    
+    var products: [Product] = []
+    var cateogries: [Category] = [] {
+        didSet {
+            _output.send(.subCategoriesFetched)
+        }
+    }
+    var isLoading: Bool = true
+    var sortLabel: String {
+        orderType.name()
+    }
+    
+    private var subscriptions = Set<AnyCancellable>()
+    private var searchSubscription: AnyCancellable?
+    private var searchSubject = PassthroughSubject<String, Never>()
+    
+    public init() {
+        setupSearchSubscription()
+    }
+    
+    private func setupSearchSubscription() {
+        searchSubscription = searchSubject
+            .debounce(for: .milliseconds(1000), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .sink { [weak self] query in
+                self?.performSearch(query: query)
+            }
+    }
+    
     func viewDidLoad(id: Int) {
+        _output.send(.isLoading(true))
+        self.id = id
+        self.cateogries = Categories().getSubcategoryItems(id: id)
+        fetchProducts(for: id)
+    }
+    
+    func fetchProducts(for id: Int, isRetry: Bool = false) {
         self.id = id
         _output.send(.isLoading(true))
         
         let category = Category(id: id)
-        parameters = SearchParameters(page: currentPage, order: orederType, category: category)
+        let updatedParams = parameters
+        updatedParams.category = category
         
-        fetchProductsUseCase.execute(params: parameters)
+        fetchProductsUseCase.execute(params: updatedParams)
             .receive(on: DispatchQueue.main)
-            .sink { completion in
-                switch completion {
-                case .finished:
-                    print("successfully fetched hot items")
-                case .failure(let error):
-                    print("error: \(error.localizedDescription)")
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    print("Error: \(error.localizedDescription)")
+                    self?._output.send(.isLoading(false))
                 }
             } receiveValue: { [weak self] products in
-                self?.products = products
-                self?._output.send(.productsFetched)
+                if !products.isEmpty {
+                    self?.products = products
+                    self?._output.send(.productsFetched)
+                } else {
+                    self?._output.send(isRetry ? .productsFetched : .nothingFound)
+                }
                 self?._output.send(.isLoading(false))
-            }.store(in: &subscriptions)
+            }
+            .store(in: &subscriptions)
+    }
+    
+    func applyFilters( minPrice: Int?, maxPrice: Int?, selectedColors: [ProductColor]?, selectedMaterials: [ProductMaterial]?, selectedConditions: [ProductCondition]?
+    ) {
+        parameters = SearchParameters(
+            page: currentPage,
+            order: parameters.order,
+            query: parameters.query,
+            category: parameters.category,
+            colors: selectedColors,
+            materials: selectedMaterials,
+            conditions: selectedConditions,
+            minPrice: minPrice,
+            maxPrice: maxPrice
+        )
+    }
+    
+    func searchProduct(query: String) {
+        searchSubject.send(query)
     }
     
     func productTappedAt(index: Int) {
         shopCorrdinator.goToProductDetail(id: index)
-    }
-    
-    func categoryTapped(category: CategoryType) {
-        
     }
     
     func backButtonTapped() {
@@ -114,7 +173,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     }
     
     func presentSortingView() {
-        shopCorrdinator.presentSortingViewController(nowSelected: orederType, viewModel: self)
+        shopCorrdinator.presentSortingViewController(nowSelected: orderType, viewModel: self)
     }
     
     func presentFilterView() {
@@ -123,5 +182,41 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     
     func dismissPresented() {
         shopCorrdinator.dismissPresented()
+    }
+    
+    private func performSearch(query: String) {
+        guard !query.isEmpty, let id = id else { return }
+        
+        _output.send(.isLoading(true))
+        
+        let newParams = SearchParameters(
+            page: currentPage,
+            order: .relevance,
+            query: query,
+            category: Category(id: id),
+            colors: parameters.colors,
+            materials: parameters.materials,
+            conditions: parameters.conditions,
+            minPrice: parameters.minPrice,
+            maxPrice: parameters.maxPrice
+        )
+        
+        fetchProductsUseCase.execute(params: newParams)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    print("Error: \(error.localizedDescription)")
+                    self?._output.send(.isLoading(false))
+                }
+            } receiveValue: { [weak self] products in
+                if !products.isEmpty {
+                    self?.products = products
+                    self?._output.send(.productsFetched)
+                    self?._output.send(.isLoading(false))
+                } else {
+                    self?._output.send(.nothingFound)
+                }
+            }
+            .store(in: &subscriptions)
     }
 }

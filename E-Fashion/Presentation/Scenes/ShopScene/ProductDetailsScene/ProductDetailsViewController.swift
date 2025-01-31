@@ -173,20 +173,30 @@ class ProductDetailsViewController: UIViewController {
                     self?.updateProductInfo()
                 case .imagesFetched:
                     self?.collectionView.reloadData()
-                case .favouritesUpdated:
-                    self?.updateFavouriteButton()
                 case .addedToCart:
-                    self?.updateAddToCartButton()
                     self?.showToast(message: "Added to cart successfully")
                 case .isLoading(let isLoading):
                     self?.updateLoadingState(isLoading)
-                case .isInCartFetched:
-                    self?.updateAddToCartButton()
                 case .failedToAddInCart:
                     self?.showAlert(title: "Error", message: "Failed to add item to cart")
                 case .failedToAddInFavourites:
                     self?.showAlert(title: "Error", message: "Failed to add item to favourites")
+                default: break
                 }
+            }
+            .store(in: &subscriptions)
+        
+        viewModel.$inCart
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateAddToCartButton()
+            }
+            .store(in: &subscriptions)
+        
+        viewModel.$isFavourite
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateFavouriteButton()
             }
             .store(in: &subscriptions)
     }
@@ -310,7 +320,7 @@ class ProductDetailsViewController: UIViewController {
     }
     
     private func updateFavouriteButton() {
-        let image = viewModel.isFavourite ? UIImage(named: Icons.heartFilled) : UIImage(named: Icons.heart)
+        let image = viewModel.isFavourite ? UIImage(named: Icons.smallRedHeart) : UIImage(named: Icons.heart)
         favouritesButton.setImage(image, for: .normal)
     }
     
@@ -346,7 +356,11 @@ class ProductDetailsViewController: UIViewController {
     }
     
     @objc private func favouritesTapped() {
-        viewModel.addToFavourites()
+        if viewModel.isFavourite {
+            viewModel.removeFromFavourites()
+        } else {
+            viewModel.addToFavourites()
+        }
     }
     
     @objc private func shareTapped() {

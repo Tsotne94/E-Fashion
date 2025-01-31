@@ -10,7 +10,7 @@ import UIKit
 class CustomHeaderView: UIView {
     var backButtonTapped: (() -> Void)?
     
-    private let titleLabel: UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .accentBlack

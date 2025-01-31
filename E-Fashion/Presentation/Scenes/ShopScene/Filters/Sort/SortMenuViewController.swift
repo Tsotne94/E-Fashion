@@ -42,7 +42,7 @@ class SortMenuViewController: UIViewController {
             config.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
             
             let button = UIButton(configuration: config)
-            button.setTitle(orderType.rawValue, for: .normal)
+            button.setTitle(orderType.name(), for: .normal)
             button.titleLabel?.font = UIFont(name: CustomFonts.nutinoBold, size: 18)
             button.contentHorizontalAlignment = .left
             button.tag = orderType.hashValue
@@ -95,7 +95,7 @@ class SortMenuViewController: UIViewController {
     
     @objc private func buttonTapped(_ sender: UIButton) {
         guard let selectedOrderType = OrderType.allCases.first(where: { $0.hashValue == sender.tag }) else { return }
-        viewModel.orederType = selectedOrderType
+        viewModel.orderType = selectedOrderType
         viewModel.dismissPresented()
     }
 }

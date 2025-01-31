@@ -13,6 +13,7 @@ protocol HomeViewModel: AnyObject, HomeViewModelInput, HomeViewModelOutput {}
 
 protocol HomeViewModelInput {
     func productTapped(productId: Int)
+    func fetchFavourites()
     func fetchNew()
     func fetchHot()
 }
@@ -27,13 +28,14 @@ protocol HomeViewModelOutput {
 
 enum HomeViewModelOutputAction {
     case productsFetched
-    case showProductDetails(Product)
     case showError(String)
+    case isLoading(Bool)
 }
 
 final class DefaultHomeViewModel: HomeViewModel {
     @Inject private var homeCoordinator: HomeTabCoordinator
     @Inject private var fetchProductsUseCase: FetchProductsUseCase
+    @Inject private var fetchFavouriteItemsUseCase: FetchFavouriteItemsUseCase
     
     private let categories = Categories()
     
@@ -47,6 +49,7 @@ final class DefaultHomeViewModel: HomeViewModel {
             _output.send(.productsFetched)
         }
     }
+    
     var newItemsPage: Int = 1
     var hotItemsPage: Int = 1
     
@@ -71,36 +74,58 @@ final class DefaultHomeViewModel: HomeViewModel {
         
         fetchProductsUseCase.execute(params: params)
             .receive(on: DispatchQueue.main)
-            .sink { completion in
+            .sink { [weak self] completion in
                 switch completion {
                 case .finished:
                     print("successfully fetched new items")
+                    self?._output.send(.isLoading(false))
                 case .failure(let error):
                     print("error: \(error.localizedDescription)")
+                    self?._output.send(.isLoading(false))
                 }
             } receiveValue: { [weak self] products in
-                self?.newItems += products
+                self?.newItems = products
             }
             .store(in: &subscriptions)
     }
     
     func fetchHot() {
-        guard let clothesSection = categories.getSection(for: .women, sectionType: .clothes),
+        guard let clothesSection = categories.getSection(for: .women, sectionType: .shoes),
               let randomItem = clothesSection.items.randomElement() else { return }
         
         let params = SearchParameters(page: hotItemsPage, order: .relevance, category: randomItem)
         
         fetchProductsUseCase.execute(params: params)
             .receive(on: DispatchQueue.main)
-            .sink { completion in
+            .sink { [weak self] completion in
                 switch completion {
                 case .finished:
                     print("successfully fetched new items")
+                    self?._output.send(.isLoading(false))
                 case .failure(let error):
                     print("error: \(error.localizedDescription)")
+                    self?._output.send(.isLoading(false))
                 }
             } receiveValue: { [weak self] products in
-                self?.hotItems += products.sorted(by: { $0.promoted && !$1.promoted })
+                self?.hotItems = products.sorted(by: { $0.promoted && !$1.promoted })
+            }
+            .store(in: &subscriptions)
+    }
+    
+    func fetchFavourites() {
+        fetchFavouriteItemsUseCase.execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    print("successfully fetched favourite items")
+                    self?._output.send(.productsFetched)
+                case .failure(let error):
+                    print("error: \(error.localizedDescription)")
+                    self?._output.send(.showError(error.localizedDescription))
+                }
+            } receiveValue: { products in
+                FavouriteProducts.products = products
             }
             .store(in: &subscriptions)
     }

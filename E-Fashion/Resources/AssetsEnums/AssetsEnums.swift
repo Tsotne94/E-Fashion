@@ -35,6 +35,7 @@ enum Icons {
     static let eyeSlashed = "eye.slash"
     static let banner = "banner"
     static let chip = "chip"
+    static let smallRedHeart = "smallHeart"
 }
 
 enum GreetingImages {

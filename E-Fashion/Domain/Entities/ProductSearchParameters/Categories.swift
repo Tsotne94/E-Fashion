@@ -188,7 +188,6 @@ class Categories {
         let mainCategory = getCategories(for: categoryType)
         
         guard let section = mainCategory.sections[sectionType] else {
-            debugPrint("⚠️ Warning: Section not found - Category: \(categoryType), Section: \(sectionType)")
             return nil
         }
         
@@ -197,7 +196,6 @@ class Categories {
     
     func getItems(for categoryType: CategoryType, sectionType: SectionType) -> [Category] {
         guard let section = getSection(for: categoryType, sectionType: sectionType) else {
-            debugPrint("⚠️ Warning: No items found - Category: \(categoryType), Section: \(sectionType)")
             return []
         }
         
@@ -207,5 +205,18 @@ class Categories {
     func getItem(id: Int, categoryType: CategoryType, sectionType: SectionType) -> Category? {
         let items = getItems(for: categoryType, sectionType: sectionType)
         return items.first { $0.id == id }
+    }
+    
+    func getSubcategoryItems(id: Int) -> [Category] {
+        let allMainCategories = [men, women, kids]
+
+        for mainCategory in allMainCategories {
+            for section in mainCategory.sections.values {
+                if section.id == id {
+                    return section.items
+                }
+            }
+        }
+        return []
     }
 }

@@ -14,6 +14,11 @@ class ProductsCatalogViewController: UIViewController {
     private var subscriptions = Set<AnyCancellable>()
     private var id: Int? = nil
     private var isWideLayout = false
+    private let searchController = UISearchController(searchResultsController: nil)
+    private var isSearchVisible = false
+    
+    private var collectionViewTopToButtonStack: NSLayoutConstraint?
+    private var collectionViewTopToSearchBar: NSLayoutConstraint?
     
     private var productCellWidth: CGFloat {
         return isWideLayout ? view.bounds.width / 1.2 : view.bounds.width / 2.4
@@ -33,9 +38,18 @@ class ProductsCatalogViewController: UIViewController {
     private let searchButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("", for: .normal)
         button.setImage(UIImage(named: Icons.search), for: .normal)
+        button.tintColor = .accentBlack
         return button
+    }()
+    
+    private let searchBarContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .customWhite
+        view.alpha = 0
+        view.isHidden = true
+        return view
     }()
     
     private let categoriesCollectionView: UICollectionView = {
@@ -70,6 +84,7 @@ class ProductsCatalogViewController: UIViewController {
         button.setImage(UIImage(named: Icons.filter), for: .normal)
         button.setTitle("Filters", for: .normal)
         button.setTitleColor(.accentBlack, for: .normal)
+        button.setTitleColor(.accentBlack.withAlphaComponent(0.5), for: .highlighted)
         return button
     }()
     
@@ -80,6 +95,7 @@ class ProductsCatalogViewController: UIViewController {
         button.setImage(UIImage(named: Icons.sort), for: .normal)
         button.setTitle("\(viewModel.sortLabel)", for: .normal)
         button.setTitleColor(.accentBlack, for: .normal)
+        button.setTitleColor(.accentBlack.withAlphaComponent(0.5), for: .highlighted)
         return button
     }()
     
@@ -119,14 +135,23 @@ class ProductsCatalogViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupSearchController()
         setupBinding()
         setupConstraints()
         setupTargets()
+        if let id = self.id {
+            viewModel.viewDidLoad(id: id)
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        productsCollectionView.reloadData()
     }
     
     func fetchProducts(id: Int) {
-        viewModel.viewDidLoad(id: id)
         self.id = id
+        viewModel.viewDidLoad(id: id)
     }
     
     private func setupUI() {
@@ -134,10 +159,10 @@ class ProductsCatalogViewController: UIViewController {
         
         view.addSubview(headerView)
         headerView.addSubview(searchButton)
+        view.addSubview(searchBarContainer)
         view.addSubview(categoriesCollectionView)
         view.addSubview(buttonStackView)
         view.addSubview(productsCollectionView)
-        
         view.addSubview(loadingIndicator)
         
         setupCategoriesCollectionView()
@@ -148,43 +173,42 @@ class ProductsCatalogViewController: UIViewController {
         }
     }
     
-    private func setupBinding() {
-        viewModel.output
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] action in
-                switch action {
-                case .productsFetched:
-                    self?.productsCollectionView.reloadData()
-                case .sortingChanged:
-                    self?.productsCollectionView.reloadData()
-                    self?.sortButton.setTitle(self?.viewModel.sortLabel, for: .normal)
-                case .isLoading(let isLoading):
-                    self?.updateLoadingState(isLoading)
-                }
-            }.store(in: &subscriptions)
-    }
-    
-    private func setupCategoriesCollectionView() {
-        productsCollectionView.delegate = self
-        productsCollectionView.dataSource = self
-        productsCollectionView.register(ProductCollectionCell.self, forCellWithReuseIdentifier: ProductCollectionCell.reuseIdentifier)
-    }
-    
-    private func setupProductsCollectionView() {
-        categoriesCollectionView.delegate = self
-        categoriesCollectionView.dataSource = self
-        categoriesCollectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.reuseIdentifier)
+    private func setupSearchController() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search products"
+        searchController.searchBar.tintColor = .accentBlack
+        searchController.searchBar.searchBarStyle = .minimal
+        searchController.searchBar.delegate = self
+        
+        if let textField = searchController.searchBar.value(forKey: "searchField") as? UITextField {
+            textField.backgroundColor = .customGray.withAlphaComponent(0.3)
+            textField.layer.cornerRadius = 10
+            textField.clipsToBounds = true
+        }
+        
+        searchBarContainer.addSubview(searchController.searchBar)
     }
     
     private func setupConstraints() {
+        collectionViewTopToButtonStack = productsCollectionView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor, constant: 8)
+        collectionViewTopToSearchBar = productsCollectionView.topAnchor.constraint(equalTo: searchBarContainer.bottomAnchor)
+        
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headerView.heightAnchor.constraint(equalToConstant: CustomHeaderView.headerHeight()),
             
-            searchButton.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -15),
+            searchButton.centerYAnchor.constraint(equalTo: headerView.titleLabel.centerYAnchor),
             searchButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            searchButton.widthAnchor.constraint(equalToConstant: 24),
+            searchButton.heightAnchor.constraint(equalToConstant: 24),
+            
+            searchBarContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            searchBarContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            searchBarContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            searchBarContainer.heightAnchor.constraint(equalToConstant: 56),
             
             categoriesCollectionView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 8),
             categoriesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -195,7 +219,6 @@ class ProductsCatalogViewController: UIViewController {
             buttonStackView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8),
             buttonStackView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8),
             
-            productsCollectionView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor, constant: 8),
             productsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             productsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             productsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
@@ -205,6 +228,43 @@ class ProductsCatalogViewController: UIViewController {
             loadingIndicator.widthAnchor.constraint(equalToConstant: 100),
             loadingIndicator.heightAnchor.constraint(equalToConstant: 100)
         ])
+        
+        collectionViewTopToButtonStack?.isActive = true
+    }
+    
+    private func setupBinding() {
+        viewModel.output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] action in
+                switch action {
+                case .productsFetched:
+                    self?.productsCollectionView.reloadData()
+                case .sortingChanged:
+                    self?.sortButton.setTitle(self?.viewModel.sortLabel, for: .normal)
+                case .isLoading(let isLoading):
+                    self?.updateLoadingState(isLoading)
+                case .subCategoriesFetched:
+                    self?.categoriesCollectionView.reloadData()
+                case .nothingFound:
+                    guard let self = self else { return }
+                    guard let id = self.id else { return }
+                    self.showAlert(title: "No Products Found", message: "OK") {
+                        self.viewModel.fetchProducts(for: id, isRetry: true)
+                    }
+                }
+            }.store(in: &subscriptions)
+    }
+    
+    private func setupCategoriesCollectionView() {
+        categoriesCollectionView.delegate = self
+        categoriesCollectionView.dataSource = self
+        categoriesCollectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.reuseIdentifier)
+    }
+    
+    private func setupProductsCollectionView() {
+        productsCollectionView.delegate = self
+        productsCollectionView.dataSource = self
+        productsCollectionView.register(ProductCollectionCell.self, forCellWithReuseIdentifier: ProductCollectionCell.reuseIdentifier)
     }
     
     private func setupTargets() {
@@ -224,8 +284,42 @@ class ProductsCatalogViewController: UIViewController {
         }
     }
     
+    private func toggleSearchBar() {
+        isSearchVisible.toggle()
+        
+        if isSearchVisible {
+            searchBarContainer.isHidden = false
+            searchController.searchBar.becomeFirstResponder()
+            
+            NSLayoutConstraint.deactivate([collectionViewTopToButtonStack].compactMap { $0 })
+            NSLayoutConstraint.activate([collectionViewTopToSearchBar].compactMap { $0 })
+        } else {
+            searchController.searchBar.text = ""
+            searchController.isActive = false
+            searchController.searchBar.resignFirstResponder()
+            
+            NSLayoutConstraint.deactivate([collectionViewTopToSearchBar].compactMap { $0 })
+            NSLayoutConstraint.activate([collectionViewTopToButtonStack].compactMap { $0 })
+            
+            guard let id = viewModel.id else { return }
+            viewModel.fetchProducts(for: id)
+        }
+        
+        UIView.animate(withDuration: 0.3, animations: { [weak self] in
+            guard let self = self else { return }
+            self.searchBarContainer.alpha = self.isSearchVisible ? 1 : 0
+            self.categoriesCollectionView.alpha = self.isSearchVisible ? 0 : 1
+            self.buttonStackView.alpha = self.isSearchVisible ? 0 : 1
+            self.view.layoutIfNeeded()
+        }) { [weak self] _ in
+            if let isSearchVisible = self?.isSearchVisible, !isSearchVisible {
+                self?.searchBarContainer.isHidden = true
+            }
+        }
+    }
+    
     @objc private func searchButtonTapped() {
-        print("Search button tapped")
+        toggleSearchBar()
     }
     
     @objc private func filterButtonTapped() {
@@ -252,6 +346,20 @@ class ProductsCatalogViewController: UIViewController {
     }
 }
 
+extension ProductsCatalogViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text else { return }
+        viewModel.searchProduct(query: searchText)
+    }
+}
+
+
+extension ProductsCatalogViewController: UISearchBarDelegate {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        toggleSearchBar()
+    }
+}
+
 extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == categoriesCollectionView {
@@ -264,7 +372,8 @@ extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionV
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == categoriesCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryCollectionViewCell.reuseIdentifier, for: indexPath) as! CategoryCollectionViewCell
-            cell.configureCell(with: viewModel.cateogries[indexPath.row])
+            let name = viewModel.cateogries[indexPath.row].title
+            cell.configureCell(with: name)
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCollectionCell.reuseIdentifier, for: indexPath) as! ProductCollectionCell
@@ -275,7 +384,7 @@ extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionV
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == categoriesCollectionView {
-            
+            viewModel.fetchProducts(for: viewModel.cateogries[indexPath.row].id)
         } else {
             let id = viewModel.products[indexPath.row].productId
             viewModel.productTappedAt(index: id)

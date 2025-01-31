@@ -39,15 +39,6 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
         return label
     }()
     
-    private let viewAllButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("View all", for: .normal)
-        button.setTitleColor(.accentBlack, for: .normal)
-        button.titleLabel?.font = UIFont(name: CustomFonts.nutinoRegular, size: 11)
-        return button
-    }()
-    
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -85,14 +76,17 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
             .sink { [weak self] action in
                 switch action {
                 case .productsFetched:
-                    self?.loaderView.stop()
-                    self?.loaderView.isHidden = true
                     self?.collectionView.reloadData()
-                case .showProductDetails(_):
-                    print("cool")
-                case .showError(_):
-                    self?.loaderView.stop()
-                    self?.loaderView.isHidden = true
+                case .showError(let error):
+                    print("error while loading products error: \(error)")
+                case .isLoading(let isLoading):
+                    if isLoading {
+                        self?.loaderView.stop()
+                        self?.loaderView.isHidden = true
+                    } else {
+                        self?.loaderView.stop()
+                        self?.loaderView.isHidden = true
+                    }
                 }
             }.store(in: &subscriptions)
     }
@@ -100,7 +94,6 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
     private func setupViews() {
         contentView.addSubview(titleLabel)
         contentView.addSubview(subtitleLabel)
-        contentView.addSubview(viewAllButton)
         contentView.addSubview(collectionView)
         contentView.addSubview(loaderView)
     }
@@ -112,9 +105,6 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
             
             subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
             subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            
-            viewAllButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            viewAllButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
             collectionView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 8),
             collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -142,6 +132,7 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
         loaderView.isHidden = false
         loaderView.play()
         
+        viewModel.fetchFavourites()
         switch self.items {
         case .new:
             viewModel.fetchNew()
@@ -151,7 +142,6 @@ class ProductSectionTableCell: UITableViewCell, IdentifiableProtocol {
     }
 }
 
-// MARK: - UICollectionView Delegate & DataSource
 extension ProductSectionTableCell: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch items {
