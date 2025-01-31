@@ -68,7 +68,6 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
     }
     
     func removeAddress(_ address: AddressModel) {
-        guard address.isDefault else { return }
         let addressId = address.id
         
         deliveryRepository.removeAddress(id: addressId)
