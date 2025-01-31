@@ -22,13 +22,24 @@ public extension DependencyContainer {
             Module { DefaultRetriveCachedImageUseCase() as RetriveCachedImageUseCase }
             Module { DefaultAddToCartUseCase() as AddToCartUseCase }
             Module { DefaultFetchItemsInCartUseCase() as FetchItemsInCartUseCase }
-            Module { DefaultRemoveOneFromCartUseCase() as RemoveOneFromCartUseCase }
             Module { DefaultRemoveWholeItemFromCartUseCase() as RemoveWholeItemFromCartUseCase }
             Module { DefaultAddToFavouritesUseCase() as AddToFavouritesUseCase }
             Module { DefaultFetchFavouriteItemsUseCase() as FetchFavouriteItemsUseCase }
             Module { DefaultRemoveFromFavouritesUseCase() as RemoveFromFavouritesUseCase }
             Module { DefaultIsFavouriteUseCase() as IsFavouriteUseCase }
             Module { DefaultIsInCartUseCase() as IsInCartUseCase }
+            Module { DefaultAddAddressUseCase() as AddAddressUseCase }
+            Module { DefaultFetchDeliveryAddressUseCase() as FetchDeliveryAddressUseCase }
+            Module { DefaultAddAddressUseCase() as AddAddressUseCase }
+            Module { DefaultRemoveAddressUseCase() as RemoveAddressUseCase }
+            Module { DefaultUpdateDefaultAddressUseCase() as UpdateDefaultAddressUseCase }
+            Module { DefaultAddPaymentMethodUseCase() as AddPaymentMethodUseCase }
+            Module { DefaultFetchPaymentMethodsUseCase() as FetchPaymentMethodsUseCase }
+            Module { DefaultRemovePaymentMethodUseCase() as RemovePaymentMethodUseCase }
+            Module { DefaultUpdateDefaultPaymentMethodUseCase() as UpdateDefaultPaymentMethodUseCase }
+            Module { DefaultFetchDefaultDelieryLocationUseCase() as FetchDefaultDelieryLocationUseCase }
+            Module { DefaultFetchDefaultPaymentMethodUseCase() as FetchDefaultPaymentMethodUseCase }
+            Module { DefaultClearCartUseCase() as ClearCartUseCase }
         }
     }
 }

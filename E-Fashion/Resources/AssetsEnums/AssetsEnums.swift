@@ -88,8 +88,30 @@ enum WomenAssets {
     static let shoes = "womanShoes"
 }
 
-enum DeliveryProviders: String {
+enum DeliveryProviders: String, CaseIterable {
     case dhl = "dhl"
     case usps = "usps"
     case fedex = "fedex"
+    
+    func price() -> Double {
+        switch self {
+        case .dhl:
+            5.99
+        case .usps:
+            8.99
+        case .fedex:
+            15.99
+        }
+    }
+    
+    func deliveryTime() -> String {
+        switch self {
+        case .dhl:
+            "5-6 Days"
+        case .usps:
+            "3-4 Days"
+        case .fedex:
+            "1-2 Days"
+        }
+    }
 }

@@ -50,15 +50,13 @@ struct ProductCardView: View {
             Spacer()
             
             VStack(alignment: .trailing) {
-                Menu {
-                    Button(role: .destructive, action: onDelete) {
-                        Label("Delete", systemImage: "trash")
+                Button(action: onDelete) {
+                    HStack {
+                        Image(systemName: "trash")
+                            .foregroundColor(.red)
                     }
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .foregroundColor(.gray)
-                        .padding(8)
                 }
+                .padding(5)
                 
                 Spacer()
                 

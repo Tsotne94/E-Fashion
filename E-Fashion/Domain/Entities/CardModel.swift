@@ -5,7 +5,11 @@
 //  Created by Cotne Chubinidze on 30.01.25.
 //
 
+import Foundation
+
 struct CardModel: Codable {
+    let id: String
+    let timestamp: Date
     let number: String
     let holderName: String
     let expiryDate: String
@@ -14,6 +18,8 @@ struct CardModel: Codable {
     let type: CardType
     
     init(number: String, holderName: String, expiryDate: String, cvv: String, isdefault: Bool) {
+        self.id = UUID().uuidString
+        self.timestamp = Date()
         self.number = number
         self.holderName = holderName
         self.expiryDate = expiryDate

@@ -64,28 +64,6 @@ public struct DefaultFirestoreCartRepository: FirestoreCartRepository {
             .eraseToAnyPublisher()
     }
     
-    func removeOneItemFromCart(id: String) -> AnyPublisher<Void, any Error> {
-        getCurrentUserUseCase.execute()
-            .flatMap { user in
-                Future { promise in
-                    let cartRef = Firestore.firestore()
-                        .collection("Carts")
-                        .document(user.uid)
-                        .collection("items")
-                        .document(id)
-                    
-                    cartRef.updateData(["quantity": FieldValue.increment(-1.0)]) { error in
-                        if let error = error {
-                            promise(.failure(error))
-                        } else {
-                            promise(.success(()))
-                        }
-                    }
-                }
-            }
-            .eraseToAnyPublisher()
-    }
-    
     func removeWholeItem(id: String) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
@@ -129,5 +107,43 @@ public struct DefaultFirestoreCartRepository: FirestoreCartRepository {
                     }
                 }
             }.eraseToAnyPublisher()
+    }
+    func clearItems() -> AnyPublisher<Void, Error> {
+        getCurrentUserUseCase.execute()
+            .flatMap { user -> AnyPublisher<Void, Error> in
+                let cartRef = Firestore.firestore()
+                    .collection("Carts")
+                    .document(user.uid)
+                    .collection("items")
+                
+                return Future { promise in
+                    cartRef.getDocuments { snapshot, error in
+                        if let error = error {
+                            promise(.failure(error))
+                            return
+                        }
+                        
+                        guard let docs = snapshot?.documents, !docs.isEmpty else {
+                            promise(.success(()))
+                            return
+                        }
+                        
+                        let batch = Firestore.firestore().batch()
+                        docs.forEach { doc in
+                            batch.deleteDocument(cartRef.document(doc.documentID))
+                        }
+                        
+                        batch.commit { error in
+                            if let error = error {
+                                promise(.failure(error))
+                            } else {
+                                promise(.success(()))
+                            }
+                        }
+                    }
+                }
+                .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 }

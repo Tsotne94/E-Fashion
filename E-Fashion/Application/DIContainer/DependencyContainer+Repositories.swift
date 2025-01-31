@@ -15,6 +15,8 @@ public extension DependencyContainer {
             Module { DefaultCashRepository() as CacheRepository }
             Module { DefaultFirestoreCartRepository() as FirestoreCartRepository }
             Module { DefaultFirestoreFavouritesRepository() as FirestoreFavouritesRepository }
+            Module { DefaultDeliveryRepository() as DeliveryRepository }
+            Module { DefaultPaymentRepository() as PaymentRepository }
         }
     }
 }

@@ -6,48 +6,44 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ShippingAdressesView: View {
-    @State private var addresses: [AddressModel] = [
-        AddressModel(
-            name: "John Doe",
-            address: "123 Main Street",
-            city: "New York",
-            state: "NY",
-            zip: "10001",
-            country: "United States",
-            isDefault: true
-        ),
-        AddressModel(
-            name: "John Doe",
-            address: "456 Park Avenue",
-            city: "Los Angeles",
-            state: "CA",
-            zip: "90001",
-            country: "United States",
-            isDefault: false
-        )
-    ]
+    @Inject private var coordinator: BagTabCoordinator
+    @StateObject private var viewModel = DefaultShippingAddressesViewModel()
+    
+    @State private var cancellables = Set<AnyCancellable>()
+    @State private var showDefaultAddressAlert = false
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 SUICustomHeaderView(title: "Shipping Addresses", showBackButton: true) {
-                    print("back tapped")
+                    coordinator.goBack()
                 }
                 
-                ScrollView {
-                    VStack(spacing: 16) {
-                        ForEach(addresses.indices, id: \.self) { index in
-                            addressView(address: addresses[index], index: index)
+                if viewModel.addresses.isEmpty {
+                    emptyStateView()
+                } else {
+                    Text("Your Shipping Addresses")
+                        .font(.custom(CustomFonts.nutinoMedium, size: 18))
+                        .padding(.horizontal)
+                        .padding(.top, 16)
+                    
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            ForEach(viewModel.addresses.indices, id: \.self) { index in
+                                addressView(address: viewModel.addresses[index], index: index)
+                            }
                         }
+                        .padding()
                     }
-                    .padding()
                 }
+                Spacer()
             }
             
             Button {
-                
+                coordinator.addDeliveryLoaction(viewmodel: viewModel)
             } label: {
                 Image(systemName: "plus")
                     .font(.title2)
@@ -62,7 +58,46 @@ struct ShippingAdressesView: View {
             .padding(.trailing, 20)
             .padding(.bottom, 90)
         }
-        .background(Color.customWhite, ignoresSafeAreaEdges: .all)
+        .background(Color.customWhite)
+        .ignoresSafeArea()
+        .alert(isPresented: $showDefaultAddressAlert) {
+            Alert(
+                title: Text("Default Address"),
+                message: Text("This is already your default shipping address. To change, select another address or delete this one."),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+        .onAppear {
+            viewModel.fetchAddresses()
+        }
+    }
+    
+    private func emptyStateView() -> some View {
+        VStack(spacing: 20) {
+            Image(systemName: "map")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, height: 100)
+                .foregroundColor(.gray.opacity(0.5))
+            
+            Text("No Shipping Addresses")
+                .font(.custom(CustomFonts.nutinoMedium, size: 20))
+                .foregroundColor(.primary)
+            
+            Text("Add your first shipping address to start managing your delivery locations.")
+                .font(.custom(CustomFonts.nutinoRegular, size: 16))
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+    }
+    
+    private func updateDefaultAddress(_ newDefaultAddress: AddressModel) {
+        if !newDefaultAddress.isDefault {
+            viewModel.setDefaultAddress(newDefaultAddress)
+        }
     }
     
     private func addressView(address: AddressModel, index: Int) -> some View {
@@ -75,11 +110,10 @@ struct ShippingAdressesView: View {
                 Spacer()
                 
                 Button {
-                    
+                    viewModel.removeAddress(address)
                 } label: {
-                    Text("Edit")
-                        .font(.custom(CustomFonts.nutinoRegular, size: 15))
-                        .foregroundStyle(.accentRed)
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
                 }
             }
             
@@ -100,13 +134,11 @@ struct ShippingAdressesView: View {
             
             HStack(spacing: 12) {
                 Button {
-                    var updatedAddresses = addresses
-                    updatedAddresses = updatedAddresses.map { addr in
-                        var newAddr = addr
-                        
-                        return newAddr
+                    if address.isDefault {
+                        showDefaultAddressAlert = true
+                    } else {
+                        viewModel.setDefaultAddress(address)
                     }
-                    addresses = updatedAddresses
                 } label: {
                     Image(address.isDefault ? Icons.selectedBlack : Icons.selectableBox)
                         .resizable()
@@ -125,8 +157,4 @@ struct ShippingAdressesView: View {
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
-}
-
-#Preview {
-    ShippingAdressesView()
 }

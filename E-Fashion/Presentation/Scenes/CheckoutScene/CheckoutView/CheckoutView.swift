@@ -8,114 +8,47 @@
 import SwiftUI
 
 struct CheckoutView: View {
-    @Inject private var shopCoordinator: BagTabCoordinator
+    @StateObject private var viewModel = DefaultCheckoutViewModel()
+    @State var selectedDelivery: DeliveryProviders = .dhl
     
     var body: some View {
         VStack {
-            header()
-            ScrollView {
-                address()
-                    .shadow(radius: 5)
-                paymentMethod()
-                deliveryMethod()
-                price()
-                orderButton()
+            if viewModel.products.isEmpty {
+                EmptyStateView(viewModel: viewModel)
+            } else {
+                FullCheckoutView(viewModel: viewModel, selectedDelivery: $selectedDelivery)
             }
+        }
+        .onAppear {
+            viewModel.fetchProducts()
+            viewModel.fetchDefaultAddress()
+            viewModel.fetchDefaultPayment()
         }
         .background(.customWhite)
         .background(ignoresSafeAreaEdges: .all)
     }
+}
+
+struct DeliveryMethodView: View {
+    @Binding var selectedDelivery: DeliveryProviders
     
-    private func header() -> some View {
-        HStack {
-            Button {
-                
-            } label: {
-                Image(Icons.back)
-            }
-            .padding()
-            
-            SUIAuthHeaderView(title: "Checkout")
-        }
-        .background(.white)
-    }
-    
-    private func address() -> some View {
-        VStack(alignment: .leading) {
-            Text("Shipping Adress")
-                .font(.custom(CustomFonts.nutinoBold, size: 16))
-                .shadow(radius: 3)
-            VStack(alignment: .leading) {
-                HStack {
-                    Text("Jhon Doe")
-                        .font(.custom(CustomFonts.nutinoMedium, size: 14))
-                    Spacer()
-                    Button {
-                        print("change pressed")
-                    } label: {
-                        Text("Change")
-                            .font(.custom(CustomFonts.nutinoMedium, size: 14))
-                            .foregroundStyle(.accentRed)
-                    }
-                }
-                .padding(.bottom, 16)
-                Text("3 Newbridge Court Chino Hills, CA 91709, United States")
-                    .font(.custom(CustomFonts.nutinoRegular, size: 14))
-                    .frame(maxWidth: 200)
-            }
-            .padding()
-            .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-        }
-        .padding()
-    }
-    
-    private func paymentMethod() -> some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text("Payment")
-                    .font(.custom(CustomFonts.nutinoBold, size: 16))
-                    .shadow(radius: 3)
-                Spacer()
-                Button {
-                    shopCoordinator.changeCard()
-                } label: {
-                    Text("Change")
-                        .font(.custom(CustomFonts.nutinoMedium, size: 14))
-                        .foregroundStyle(.accentRed)
-                }
-            }
-            
-            HStack {
-                Image(Icons.masterCard)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 50, height: 50)
-                    .padding(10)
-                    .background(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                Text("**** **** **** 3947")
-                    .font(.custom(CustomFonts.nutinoRegular, size: 14))
-            }
-        }
-        .padding()
-    }
-    
-    private func deliveryMethod() -> some View {
+    var body: some View {
         VStack {
             HStack(spacing: 10) {
-                deliveryProvider(provider: .dhl)
-                    .shadow(radius: 5)
-                deliveryProvider(provider: .fedex)
-                    .shadow(radius: 5)
-                deliveryProvider(provider: .usps)
-                    .shadow(radius: 5)
+                ForEach(DeliveryProviders.allCases, id: \ .self) { provider in
+                    DeliveryProviderView(provider: provider, selectedDelivery: $selectedDelivery)
+                }
             }
         }
         .padding()
     }
+}
+
+struct DeliveryProviderView: View {
+    let provider: DeliveryProviders
+    @Binding var selectedDelivery: DeliveryProviders
     
-    private func deliveryProvider(provider: DeliveryProviders) -> some View {
+    var body: some View {
         ZStack {
             VStack {
                 Image(provider.rawValue)
@@ -123,35 +56,32 @@ struct CheckoutView: View {
                     .scaledToFit()
                     .frame(height: 30)
                     .padding(.horizontal, 10)
-                switch provider {
-                case .dhl:
-                    Text("2-3 Day")
-                        .font(.custom(CustomFonts.nutinoLight, size: 11))
-                        .foregroundStyle(.customGray)
-                case .usps:
-                    Text("3-4 Day")
-                        .font(.custom(CustomFonts.nutinoLight, size: 11))
-                        .foregroundStyle(.customGray)
-                case .fedex:
-                    Text("4-5 Day")
-                        .font(.custom(CustomFonts.nutinoLight, size: 11))
-                        .foregroundStyle(.customGray)
-                }
+                Text(provider.deliveryTime())
+                    .font(.custom(CustomFonts.nutinoLight, size: 11))
+                    .foregroundStyle(.customGray)
             }
             .padding(10)
             .background(.white)
             .clipShape(RoundedRectangle(cornerRadius: 20))
+            .onTapGesture {
+                selectedDelivery = provider
+            }
         }
     }
+}
+
+struct PriceView: View {
+    @ObservedObject var viewModel: DefaultCheckoutViewModel
+    var selectedDelivery: DeliveryProviders
     
-    private func price() -> some View {
+    var body: some View {
         VStack(spacing: 8) {
             HStack {
                 Text("Order:")
                     .font(.custom(CustomFonts.nutinoMedium, size: 14))
                     .foregroundStyle(.customGray)
                 Spacer()
-                Text("112$")
+                Text(price(viewModel.totalPrice ?? 0.0) + "$")
                     .font(.custom(CustomFonts.nutinoBold, size: 16))
             }
             
@@ -160,7 +90,7 @@ struct CheckoutView: View {
                     .font(.custom(CustomFonts.nutinoMedium, size: 14))
                     .foregroundStyle(.customGray)
                 Spacer()
-                Text("15$")
+                Text(price(selectedDelivery.price()) + "$")
                     .font(.custom(CustomFonts.nutinoBold, size: 16))
             }
             
@@ -169,26 +99,38 @@ struct CheckoutView: View {
                     .font(.custom(CustomFonts.nutinoBold, size: 16))
                     .foregroundStyle(.customGray)
                 Spacer()
-                Text("127$")
+                Text(price((viewModel.totalPrice ?? 0.0) + selectedDelivery.price()) + "$")
                     .font(.custom(CustomFonts.nutinoBold, size: 18))
             }
         }
         .padding()
     }
     
-    private func orderButton() -> some View {
+    func price(_ price: Double) -> String {
+        if viewModel.totalPrice == nil {
+            return "0.00"
+        }
+        return String(format: "%.2f", price)
+    }
+}
+
+struct OrderButton: View {
+    @ObservedObject var viewModel: DefaultCheckoutViewModel
+    
+    var body: some View {
         Button {
-            shopCoordinator.orderPlaced()
+            viewModel.orderPlaced()
         } label: {
             Text("SUBMIT ORDER")
                 .font(.custom(CustomFonts.nutinoBold, size: 16))
                 .foregroundColor(.white)
                 .padding()
                 .frame(width: 250, height: 50)
-                .background(Color.accentRed)
+                .background(viewModel.isVlaid() ? .customGray : Color.accentRed )
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .shadow(radius: 3)
         }
+        .disabled(viewModel.isVlaid())
     }
 }
 
