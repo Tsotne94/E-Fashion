@@ -14,9 +14,9 @@ protocol ProductsCatalogViewModel: ProductsCatalogViewModelInput, ProductsCatalo
 protocol ProductsCatalogViewModelInput{
     func viewDidLoad(id: Int)
     func fetchProducts(for id: Int)
+    func searchProduct(query: String)
     func backButtonTapped()
     func productTappedAt(index: Int)
-    func categoryTapped(category: CategoryType)
     func presentSortingView()
     func presentFilterView()
     func dismissPresented()
@@ -46,6 +46,11 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     @Inject private var shopCorrdinator: ShopTabCoordinator
     @Inject private var fetchFavouritesUseCase: FetchFavouriteItemsUseCase
     
+    private var _output = PassthroughSubject<ProductsCatalogViewModelOutputAction, Never>()
+    var output: AnyPublisher<ProductsCatalogViewModelOutputAction, Never> {
+        _output.eraseToAnyPublisher()
+    }
+    
     lazy var orderType: OrderType = .newestFirst {
         didSet {
             if let id = id {
@@ -70,16 +75,25 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
         orderType.name()
     }
     
-    private var _output = PassthroughSubject<ProductsCatalogViewModelOutputAction, Never>()
-    var output: AnyPublisher<ProductsCatalogViewModelOutputAction, Never> {
-        _output.eraseToAnyPublisher()
+    private var subscriptions = Set<AnyCancellable>()
+    private var searchSubscription: AnyCancellable?
+    private var searchSubject = PassthroughSubject<String, Never>()
+    
+    public init() {
+        setupSearchSubscription()
     }
     
-    private var subscriptions = Set<AnyCancellable>()
+    private func setupSearchSubscription() {
+        searchSubscription = searchSubject
+            .debounce(for: .milliseconds(1000), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .sink { [weak self] query in
+                self?.performSearch(query: query)
+            }
+    }
     
-    public init() { }
-   
     func viewDidLoad(id: Int) {
+        _output.send(.isLoading(true))
         self.id = id
         self.cateogries = Categories().getSubcategoryItems(id: id)
         fetchProducts(for: id)
@@ -94,26 +108,25 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
         
         fetchProductsUseCase.execute(params: parameters)
             .receive(on: DispatchQueue.main)
-            .sink { completion in
-                switch completion {
-                case .finished:
-                    print("Successfully fetched products")
-                case .failure(let error):
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
                     print("Error: \(error.localizedDescription)")
+                    self?._output.send(.isLoading(false))
                 }
             } receiveValue: { [weak self] products in
                 self?.products = products
                 self?._output.send(.productsFetched)
                 self?._output.send(.isLoading(false))
-            }.store(in: &subscriptions)
+            }
+            .store(in: &subscriptions)
+    }
+    
+    func searchProduct(query: String) {
+        searchSubject.send(query)
     }
     
     func productTappedAt(index: Int) {
         shopCorrdinator.goToProductDetail(id: index)
-    }
-    
-    func categoryTapped(category: CategoryType) {
-        
     }
     
     func backButtonTapped() {
@@ -130,5 +143,32 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     
     func dismissPresented() {
         shopCorrdinator.dismissPresented()
+    }
+    
+    private func performSearch(query: String) {
+        guard !query.isEmpty, let id = id else { return }
+        
+        _output.send(.isLoading(true))
+        
+        let newParams = SearchParameters(
+            page: currentPage,
+            order: .relevance,
+            query: query,
+            category: Category(id: id)
+        )
+        
+        fetchProductsUseCase.execute(params: newParams)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    print("Error: \(error.localizedDescription)")
+                    self?._output.send(.isLoading(false))
+                }
+            } receiveValue: { [weak self] products in
+                self?.products = products
+                self?._output.send(.productsFetched)
+                self?._output.send(.isLoading(false))
+            }
+            .store(in: &subscriptions)
     }
 }

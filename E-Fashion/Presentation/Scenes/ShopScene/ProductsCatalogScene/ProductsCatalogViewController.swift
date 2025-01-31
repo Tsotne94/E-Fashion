@@ -14,6 +14,11 @@ class ProductsCatalogViewController: UIViewController {
     private var subscriptions = Set<AnyCancellable>()
     private var id: Int? = nil
     private var isWideLayout = false
+    private let searchController = UISearchController(searchResultsController: nil)
+    private var isSearchVisible = false
+    
+    private var collectionViewTopToButtonStack: NSLayoutConstraint?
+    private var collectionViewTopToSearchBar: NSLayoutConstraint?
     
     private var productCellWidth: CGFloat {
         return isWideLayout ? view.bounds.width / 1.2 : view.bounds.width / 2.4
@@ -33,9 +38,18 @@ class ProductsCatalogViewController: UIViewController {
     private let searchButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("", for: .normal)
         button.setImage(UIImage(named: Icons.search), for: .normal)
+        button.tintColor = .accentBlack
         return button
+    }()
+    
+    private let searchBarContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .customWhite
+        view.alpha = 0
+        view.isHidden = true
+        return view
     }()
     
     private let categoriesCollectionView: UICollectionView = {
@@ -121,9 +135,13 @@ class ProductsCatalogViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupSearchController()
         setupBinding()
         setupConstraints()
         setupTargets()
+        if let id = self.id {
+            viewModel.viewDidLoad(id: id)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -132,8 +150,8 @@ class ProductsCatalogViewController: UIViewController {
     }
     
     func fetchProducts(id: Int) {
-        viewModel.viewDidLoad(id: id)
         self.id = id
+        viewModel.viewDidLoad(id: id)
     }
     
     private func setupUI() {
@@ -141,10 +159,10 @@ class ProductsCatalogViewController: UIViewController {
         
         view.addSubview(headerView)
         headerView.addSubview(searchButton)
+        view.addSubview(searchBarContainer)
         view.addSubview(categoriesCollectionView)
         view.addSubview(buttonStackView)
         view.addSubview(productsCollectionView)
-        
         view.addSubview(loadingIndicator)
         
         setupCategoriesCollectionView()
@@ -153,6 +171,65 @@ class ProductsCatalogViewController: UIViewController {
         headerView.backButtonTapped = { [weak self] in
             self?.viewModel.backButtonTapped()
         }
+    }
+    
+    private func setupSearchController() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search products"
+        searchController.searchBar.tintColor = .accentBlack
+        searchController.searchBar.searchBarStyle = .minimal
+        searchController.searchBar.delegate = self
+        
+        if let textField = searchController.searchBar.value(forKey: "searchField") as? UITextField {
+            textField.backgroundColor = .customGray.withAlphaComponent(0.3)
+            textField.layer.cornerRadius = 10
+            textField.clipsToBounds = true
+        }
+        
+        searchBarContainer.addSubview(searchController.searchBar)
+    }
+    
+    private func setupConstraints() {
+        collectionViewTopToButtonStack = productsCollectionView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor, constant: 8)
+        collectionViewTopToSearchBar = productsCollectionView.topAnchor.constraint(equalTo: searchBarContainer.bottomAnchor)
+        
+        NSLayoutConstraint.activate([
+            headerView.topAnchor.constraint(equalTo: view.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: CustomHeaderView.headerHeight()),
+            
+            searchButton.centerYAnchor.constraint(equalTo: headerView.titleLabel.centerYAnchor),
+            searchButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            searchButton.widthAnchor.constraint(equalToConstant: 24),
+            searchButton.heightAnchor.constraint(equalToConstant: 24),
+            
+            searchBarContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            searchBarContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            searchBarContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            searchBarContainer.heightAnchor.constraint(equalToConstant: 56),
+            
+            categoriesCollectionView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 8),
+            categoriesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            categoriesCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            categoriesCollectionView.heightAnchor.constraint(equalToConstant: 35),
+            
+            buttonStackView.topAnchor.constraint(equalTo: categoriesCollectionView.bottomAnchor, constant: 8),
+            buttonStackView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8),
+            buttonStackView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8),
+            
+            productsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            productsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            productsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loadingIndicator.widthAnchor.constraint(equalToConstant: 100),
+            loadingIndicator.heightAnchor.constraint(equalToConstant: 100)
+        ])
+        
+        collectionViewTopToButtonStack?.isActive = true
     }
     
     private func setupBinding() {
@@ -173,46 +250,15 @@ class ProductsCatalogViewController: UIViewController {
     }
     
     private func setupCategoriesCollectionView() {
-        productsCollectionView.delegate = self
-        productsCollectionView.dataSource = self
-        productsCollectionView.register(ProductCollectionCell.self, forCellWithReuseIdentifier: ProductCollectionCell.reuseIdentifier)
-    }
-    
-    private func setupProductsCollectionView() {
         categoriesCollectionView.delegate = self
         categoriesCollectionView.dataSource = self
         categoriesCollectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.reuseIdentifier)
     }
     
-    private func setupConstraints() {
-        NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.topAnchor),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: CustomHeaderView.headerHeight()),
-            
-            searchButton.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -15),
-            searchButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            
-            categoriesCollectionView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 8),
-            categoriesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            categoriesCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            categoriesCollectionView.heightAnchor.constraint(equalToConstant: 35),
-            
-            buttonStackView.topAnchor.constraint(equalTo: categoriesCollectionView.bottomAnchor, constant: 8),
-            buttonStackView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8),
-            buttonStackView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8),
-            
-            productsCollectionView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor, constant: 8),
-            productsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            productsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            productsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            
-            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            loadingIndicator.widthAnchor.constraint(equalToConstant: 100),
-            loadingIndicator.heightAnchor.constraint(equalToConstant: 100)
-        ])
+    private func setupProductsCollectionView() {
+        productsCollectionView.delegate = self
+        productsCollectionView.dataSource = self
+        productsCollectionView.register(ProductCollectionCell.self, forCellWithReuseIdentifier: ProductCollectionCell.reuseIdentifier)
     }
     
     private func setupTargets() {
@@ -232,8 +278,39 @@ class ProductsCatalogViewController: UIViewController {
         }
     }
     
+    private func toggleSearchBar() {
+        isSearchVisible.toggle()
+        
+        if isSearchVisible {
+            searchBarContainer.isHidden = false
+            searchController.searchBar.becomeFirstResponder()
+            
+            NSLayoutConstraint.deactivate([collectionViewTopToButtonStack].compactMap { $0 })
+            NSLayoutConstraint.activate([collectionViewTopToSearchBar].compactMap { $0 })
+        } else {
+            searchController.searchBar.text = ""
+            searchController.isActive = false
+            searchController.searchBar.resignFirstResponder()
+            
+            NSLayoutConstraint.deactivate([collectionViewTopToSearchBar].compactMap { $0 })
+            NSLayoutConstraint.activate([collectionViewTopToButtonStack].compactMap { $0 })
+        }
+        
+        UIView.animate(withDuration: 0.3, animations: { [weak self] in
+            guard let self = self else { return }
+            self.searchBarContainer.alpha = self.isSearchVisible ? 1 : 0
+            self.categoriesCollectionView.alpha = self.isSearchVisible ? 0 : 1
+            self.buttonStackView.alpha = self.isSearchVisible ? 0 : 1
+            self.view.layoutIfNeeded()
+        }) { [weak self] _ in
+            if let isSearchVisible = self?.isSearchVisible, !isSearchVisible {
+                self?.searchBarContainer.isHidden = true
+            }
+        }
+    }
+    
     @objc private func searchButtonTapped() {
-        print("Search button tapped")
+        toggleSearchBar()
     }
     
     @objc private func filterButtonTapped() {
@@ -260,10 +337,25 @@ class ProductsCatalogViewController: UIViewController {
     }
 }
 
+extension ProductsCatalogViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text else { return }
+        viewModel.searchProduct(query: searchText)
+    }
+}
+
+
+extension ProductsCatalogViewController: UISearchBarDelegate {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        toggleSearchBar()
+        guard let id = viewModel.id else { return }
+        viewModel.fetchProducts(for: id)
+    }
+}
+
 extension ProductsCatalogViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == categoriesCollectionView {
-            print("Categories count:", viewModel.cateogries.count)
             return viewModel.cateogries.count
         } else {
             return viewModel.products.count
