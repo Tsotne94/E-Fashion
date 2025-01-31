@@ -18,8 +18,9 @@ protocol BagTabCoordinator: Coordinator {
     func changeCard()
     func goBack()
     func addCard()
+    func dismissPresented()
     func changeDeliveryLocation()
-    func addDeliveryLoaction()
+    func addDeliveryLoaction(viewmodel: ShippingAddressesViewModel)
 }
 
 final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
@@ -80,14 +81,18 @@ final class DefaultBagTabCoordinator: NSObject, BagTabCoordinator {
         rootViewController.pushViewController(viewController, animated: true)
     }
     
-    func addDeliveryLoaction() {
-        let addCardView = UIHostingController(rootView: AddShippingAddressView())
+    func addDeliveryLoaction(viewmodel: ShippingAddressesViewModel) {
+        let addCardView = UIHostingController(rootView: AddShippingAddressView(viewModel: viewmodel))
         if let sheet = addCardView.sheetPresentationController {
             sheet.detents = [.large()]
             sheet.prefersGrabberVisible = true
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
         }
         rootViewController.present(addCardView, animated: true)
+    }
+    
+    func dismissPresented() {
+        rootViewController.dismiss(animated: true)
     }
 }
 

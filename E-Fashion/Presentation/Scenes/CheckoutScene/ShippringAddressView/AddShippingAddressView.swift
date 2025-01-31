@@ -6,14 +6,21 @@
 //
 
 import SwiftUI
+import Combine
 
 struct AddShippingAddressView: View {
+    @Inject private var coordinator: BagTabCoordinator
+    let viewModel: ShippingAddressesViewModel
+    
     @State private var fullName: String = ""
     @State private var address: String = ""
     @State private var city: String = ""
     @State private var state: String = ""
     @State private var zipCode: String = ""
     @State private var country: String = ""
+    
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
     
     var body: some View {
         VStack(spacing: 0) {
@@ -60,9 +67,7 @@ struct AddShippingAddressView: View {
                     
                     Spacer(minLength: 32)
                     
-                    Button {
-                        
-                    } label: {
+                    Button(action: saveAddress) {
                         Text("SAVE ADDRESS")
                             .font(.custom(CustomFonts.nutinoMedium, size: 16))
                             .foregroundColor(.white)
@@ -83,6 +88,55 @@ struct AddShippingAddressView: View {
         }
         .background(Color.customWhite)
         .ignoresSafeArea()
+        .alert(isPresented: $showErrorAlert) {
+            Alert(
+                title: Text("Invalid Input"),
+                message: Text(errorMessage),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+    }
+    
+    private func saveAddress() {
+        guard validateInput() else {
+            return
+        }
+        
+        let newAddress = AddressModel(
+            name: fullName.trimmingCharacters(in: .whitespacesAndNewlines),
+            address: address.trimmingCharacters(in: .whitespacesAndNewlines),
+            city: city.trimmingCharacters(in: .whitespacesAndNewlines),
+            state: state.trimmingCharacters(in: .whitespacesAndNewlines),
+            zip: zipCode.trimmingCharacters(in: .whitespacesAndNewlines),
+            country: country.trimmingCharacters(in: .whitespacesAndNewlines),
+            isDefault: false
+        )
+        
+        viewModel.addAddress(newAddress)
+        coordinator.dismissPresented()
+        
+    }
+    
+    private func validateInput() -> Bool {
+        let trimmedFields = [
+            ("Full Name", fullName),
+            ("Address", address),
+            ("City", city),
+            ("State", state),
+            ("Zip Code", zipCode),
+            ("Country", country)
+        ]
+        
+        for (fieldName, fieldValue) in trimmedFields {
+            let trimmedValue = fieldValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmedValue.isEmpty {
+                errorMessage = "\(fieldName) cannot be empty."
+                showErrorAlert = true
+                return false
+            }
+        }
+        
+        return true
     }
 }
 
@@ -110,8 +164,4 @@ struct LabeledCustomTextField: View {
                 .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 2)
         }
     }
-}
-
-#Preview {
-    AddShippingAddressView()
 }

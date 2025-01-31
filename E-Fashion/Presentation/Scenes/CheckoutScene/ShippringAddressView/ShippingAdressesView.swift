@@ -6,30 +6,14 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ShippingAdressesView: View {
     @Inject private var coordinator: BagTabCoordinator
+    @StateObject private var viewModel = DefaultShippingAddressesViewModel()
     
-    @State private var addresses: [AddressModel] = [
-        AddressModel(
-            name: "John Doe",
-            address: "123 Main Street",
-            city: "New York",
-            state: "NY",
-            zip: "10001",
-            country: "United States",
-            isDefault: true
-        ),
-        AddressModel(
-            name: "John Doe",
-            address: "456 Park Avenue",
-            city: "Los Angeles",
-            state: "CA",
-            zip: "90001",
-            country: "United States",
-            isDefault: false
-        )
-    ]
+    @State private var addresses: [AddressModel] = []
+    @State private var cancellables = Set<AnyCancellable>()
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -38,25 +22,28 @@ struct ShippingAdressesView: View {
                     coordinator.goBack()
                 }
                 
-                Text("Your Shipping Addresses")
-                    .font(.custom(CustomFonts.nutinoMedium, size: 18))
-                    .padding(.horizontal)
-                    .padding(.top, 16)
-                
-                ScrollView {
-                    VStack(spacing: 16) {
-                        ForEach(addresses.indices, id: \.self) { index in
-                            addressView(address: addresses[index], index: index)
+                if addresses.isEmpty {
+                    emptyStateView()
+                } else {
+                    Text("Your Shipping Addresses")
+                        .font(.custom(CustomFonts.nutinoMedium, size: 18))
+                        .padding(.horizontal)
+                        .padding(.top, 16)
+                    
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            ForEach(addresses.indices, id: \.self) { index in
+                                addressView(address: addresses[index], index: index)
+                            }
                         }
+                        .padding()
                     }
-                    .padding()
                 }
-                
                 Spacer()
             }
             
             Button {
-                coordinator.addDeliveryLoaction()
+                coordinator.addDeliveryLoaction(viewmodel: viewModel)
             } label: {
                 Image(systemName: "plus")
                     .font(.title2)
@@ -73,6 +60,56 @@ struct ShippingAdressesView: View {
         }
         .background(Color.customWhite)
         .ignoresSafeArea()
+        .onAppear {
+            setupBindings()
+            viewModel.fetchAddresses()
+        }
+    }
+    
+    private func emptyStateView() -> some View {
+        VStack(spacing: 20) {
+            Image(systemName: "map")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, height: 100)
+                .foregroundColor(.gray.opacity(0.5))
+            
+            Text("No Shipping Addresses")
+                .font(.custom(CustomFonts.nutinoMedium, size: 20))
+                .foregroundColor(.primary)
+            
+            Text("Add your first shipping address to start managing your delivery locations.")
+                .font(.custom(CustomFonts.nutinoRegular, size: 16))
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+    }
+    
+    private func setupBindings() {
+        viewModel.output
+            .receive(on: DispatchQueue.main)
+            .sink { action in
+                switch action {
+                case .shippingAddressesFetched(let fetchedAddresses):
+                    addresses = fetchedAddresses
+                case .shippingAddressAdded(let address):
+                    addresses.append(address)
+                case .shippingAddressRemoved(let address):
+                    addresses.removeAll { $0.id == address.id }
+                case .newDefaultAddress(let address):
+                    updateDefaultAddress(address)
+                case .error(let error):
+                    print("Error: \(error)")
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateDefaultAddress(_ newDefaultAddress: AddressModel) {
+        viewModel.setDefaultAddress(newDefaultAddress)
     }
     
     private func addressView(address: AddressModel, index: Int) -> some View {
@@ -85,7 +122,7 @@ struct ShippingAdressesView: View {
                 Spacer()
                 
                 Button {
-                    addresses.remove(at: index)
+                    viewModel.removeAddress(address)
                 } label: {
                     Image(systemName: "trash")
                         .foregroundColor(.red)
@@ -109,12 +146,7 @@ struct ShippingAdressesView: View {
             
             HStack(spacing: 12) {
                 Button {
-                    var updatedAddresses = addresses
-                    updatedAddresses = updatedAddresses.map { addr in
-                        var newAddr = addr
-                        return newAddr
-                    }
-                    addresses = updatedAddresses
+                    viewModel.setDefaultAddress(address)
                 } label: {
                     Image(address.isDefault ? Icons.selectedBlack : Icons.selectableBox)
                         .resizable()
@@ -133,8 +165,4 @@ struct ShippingAdressesView: View {
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
-}
-
-#Preview {
-    ShippingAdressesView()
 }
