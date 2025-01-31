@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct FilterView: View {
+    let viewModel: DefaultProductsCatalogViewModel
+    
     @State private var minPrice: Double = 1
     @State private var maxPrice: Double = 500
     @State private var selectedColorId: Int? = nil
     @State private var selectedConditionId: Int? = nil
+    @State private var selectedMaterialId: Int? = nil
+    @State private var isMaterialPickerPresented = false
     
     var body: some View {
         ZStack {
@@ -51,6 +55,12 @@ struct FilterView: View {
                             .cornerRadius(12)
                             .shadow(radius: 5)
                         
+                        materialsView()
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .shadow(radius: 5)
+                        
                         conditionsView()
                             .padding()
                             .background(Color.white)
@@ -70,6 +80,9 @@ struct FilterView: View {
             }
         }
         .edgesIgnoringSafeArea(.all)
+        .sheet(isPresented: $isMaterialPickerPresented) {
+            MaterialPickerView(selectedMaterialId: $selectedMaterialId)
+        }
     }
     
     private func colorsView() -> some View {
@@ -91,6 +104,36 @@ struct FilterView: View {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    private func materialsView() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Material")
+                .font(.custom(CustomFonts.nutinoBlack, size: 20))
+            
+            Button(action: {
+                isMaterialPickerPresented = true
+            }) {
+                HStack {
+                    Text(selectedMaterialId.flatMap { id in
+                        ProductMaterial.allMaterials.first { $0.id == id }?.title
+                    } ?? "Select Material")
+                    .font(.custom(CustomFonts.nutinoRegular, size: 16))
+                    .foregroundColor(selectedMaterialId == nil ? .gray : .black)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(.gray)
+                }
+                .padding()
+                .background(Color.white)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .strokeBorder(Color.gray.opacity(0.5), lineWidth: 1)
+                )
             }
         }
     }
@@ -141,7 +184,7 @@ struct FilterView: View {
     private func buttons() -> some View {
         HStack(spacing: 20) {
             Button {
-                print("discard pressed")
+                viewModel.dismissPresented()
             } label: {
                 Text("Discard")
                     .font(Font.custom(CustomFonts.nutinoBold, size: 16))
@@ -158,7 +201,27 @@ struct FilterView: View {
             .shadow(radius: 5)
             
             Button {
-                print("Apply pressed")
+                let selectedColor = selectedColorId.flatMap { colorId in
+                    ProductColor.allColors.first { $0.id == colorId }
+                }.map { [$0] }
+                
+                let selectedMaterial = selectedMaterialId.flatMap { materialId in
+                    ProductMaterial.allMaterials.first { $0.id == materialId }
+                }.map { [$0] }
+                
+                let selectedCondition = selectedConditionId.flatMap { conditionId in
+                    ProductCondition.allConditions.first { $0.id == conditionId }
+                }.map { [$0] }
+                
+                viewModel.applyFilters(
+                    minPrice: Int(minPrice),
+                    maxPrice: Int(maxPrice),
+                    selectedColors: selectedColor,
+                    selectedMaterials: selectedMaterial,
+                    selectedConditions: selectedCondition
+                )
+                
+                viewModel.dismissPresented()
             } label: {
                 Text("Apply")
                     .font(Font.custom(CustomFonts.nutinoBold, size: 16))
@@ -177,8 +240,4 @@ struct FilterView: View {
         .padding()
         .frame(maxWidth: .infinity)
     }
-}
-
-#Preview {
-    FilterView()
 }

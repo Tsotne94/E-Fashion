@@ -8,18 +8,18 @@
 import Foundation
 import Combine
 
-protocol ProductsCatalogViewModel: ProductsCatalogViewModelInput, ProductsCatalogViewModelOutput {
-}
+protocol ProductsCatalogViewModel: ProductsCatalogViewModelInput, ProductsCatalogViewModelOutput {}
 
-protocol ProductsCatalogViewModelInput{
+protocol ProductsCatalogViewModelInput {
     func viewDidLoad(id: Int)
-    func fetchProducts(for id: Int)
+    func fetchProducts(for id: Int, isRetry: Bool)
     func searchProduct(query: String)
     func backButtonTapped()
     func productTappedAt(index: Int)
     func presentSortingView()
     func presentFilterView()
     func dismissPresented()
+    func applyFilters(minPrice: Int?, maxPrice: Int?, selectedColors: [ProductColor]?, selectedMaterials: [ProductMaterial]?, selectedConditions: [ProductCondition]?)
     var currentPage: Int { get }
     var id: Int? { get set }
     var orderType: OrderType { get set }
@@ -39,6 +39,7 @@ enum ProductsCatalogViewModelOutputAction {
     case sortingChanged
     case subCategoriesFetched
     case isLoading(Bool)
+    case nothingFound
 }
 
 final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
@@ -53,6 +54,17 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     
     lazy var orderType: OrderType = .newestFirst {
         didSet {
+            parameters = SearchParameters(
+                page: currentPage,
+                order: orderType,
+                query: parameters.query,
+                category: parameters.category,
+                colors: parameters.colors,
+                materials: parameters.materials,
+                conditions: parameters.conditions,
+                minPrice: parameters.minPrice,
+                maxPrice: parameters.maxPrice
+            )
             if let id = id {
                 fetchProducts(for: id)
             }
@@ -62,7 +74,14 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     
     var currentPage: Int = 1
     var id: Int? = nil
-    lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orderType)
+    
+    lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orderType) {
+        didSet {
+            if let id = id {
+                fetchProducts(for: id)
+            }
+        }
+    }
     
     var products: [Product] = []
     var cateogries: [Category] = [] {
@@ -99,14 +118,15 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
         fetchProducts(for: id)
     }
     
-    func fetchProducts(for id: Int) {
+    func fetchProducts(for id: Int, isRetry: Bool = false) {
         self.id = id
         _output.send(.isLoading(true))
         
         let category = Category(id: id)
-        parameters = SearchParameters(page: currentPage, order: orderType, category: category)
+        let updatedParams = parameters
+        updatedParams.category = category
         
-        fetchProductsUseCase.execute(params: parameters)
+        fetchProductsUseCase.execute(params: updatedParams)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
@@ -114,11 +134,30 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
                     self?._output.send(.isLoading(false))
                 }
             } receiveValue: { [weak self] products in
-                self?.products = products
-                self?._output.send(.productsFetched)
+                if !products.isEmpty {
+                    self?.products = products
+                    self?._output.send(.productsFetched)
+                } else {
+                    self?._output.send(isRetry ? .productsFetched : .nothingFound)
+                }
                 self?._output.send(.isLoading(false))
             }
             .store(in: &subscriptions)
+    }
+    
+    func applyFilters( minPrice: Int?, maxPrice: Int?, selectedColors: [ProductColor]?, selectedMaterials: [ProductMaterial]?, selectedConditions: [ProductCondition]?
+    ) {
+        parameters = SearchParameters(
+            page: currentPage,
+            order: parameters.order,
+            query: parameters.query,
+            category: parameters.category,
+            colors: selectedColors,
+            materials: selectedMaterials,
+            conditions: selectedConditions,
+            minPrice: minPrice,
+            maxPrice: maxPrice
+        )
     }
     
     func searchProduct(query: String) {
@@ -154,7 +193,12 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
             page: currentPage,
             order: .relevance,
             query: query,
-            category: Category(id: id)
+            category: Category(id: id),
+            colors: parameters.colors,
+            materials: parameters.materials,
+            conditions: parameters.conditions,
+            minPrice: parameters.minPrice,
+            maxPrice: parameters.maxPrice
         )
         
         fetchProductsUseCase.execute(params: newParams)
@@ -165,9 +209,13 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
                     self?._output.send(.isLoading(false))
                 }
             } receiveValue: { [weak self] products in
-                self?.products = products
-                self?._output.send(.productsFetched)
-                self?._output.send(.isLoading(false))
+                if !products.isEmpty {
+                    self?.products = products
+                    self?._output.send(.productsFetched)
+                    self?._output.send(.isLoading(false))
+                } else {
+                    self?._output.send(.nothingFound)
+                }
             }
             .store(in: &subscriptions)
     }

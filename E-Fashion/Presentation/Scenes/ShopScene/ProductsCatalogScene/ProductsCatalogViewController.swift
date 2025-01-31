@@ -245,6 +245,12 @@ class ProductsCatalogViewController: UIViewController {
                     self?.updateLoadingState(isLoading)
                 case .subCategoriesFetched:
                     self?.categoriesCollectionView.reloadData()
+                case .nothingFound:
+                    guard let self = self else { return }
+                    guard let id = self.id else { return }
+                    self.showAlert(title: "No Products Found", message: "OK") {
+                        self.viewModel.fetchProducts(for: id, isRetry: true)
+                    }
                 }
             }.store(in: &subscriptions)
     }
@@ -294,6 +300,9 @@ class ProductsCatalogViewController: UIViewController {
             
             NSLayoutConstraint.deactivate([collectionViewTopToSearchBar].compactMap { $0 })
             NSLayoutConstraint.activate([collectionViewTopToButtonStack].compactMap { $0 })
+            
+            guard let id = viewModel.id else { return }
+            viewModel.fetchProducts(for: id)
         }
         
         UIView.animate(withDuration: 0.3, animations: { [weak self] in
@@ -348,8 +357,6 @@ extension ProductsCatalogViewController: UISearchResultsUpdating {
 extension ProductsCatalogViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         toggleSearchBar()
-        guard let id = viewModel.id else { return }
-        viewModel.fetchProducts(for: id)
     }
 }
 

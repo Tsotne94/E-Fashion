@@ -70,7 +70,7 @@ class DefaultShopTabCoordinator:  NSObject, ShopTabCoordinator {
     }
     
     func presentFilterViewController(nowSelectedParameters: SearchParameters, viewModel: DefaultProductsCatalogViewModel) {
-        let viewController = UIHostingController(rootView: FilterView())
+        let viewController = UIHostingController(rootView: FilterView(viewModel: viewModel))
         viewController.modalPresentationStyle = .fullScreen
         rootViewController.present(viewController, animated: true)
     }
