@@ -14,7 +14,7 @@ struct PaymentMethodsView: View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 SUICustomHeaderView(title: "Payment Methods", showBackButton: true) {
-                    print("back tapped")
+                    tabCoordinator.goBack()
                 }
                 
                 Text("Your Payment Methods")

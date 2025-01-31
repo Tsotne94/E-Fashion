@@ -17,9 +17,7 @@ struct AddShippingAddressView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            SUICustomHeaderView(title: "Adding Shipping Address", showBackButton: true) {
-                print("back tapped")
-            }
+            SUICustomHeaderView(title: "Adding Shipping Address", showBackButton: false)
             
             ScrollView {
                 VStack(spacing: 24) {

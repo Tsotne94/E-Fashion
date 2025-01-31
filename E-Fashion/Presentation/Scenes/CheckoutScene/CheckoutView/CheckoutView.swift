@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CheckoutView: View {
-    @Inject private var shopCoordinator: BagTabCoordinator
+    @Inject private var coordinator: BagTabCoordinator
     
     var body: some View {
         VStack {
@@ -29,7 +29,7 @@ struct CheckoutView: View {
     private func header() -> some View {
         HStack {
             Button {
-                
+                coordinator.goBack()
             } label: {
                 Image(Icons.back)
             }
@@ -51,7 +51,7 @@ struct CheckoutView: View {
                         .font(.custom(CustomFonts.nutinoMedium, size: 14))
                     Spacer()
                     Button {
-                        print("change pressed")
+                        coordinator.changeDeliveryLocation()
                     } label: {
                         Text("Change")
                             .font(.custom(CustomFonts.nutinoMedium, size: 14))
@@ -78,7 +78,7 @@ struct CheckoutView: View {
                     .shadow(radius: 3)
                 Spacer()
                 Button {
-                    shopCoordinator.changeCard()
+                    coordinator.changeCard()
                 } label: {
                     Text("Change")
                         .font(.custom(CustomFonts.nutinoMedium, size: 14))
@@ -178,7 +178,7 @@ struct CheckoutView: View {
     
     private func orderButton() -> some View {
         Button {
-            shopCoordinator.orderPlaced()
+            coordinator.orderPlaced()
         } label: {
             Text("SUBMIT ORDER")
                 .font(.custom(CustomFonts.nutinoBold, size: 16))

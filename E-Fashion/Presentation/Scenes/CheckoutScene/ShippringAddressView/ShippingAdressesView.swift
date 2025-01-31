@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ShippingAdressesView: View {
+    @Inject private var coordinator: BagTabCoordinator
+    
     @State private var addresses: [AddressModel] = [
         AddressModel(
             name: "John Doe",
@@ -31,10 +33,15 @@ struct ShippingAdressesView: View {
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 SUICustomHeaderView(title: "Shipping Addresses", showBackButton: true) {
-                    print("back tapped")
+                    coordinator.goBack()
                 }
+                
+                Text("Your Shipping Addresses")
+                    .font(.custom(CustomFonts.nutinoMedium, size: 18))
+                    .padding(.horizontal)
+                    .padding(.top, 16)
                 
                 ScrollView {
                     VStack(spacing: 16) {
@@ -44,10 +51,12 @@ struct ShippingAdressesView: View {
                     }
                     .padding()
                 }
+                
+                Spacer()
             }
             
             Button {
-                
+                coordinator.addDeliveryLoaction()
             } label: {
                 Image(systemName: "plus")
                     .font(.title2)
@@ -62,7 +71,8 @@ struct ShippingAdressesView: View {
             .padding(.trailing, 20)
             .padding(.bottom, 90)
         }
-        .background(Color.customWhite, ignoresSafeAreaEdges: .all)
+        .background(Color.customWhite)
+        .ignoresSafeArea()
     }
     
     private func addressView(address: AddressModel, index: Int) -> some View {
@@ -103,7 +113,6 @@ struct ShippingAdressesView: View {
                     var updatedAddresses = addresses
                     updatedAddresses = updatedAddresses.map { addr in
                         var newAddr = addr
-                        
                         return newAddr
                     }
                     addresses = updatedAddresses
