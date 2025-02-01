@@ -85,7 +85,6 @@ Whether you're seeking to refresh your wardrobe with hot new picks or organize y
   <img src="https://github.com/user-attachments/assets/14433d4d-86a2-4bd9-b46e-36c527622179" alt="Onboarding Screenshot" width="250">
   <img src="https://github.com/user-attachments/assets/9c6cb366-4c5c-49f9-b36a-baefec22805c" alt="Home Screenshot" width="250">
   <img src="https://github.com/user-attachments/assets/8920bad6-52a3-4fcc-8240-4fffe8a14950" alt="Details Screenshot" width="250">
-  <img src="https://github.com/user-attachments/assets/628db26d-f6c1-4e78-87d9-b69cd629f310" alt="Cart Screenshot" width="250">
 </div>
 
 ---
