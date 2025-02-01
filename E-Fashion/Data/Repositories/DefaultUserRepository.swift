@@ -18,22 +18,29 @@ public struct DefaultUserRepository: UserRepository {
             if let user = Auth.auth().currentUser {
                 promise(.success(UserDTO(from: user).toUser()))
             } else {
-                promise(.failure(NSError(domain: "AuthError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Error Occured During Registration, Please Try Again"])))
+                promise(.failure(NSError(domain: "AuthError", code: 1, userInfo: [NSLocalizedDescriptionKey: "No authenticated user found"])))
             }
         }
         .eraseToAnyPublisher()
     }
     
     func saveUser(user: User) -> AnyPublisher<Void, Error> {
+        guard let firebaseUser = Auth.auth().currentUser else {
+            return Fail(error: NSError(domain: "AuthError", code: 1, userInfo: [NSLocalizedDescriptionKey: "No authenticated user found"]))
+                .eraseToAnyPublisher()
+        }
+        
         let userDTO = UserDTO(from: user)
         return Future { promise in
-            db.collection("Users").addDocument(data: userDTO.toDictionary()) { error in
-                if let error = error {
-                    promise(.failure(error))
-                } else {
-                    promise(.success(()))
+            self.db.collection("Users")
+                .document(firebaseUser.uid)
+                .setData(userDTO.toDictionary()) { error in
+                    if let error = error {
+                        promise(.failure(error))
+                    } else {
+                        promise(.success(()))
+                    }
                 }
-            }
         }
         .eraseToAnyPublisher()
     }
@@ -77,14 +84,13 @@ public struct DefaultUserRepository: UserRepository {
                         .document(firebaseUser.uid)
                     
                     do {
-                        try userRef.setData(from: user) { error in
+                        try userRef.setData(from: user, merge: true) { error in
                             if let error = error {
                                 promise(.failure(error))
                             } else {
                                 promise(.success(()))
                             }
                         }
-                        
                     } catch {
                         promise(.failure(error))
                     }
