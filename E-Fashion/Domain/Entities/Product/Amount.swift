@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-struct PriceAmount: Codable {
+public struct PriceAmount: Codable {
     let amount: String
     let currency_code: String
     

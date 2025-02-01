@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-protocol ProductsRepository {
+public protocol ProductsRepository {
     func fetchProducts(params: SearchParameters) -> AnyPublisher<[Product], Error>
     func fetchSingleProduct(id: String) -> AnyPublisher<ProductDetails, Error>
     func fetchImage(for urlString: String) -> AnyPublisher<Data?, Never>

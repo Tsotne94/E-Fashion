@@ -5,16 +5,16 @@
 //  Created by Cotne Chubinidze on 22.01.25.
 //
 
-protocol ClearCacheUseCase {
+public protocol ClearCacheUseCase {
     func execute()
 }
 
-struct DefaultClearCacheUseCase: ClearCacheUseCase {
+public struct DefaultClearCacheUseCase: ClearCacheUseCase {
     @Inject private var cacheRepository: CacheRepository
     
     public init() { }
     
-    func execute() {
+    public func execute() {
         cacheRepository.clearCache()
     }
 }

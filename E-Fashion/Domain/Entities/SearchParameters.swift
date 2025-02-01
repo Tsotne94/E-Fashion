@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-class SearchParameters {
+public final class SearchParameters {
     var page: Int
     var order: OrderType
     var query: String?

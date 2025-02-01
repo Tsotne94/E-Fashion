@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 22.01.25.
 //
 
-enum ImageCacheError: Error {
+public enum ImageCacheError: Error {
     case notFound
     case invalidData
     case storageError(Error)

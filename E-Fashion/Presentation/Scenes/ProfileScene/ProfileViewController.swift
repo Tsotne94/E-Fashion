@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController {
     private var viewModel = DefautlProfileViewModel()
     private var subscriptions = Set<AnyCancellable>()
     

@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 21.01.25.
 //
 
-extension Product {
+public extension Product {
     var discountPercentage: Double {
         guard let originalPrice = Double(price.amount.amount),
               let discountedPrice = Double(price.totalAmount.amount),

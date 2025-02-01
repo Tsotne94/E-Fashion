@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 21.01.25.
 //
 
-struct ProductDetails: Codable {
+public struct ProductDetails: Codable {
     let productId: Int
     let title: String
     let url: String

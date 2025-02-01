@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol IsInCartUseCase {
+public protocol IsInCartUseCase {
     func execute(id: String) -> AnyPublisher<Bool, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultIsInCartUseCase: IsInCartUseCase {
     
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<Bool, any Error> {
+    public func execute(id: String) -> AnyPublisher<Bool, any Error> {
         firestoreCartRepository.isInCart(id: id)
     }
 }

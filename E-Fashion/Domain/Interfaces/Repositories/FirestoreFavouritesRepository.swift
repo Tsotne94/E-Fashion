@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol FirestoreFavouritesRepository {
+public protocol FirestoreFavouritesRepository {
     func addItemToFavourites(product: Product) -> AnyPublisher<Void, Error>
     func fetchFavourites() -> AnyPublisher<[Product], Error>
     func removeFromFavourites(id: String) -> AnyPublisher<Void, Error>

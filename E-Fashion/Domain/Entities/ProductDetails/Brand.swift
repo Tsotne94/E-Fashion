@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 21.01.25.
 //
 
-struct Brand: Codable {
+public struct Brand: Codable {
     let brandId: Int
     let name: String?
     let favourites: Int

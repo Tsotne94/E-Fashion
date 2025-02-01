@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol AddToCartUseCase {
+public protocol AddToCartUseCase {
     func execute(product: ProductInCart) -> AnyPublisher<Void, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultAddToCartUseCase: AddToCartUseCase {
     
     public init() { }
     
-    func execute(product: ProductInCart) -> AnyPublisher<Void, any Error> {
+    public func execute(product: ProductInCart) -> AnyPublisher<Void, any Error> {
         cartRepository.addToCart(product: product)
     }
 }

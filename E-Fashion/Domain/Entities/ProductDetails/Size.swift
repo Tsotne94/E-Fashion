@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 21.01.25.
 //
 
-struct Size: Codable {
+public struct Size: Codable {
     let sizeId: Int
     let name: String
 }

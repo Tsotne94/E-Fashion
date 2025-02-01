@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol UpdateDefaultAddressUseCase {
+public protocol UpdateDefaultAddressUseCase {
     func execute(id: String) -> AnyPublisher<Void, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultUpdateDefaultAddressUseCase: UpdateDefaultAddressUseCase {
     
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<Void, any Error> {
+    public func execute(id: String) -> AnyPublisher<Void, any Error> {
         addressRepository.updateDefaultAddress(id: id)
     }
 }

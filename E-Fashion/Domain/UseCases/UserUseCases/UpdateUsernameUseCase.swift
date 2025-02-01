@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol UpdateUserInfoUseCase {
+public protocol UpdateUserInfoUseCase {
     func execute(user: User) -> AnyPublisher<Void, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultUpdateUserInfoUseCase: UpdateUserInfoUseCase {
     
     public init() { }
     
-    func execute(user: User) -> AnyPublisher<Void, any Error> {
+    public func execute(user: User) -> AnyPublisher<Void, any Error> {
         userRepository.updateUserInfo(user: user)
     }
 }

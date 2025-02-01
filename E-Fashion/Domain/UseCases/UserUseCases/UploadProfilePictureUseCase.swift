@@ -17,7 +17,7 @@ public struct DefaultUploadProfilePictureUseCase: UploadProfilePictureUseCase {
     
     public init() { }
     
-    func execute(image: Data) -> AnyPublisher<Void, Error> {
+    public func execute(image: Data) -> AnyPublisher<Void, Error> {
         userRepository.uploadProfilePicture(image: image)
     }
 }

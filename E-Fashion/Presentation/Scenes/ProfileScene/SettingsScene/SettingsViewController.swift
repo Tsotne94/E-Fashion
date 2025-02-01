@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-class SettingsViewController: UIViewController {
+final class SettingsViewController: UIViewController {
     private let viewModel = DefaultSettingsViewModel()
     private var subscriptions = Set<AnyCancellable>()
     
@@ -55,13 +55,12 @@ class SettingsViewController: UIViewController {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 60
-        imageView.backgroundColor = .customGray
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleProfileImageTap))
         imageView.addGestureRecognizer(tap)
         
-        imageView.image = UIImage(systemName: "person.circle.fill")
+        imageView.image = UIImage(systemName: "person.circle.fill")?.withTintColor(.systemGray3, renderingMode: .alwaysOriginal)
         return imageView
     }()
     

@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-extension ProductMaterial {
+public extension ProductMaterial {
     static let allMaterials: [ProductMaterial] = [
         ProductMaterial(id: 149, title: "Acrylic"),
         ProductMaterial(id: 122, title: "Alpaca"),

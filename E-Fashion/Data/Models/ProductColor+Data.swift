@@ -22,11 +22,11 @@ extension ProductColor: Hashable {
         ProductColor(id: 8, title: "Yellow")
     ]
     
-    static func == (lhs: ProductColor, rhs: ProductColor) -> Bool {
+    public static func == (lhs: ProductColor, rhs: ProductColor) -> Bool {
         lhs.id == rhs.id
     }
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }

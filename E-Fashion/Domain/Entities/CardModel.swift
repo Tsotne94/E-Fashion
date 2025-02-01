@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CardModel: Codable {
+public struct CardModel: Codable {
     let id: String
     let timestamp: Date
     let number: String
@@ -17,7 +17,7 @@ struct CardModel: Codable {
     let isDefault: Bool
     let type: CardType
     
-    init(number: String, holderName: String, expiryDate: String, cvv: String, isdefault: Bool) {
+    public init(number: String, holderName: String, expiryDate: String, cvv: String, isdefault: Bool) {
         self.id = UUID().uuidString
         self.timestamp = Date()
         self.number = number

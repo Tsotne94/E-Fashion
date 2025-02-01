@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol RemoveAddressUseCase {
+public protocol RemoveAddressUseCase {
     func execute(id: String) -> AnyPublisher<Void, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultRemoveAddressUseCase: RemoveAddressUseCase {
     
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<Void, Error> {
+    public func execute(id: String) -> AnyPublisher<Void, Error> {
         addressRepository.removeAddress(id: id)
     }
 }

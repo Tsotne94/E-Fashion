@@ -15,7 +15,7 @@ struct DefaultFirestoreFavouritesRepository: FirestoreFavouritesRepository {
     
     public init() { }
     
-    func addItemToFavourites(product: Product) -> AnyPublisher<Void, any Error> {
+    public func addItemToFavourites(product: Product) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in
@@ -41,7 +41,7 @@ struct DefaultFirestoreFavouritesRepository: FirestoreFavouritesRepository {
             }.eraseToAnyPublisher()
     }
     
-    func fetchFavourites() -> AnyPublisher<[Product], any Error> {
+    public func fetchFavourites() -> AnyPublisher<[Product], any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user -> AnyPublisher<[Product], Error> in
                 Future<[Product], Error> { promise in
@@ -75,7 +75,7 @@ struct DefaultFirestoreFavouritesRepository: FirestoreFavouritesRepository {
             .eraseToAnyPublisher()
     }
     
-    func removeFromFavourites(id: String) -> AnyPublisher<Void, Error> {
+    public func removeFromFavourites(id: String) -> AnyPublisher<Void, Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future<Void, Error> { promise in
@@ -98,7 +98,7 @@ struct DefaultFirestoreFavouritesRepository: FirestoreFavouritesRepository {
             .eraseToAnyPublisher()
     }
     
-    func isFavourite(id: String) -> AnyPublisher<Bool, Error> {
+    public func isFavourite(id: String) -> AnyPublisher<Bool, Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future<Bool, Error> { promise in

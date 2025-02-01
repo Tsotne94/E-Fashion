@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 21.01.25.
 //
 
-enum HomePageItems {
+public enum HomePageItems {
     case new
     case hot
 }

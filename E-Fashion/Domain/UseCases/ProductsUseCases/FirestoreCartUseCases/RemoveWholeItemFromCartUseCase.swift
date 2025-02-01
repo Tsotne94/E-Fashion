@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol RemoveWholeItemFromCartUseCase {
+public protocol RemoveWholeItemFromCartUseCase {
     func execute(id: String) -> AnyPublisher<Void, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultRemoveWholeItemFromCartUseCase: RemoveWholeItemFromCartUseC
     
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<Void, any Error> {
+    public func execute(id: String) -> AnyPublisher<Void, any Error> {
         cartRepository.removeWholeItem(id: id)
     }
 }

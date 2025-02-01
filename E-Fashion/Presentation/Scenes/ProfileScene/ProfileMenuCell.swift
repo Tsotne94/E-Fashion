@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileMenuCell: UITableViewCell {
+final class ProfileMenuCell: UITableViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false

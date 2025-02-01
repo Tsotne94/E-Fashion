@@ -6,7 +6,7 @@
 //
 import Foundation
 
-struct AnimationState {
+public struct AnimationState {
     var width: CGFloat = 0
     var offset: CGFloat = 0
     

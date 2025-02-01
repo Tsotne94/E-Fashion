@@ -11,7 +11,9 @@ import FirebaseFirestore
 public struct DefaultFirestoreCartRepository: FirestoreCartRepository {
     @Inject private var getCurrentUserUseCase: GetCurrentUserUseCase
     
-    func addToCart(product: ProductInCart) -> AnyPublisher<Void, any Error> {
+    public init() { }
+    
+    public func addToCart(product: ProductInCart) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in
@@ -36,7 +38,7 @@ public struct DefaultFirestoreCartRepository: FirestoreCartRepository {
             .eraseToAnyPublisher()
     }
     
-    func fetchItemsInCart() -> AnyPublisher<[ProductInCart], Never> {
+    public func fetchItemsInCart() -> AnyPublisher<[ProductInCart], Never> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future<[ProductInCart], Error> { promise in
@@ -64,7 +66,7 @@ public struct DefaultFirestoreCartRepository: FirestoreCartRepository {
             .eraseToAnyPublisher()
     }
     
-    func removeWholeItem(id: String) -> AnyPublisher<Void, any Error> {
+    public func removeWholeItem(id: String) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in
@@ -86,7 +88,7 @@ public struct DefaultFirestoreCartRepository: FirestoreCartRepository {
             .eraseToAnyPublisher()
     }
     
-    func isInCart(id: String) -> AnyPublisher<Bool, any Error> {
+    public func isInCart(id: String) -> AnyPublisher<Bool, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in
@@ -108,7 +110,7 @@ public struct DefaultFirestoreCartRepository: FirestoreCartRepository {
                 }
             }.eraseToAnyPublisher()
     }
-    func clearItems() -> AnyPublisher<Void, Error> {
+    public func clearItems() -> AnyPublisher<Void, Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user -> AnyPublisher<Void, Error> in
                 let cartRef = Firestore.firestore()

@@ -13,9 +13,10 @@ import FirebaseStorage
 public struct DefaultUserRepository: UserRepository {
     private let db = Firestore.firestore()
     private let storage = Storage.storage()
+    
     public init() { }
     
-    func getCurrentUser() -> AnyPublisher<User, Error> {
+    public func getCurrentUser() -> AnyPublisher<User, Error> {
         Future { promise in
             if let user = Auth.auth().currentUser {
                 promise(.success(UserDTO(from: user).toUser()))
@@ -26,7 +27,7 @@ public struct DefaultUserRepository: UserRepository {
         .eraseToAnyPublisher()
     }
     
-    func saveUser(user: User) -> AnyPublisher<Void, Error> {
+    public func saveUser(user: User) -> AnyPublisher<Void, Error> {
         guard let firebaseUser = Auth.auth().currentUser else {
             return Fail(error: NSError(domain: "AuthError", code: 1, userInfo: [NSLocalizedDescriptionKey: "No authenticated user found"]))
                 .eraseToAnyPublisher()
@@ -47,7 +48,7 @@ public struct DefaultUserRepository: UserRepository {
         .eraseToAnyPublisher()
     }
     
-    func FetchUserInfoUseCase() -> AnyPublisher<User, Error> {
+    public func FetchUserInfoUseCase() -> AnyPublisher<User, Error> {
         getCurrentUser()
             .flatMap { user in
                 Future { promise in
@@ -77,7 +78,7 @@ public struct DefaultUserRepository: UserRepository {
             }.eraseToAnyPublisher()
     }
     
-    func updateUserInfo(user: User) -> AnyPublisher<Void, Error> {
+    public func updateUserInfo(user: User) -> AnyPublisher<Void, Error> {
         getCurrentUser()
             .flatMap { firebaseUser in
                 Future { promise in
@@ -101,7 +102,7 @@ public struct DefaultUserRepository: UserRepository {
             .eraseToAnyPublisher()
     }
     
-    func uploadProfilePicture(image: Data) -> AnyPublisher<Void, Error> {
+    public func uploadProfilePicture(image: Data) -> AnyPublisher<Void, Error> {
         getCurrentUser()
             .flatMap { user in
                 let id = user.uid
@@ -114,7 +115,7 @@ public struct DefaultUserRepository: UserRepository {
             .eraseToAnyPublisher()
     }
 
-    private func uploadImageToStorage(image: Data, fileName: String) -> AnyPublisher<String, Error> {
+    public func uploadImageToStorage(image: Data, fileName: String) -> AnyPublisher<String, Error> {
         let storageRef = storage.reference().child("profile_images/\(fileName)")
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
@@ -138,7 +139,7 @@ public struct DefaultUserRepository: UserRepository {
         .eraseToAnyPublisher()
     }
 
-    private func updateImageURL(_ url: String, for userID: String) -> AnyPublisher<Void, Error> {
+    public func updateImageURL(_ url: String, for userID: String) -> AnyPublisher<Void, Error> {
         let userRef = db.collection("Users").document(userID)
         return Future { promise in
             userRef.updateData(["imageUrl": url]) { error in

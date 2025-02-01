@@ -11,14 +11,14 @@ public struct User: Codable {
     let displayName: String?
     let imageUrl: String?
     
-    init(uid: String, email: String? = nil, displayName: String? = nil, imageUrl: String? = nil) {
+    public init(uid: String, email: String? = nil, displayName: String? = nil, imageUrl: String? = nil) {
         self.uid = uid
         self.email = email
         self.displayName = displayName
         self.imageUrl = imageUrl
     }
     
-    init() {
+    public init() {
         self.uid = ""
         self.email = nil
         self.displayName = nil

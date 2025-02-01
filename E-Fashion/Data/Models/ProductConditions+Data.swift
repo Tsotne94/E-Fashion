@@ -19,11 +19,11 @@ extension ProductCondition: Hashable {
                         description: "A frequently used item with imperfections and signs of wear. Include photos and descriptions of flaws in your listing.")
     ]
     
-    static func == (lhs: ProductCondition, rhs: ProductCondition) -> Bool {
+    public static func == (lhs: ProductCondition, rhs: ProductCondition) -> Bool {
         lhs.id == rhs.id
     }
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }

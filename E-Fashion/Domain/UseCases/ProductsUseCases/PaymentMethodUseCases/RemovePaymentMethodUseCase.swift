@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol RemovePaymentMethodUseCase {
+public protocol RemovePaymentMethodUseCase {
     func execute(id: String) -> AnyPublisher<Void, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultRemovePaymentMethodUseCase: RemovePaymentMethodUseCase {
     
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<Void, any Error> {
+    public func execute(id: String) -> AnyPublisher<Void, any Error> {
         paymentRepository.removePaymentMethod(id: id)
     }
 }

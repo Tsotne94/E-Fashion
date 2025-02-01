@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 21.01.25.
 //
 
-struct ColorDetails: Codable {
+public struct ColorDetails: Codable {
     let colorId: Int
     let name: String
 }

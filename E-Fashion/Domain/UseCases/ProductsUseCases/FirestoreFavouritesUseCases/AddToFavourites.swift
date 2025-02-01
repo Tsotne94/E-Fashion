@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol AddToFavouritesUseCase {
+public protocol AddToFavouritesUseCase {
     func execute(product: Product) -> AnyPublisher<Void, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultAddToFavouritesUseCase: AddToFavouritesUseCase {
     
     public init() { }
     
-    func execute(product: Product) -> AnyPublisher<Void, any Error> {
+    public func execute(product: Product) -> AnyPublisher<Void, any Error> {
         favouritesRepository.addItemToFavourites(product: product)
     }
 }

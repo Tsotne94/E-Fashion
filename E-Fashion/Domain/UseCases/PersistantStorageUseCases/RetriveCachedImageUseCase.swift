@@ -7,16 +7,16 @@
 import Foundation
 import Combine
 
-protocol RetriveCachedImageUseCase {
+public protocol RetriveCachedImageUseCase {
     func execute(url: String) -> AnyPublisher<Data, ImageCacheError>
 }
 
-struct DefaultRetriveCachedImageUseCase: RetriveCachedImageUseCase {
+public struct DefaultRetriveCachedImageUseCase: RetriveCachedImageUseCase {
     @Inject private var cacheRepository: CacheRepository
     
     public init() { }
     
-    func execute(url: String) -> AnyPublisher<Data, ImageCacheError> {
+    public func execute(url: String) -> AnyPublisher<Data, ImageCacheError> {
         cacheRepository.getImage(url: url)
     }
 }

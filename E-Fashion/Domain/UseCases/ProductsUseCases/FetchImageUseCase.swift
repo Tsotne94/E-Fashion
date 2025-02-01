@@ -8,16 +8,16 @@
 import Foundation
 import Combine
 
-protocol FetchImageUseCase {
+public protocol FetchImageUseCase {
     func execute(urlString: String) -> AnyPublisher<Data?, Never>
 }
 
-struct DefaultFetchImageUseCase: FetchImageUseCase {
+public struct DefaultFetchImageUseCase: FetchImageUseCase {
     @Inject private var productsRepository: ProductsRepository
     
     public init() { }
     
-    func execute(urlString: String) -> AnyPublisher<Data?, Never> {
+    public func execute(urlString: String) -> AnyPublisher<Data?, Never> {
         productsRepository.fetchImage(for: urlString)
     }
 }

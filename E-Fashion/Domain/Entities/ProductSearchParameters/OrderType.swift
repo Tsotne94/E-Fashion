@@ -5,13 +5,13 @@
 //  Created by Cotne Chubinidze on 21.01.25.
 //
 
-enum OrderType: String, Codable, CaseIterable {
+public enum OrderType: String, Codable, CaseIterable {
     case relevance = "relevance"
     case priceHighToLow = "price_high_to_low"
     case priceLowToHigh = "price_low_to_high"
     case newestFirst = "newest_first"
     
-    func name() -> String {
+    public func name() -> String {
         switch self {
         case .relevance:
             return "Relevance"

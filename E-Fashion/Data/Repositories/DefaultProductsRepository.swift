@@ -14,7 +14,7 @@ public struct DefaultProductsRepository: ProductsRepository {
     
     public init() { }
     
-    func fetchProducts(params: SearchParameters) -> AnyPublisher<[Product], Error> {
+    public func fetchProducts(params: SearchParameters) -> AnyPublisher<[Product], Error> {
         let endpoint = APIEndpoint.shared.search(parameters: params)
         return Future { promise in
             APIEndpoint.shared.request(
@@ -31,7 +31,7 @@ public struct DefaultProductsRepository: ProductsRepository {
         }.eraseToAnyPublisher()
     }
     
-    func fetchSingleProduct(id: String) -> AnyPublisher<ProductDetails, Error> {
+    public func fetchSingleProduct(id: String) -> AnyPublisher<ProductDetails, Error> {
         let endpoint = APIEndpoint.shared.getProduct(productId: id)
         
         return Future { promise in
@@ -49,7 +49,7 @@ public struct DefaultProductsRepository: ProductsRepository {
         }.eraseToAnyPublisher()
     }
     
-    func fetchImage(for urlString: String) -> AnyPublisher<Data?, Never> {
+    public func fetchImage(for urlString: String) -> AnyPublisher<Data?, Never> {
         guard let url = URL(string: urlString) else {
             return Just(nil).eraseToAnyPublisher()
         }

@@ -4,9 +4,10 @@
 //
 //  Created by Cotne Chubinidze on 30.01.25.
 //
+
 import Foundation
 
-struct AddressModel: Codable, Equatable, Hashable {
+public struct AddressModel: Codable, Equatable, Hashable {
     let id: String
     let timestamp: Date
     let name: String

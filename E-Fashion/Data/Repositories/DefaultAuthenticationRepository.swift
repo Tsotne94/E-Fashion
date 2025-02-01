@@ -13,7 +13,7 @@ public struct DefaultAuthenticationRepository: AuthenticationRepository {
     
     public init() { }
     
-    func signIn(email: String, password: String) -> AnyPublisher<User, Error> {
+    public func signIn(email: String, password: String) -> AnyPublisher<User, Error> {
         return Future<User, Error> { promise in
             Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
                 if let error = error {
@@ -30,7 +30,7 @@ public struct DefaultAuthenticationRepository: AuthenticationRepository {
         .eraseToAnyPublisher()
     }
     
-    func signUp(email: String, password: String) -> AnyPublisher<User, Error> {
+    public func signUp(email: String, password: String) -> AnyPublisher<User, Error> {
         Future<User, Error> { promise in
             Auth.auth().createUser(withEmail: email, password: password) { result, error in
                 if let error = error {
@@ -49,7 +49,7 @@ public struct DefaultAuthenticationRepository: AuthenticationRepository {
         .eraseToAnyPublisher()
     }
     
-    func signOut() -> AnyPublisher<Void, Never> {
+    public func signOut() -> AnyPublisher<Void, Never> {
         return Future<Void, Never> { promise in
             do {
                 try Auth.auth().signOut()

@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol IsFavouriteUseCase {
+public protocol IsFavouriteUseCase {
     func execute(id: String) -> AnyPublisher<Bool, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultIsFavouriteUseCase: IsFavouriteUseCase {
     
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<Bool, Error> {
+    public func execute(id: String) -> AnyPublisher<Bool, Error> {
         favouritesRepository.isFavourite(id: id)
     }
 }

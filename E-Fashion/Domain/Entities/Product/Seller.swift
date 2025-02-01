@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-struct Seller: Codable {
+public struct Seller: Codable {
     let userId: Int
     let username: String
     let profile: String

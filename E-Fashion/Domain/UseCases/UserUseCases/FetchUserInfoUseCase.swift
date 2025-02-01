@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol FetchUserInfoUseCase {
+public protocol FetchUserInfoUseCase {
     func execute() -> AnyPublisher<User, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultFetchUserInfoUseCase: FetchUserInfoUseCase {
     
     public init() { }
     
-    func execute() -> AnyPublisher<User, any Error> {
+    public func execute() -> AnyPublisher<User, any Error> {
         userRepository.FetchUserInfoUseCase()
     }
 }
