@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import Combine
 
 class ProfileViewController: UIViewController {
-    let viewModel = DefautlProfileViewModel()
+    private var viewModel = DefautlProfileViewModel()
+    private var subscriptions = Set<AnyCancellable>()
     
     private let header: CustomHeaderView = {
         let header = CustomHeaderView(title: "My Profile", showBackButton: false)
@@ -16,12 +18,7 @@ class ProfileViewController: UIViewController {
         return header
     }()
     
-    private lazy var menuItems = [
-        MenuItem(title: "My orders", subtitle: "Already have \(viewModel.numberOfOrders ?? 0) orders", type: .orders),
-        MenuItem(title: "Shipping addresses", subtitle: "\(viewModel.numberOfAdresses ?? 0) addresses", type: .shippingAddresses),
-        MenuItem(title: "Payment methods", subtitle: "\(viewModel.paymentMethod?.type ?? .unknown)", type: .paymentMethods),
-        MenuItem(title: "Settings", subtitle: "Notifications, password", type: .settings)
-    ]
+    private var menuItems: [MenuItem] = []
     
     private let tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .plain)
@@ -51,7 +48,7 @@ class ProfileViewController: UIViewController {
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Matilda Brown"
+        label.text = "Loading..."
         label.font = .systemFont(ofSize: 20, weight: .semibold)
         return label
     }()
@@ -59,18 +56,22 @@ class ProfileViewController: UIViewController {
     private let emailLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "matildabrown@mail.com"
+        label.text = "Loading..."
         label.font = .systemFont(ofSize: 14)
         label.textColor = .systemGray
         return label
     }()
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         configureTableView()
-        setupGestures()
+        bindViewModel()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.viewDidLoad()
     }
 
     private func setupUI() {
@@ -82,7 +83,6 @@ class ProfileViewController: UIViewController {
         profileHeaderView.addSubview(nameLabel)
         profileHeaderView.addSubview(emailLabel)
         
-    
         NSLayoutConstraint.activate([
             header.topAnchor.constraint(equalTo: view.topAnchor),
             header.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -117,18 +117,55 @@ class ProfileViewController: UIViewController {
         tableView.isScrollEnabled = false
     }
     
-    private func setupGestures() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
-        profileImageView.addGestureRecognizer(tapGesture)
+    private func bindViewModel() {
+        viewModel.output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] action in
+                self?.handleViewModelOutput(action)
+            }
+            .store(in: &subscriptions)
     }
     
-
-    @objc private func profileImageTapped() {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .photoLibrary
-        imagePicker.allowsEditing = true
-        present(imagePicker, animated: true)
+    private func handleViewModelOutput(_ action: ProfileViewModelOutputAction) {
+        switch action {
+        case .profileInfoFetched:
+            updateProfileInfo()
+        case .profileImageFetched:
+            updateProfileImage()
+        case .paymentMethodsFetched, .deliveryLcationsFetched:
+            updateMenuItems()
+        }
+    }
+    
+    private func updateProfileInfo() {
+        guard let user = viewModel.user else { return }
+        nameLabel.text = (user.displayName)
+        emailLabel.text = user.email
+    }
+    
+    private func updateProfileImage() {
+        if let imageData = viewModel.profilePicture,
+           let image = UIImage(data: imageData) {
+            profileImageView.image = image
+        }
+    }
+    
+    private func updateMenuItems() {
+        menuItems = [
+            MenuItem(title: "My orders",
+                    subtitle: "Already have \(viewModel.numberOfOrders ?? 0) orders",
+                    type: .orders),
+            MenuItem(title: "Shipping addresses",
+                    subtitle: "\(viewModel.numberOfAdresses ?? 0) addresses",
+                    type: .shippingAddresses),
+            MenuItem(title: "Payment methods",
+                     subtitle: viewModel.paymentMethod?.number.identifyCardType().getImageName() ?? "No payment method",
+                    type: .paymentMethods),
+            MenuItem(title: "Settings",
+                    subtitle: "Username, Logout",
+                    type: .settings)
+        ]
+        tableView.reloadData()
     }
     
     private func handleMenuItemTap(_ type: MenuItemType) {
@@ -167,18 +204,3 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         handleMenuItemTap(menuItem.type)
     }
 }
-
-extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let image = info[.editedImage] as? UIImage {
-            profileImageView.image = image
-        }
-        picker.dismiss(animated: true)
-    }
-}
-
-/*
- if let image = UIImage(named: "example") {
-     let data = image.jpegData(compressionQuality: 0.8) // 0.0 to 1.0, where 1.0 is highest quality
- }
- */
