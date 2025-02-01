@@ -5,6 +5,7 @@
 //  Created by Cotne Chubinidze on 19.01.25.
 //
 
+import Foundation
 import Combine
 
 protocol UserRepository {
@@ -12,4 +13,5 @@ protocol UserRepository {
     func saveUser(user: User) -> AnyPublisher<Void, Error>
     func FetchUserInfoUseCase() -> AnyPublisher<User, Error>
     func updateUserInfo(user: User) -> AnyPublisher<Void, Error>
+    func uploadProfilePicture(image: Data) -> AnyPublisher<Void, Error>
 }

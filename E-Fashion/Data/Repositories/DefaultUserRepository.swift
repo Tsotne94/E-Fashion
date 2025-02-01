@@ -8,9 +8,11 @@
 import Combine
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseStorage
 
 public struct DefaultUserRepository: UserRepository {
     private let db = Firestore.firestore()
+    private let storage = Storage.storage()
     public init() { }
     
     func getCurrentUser() -> AnyPublisher<User, Error> {
@@ -97,5 +99,56 @@ public struct DefaultUserRepository: UserRepository {
                 }
             }
             .eraseToAnyPublisher()
+    }
+    
+    func uploadProfilePicture(image: Data) -> AnyPublisher<Void, Error> {
+        getCurrentUser()
+            .flatMap { user in
+                let id = user.uid
+                let fileName = "\(id).jpg"
+                return self.uploadImageToStorage(image: image, fileName: fileName)
+                    .flatMap { downloadURL in
+                        self.updateImageURL(downloadURL, for: id)
+                    }
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private func uploadImageToStorage(image: Data, fileName: String) -> AnyPublisher<String, Error> {
+        let storageRef = storage.reference().child("profile_images/\(fileName)")
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        
+        return Future { promise in
+            storageRef.putData(image, metadata: metadata) { _, error in
+                if let error = error {
+                    promise(.failure(error))
+                    return
+                }
+                
+                storageRef.downloadURL { url, error in
+                    if let error = error {
+                        promise(.failure(error))
+                    } else if let url = url {
+                        promise(.success(url.absoluteString))
+                    }
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
+    private func updateImageURL(_ url: String, for userID: String) -> AnyPublisher<Void, Error> {
+        let userRef = db.collection("Users").document(userID)
+        return Future { promise in
+            userRef.updateData(["imageUrl": url]) { error in
+                if let error = error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(()))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }

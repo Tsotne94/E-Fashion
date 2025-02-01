@@ -31,10 +31,10 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
     @Inject private var deliveryRepository: DeliveryRepository
     private var cancellables = Set<AnyCancellable>()
     
-    private let outputSubject = PassthroughSubject<ShippingAddressesViewModelOutputAction, Never>()
+    private let _output = PassthroughSubject<ShippingAddressesViewModelOutputAction, Never>()
     
     var output: AnyPublisher<ShippingAddressesViewModelOutputAction, Never> {
-        outputSubject.eraseToAnyPublisher()
+        _output.eraseToAnyPublisher()
     }
     
     @Published var addresses: [AddressModel] = [] 
@@ -46,7 +46,7 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.error(error))
+                    self?._output.send(.error(error))
                 }
             }, receiveValue: { [weak self] addresses in
                 self?.addresses = addresses.sorted(by: { $0.isDefault && !$1.isDefault})
@@ -59,7 +59,7 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.error(error))
+                    self?._output.send(.error(error))
                 }
             }, receiveValue: { [weak self] _ in
                 self?.fetchAddresses()
@@ -74,7 +74,7 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.error(error))
+                    self?._output.send(.error(error))
                 }
             }, receiveValue: { [weak self] _ in
                 self?.fetchAddresses()
@@ -91,7 +91,7 @@ final class DefaultShippingAddressesViewModel: ObservableObject, ShippingAddress
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.error(error))
+                    self?._output.send(.error(error))
                 }
             }, receiveValue: { [weak self] _ in
                 self?.fetchAddresses()

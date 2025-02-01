@@ -41,10 +41,10 @@ final class DefaultPaymentMethodsViewModel: ObservableObject, PaymentMethodsView
     @Inject private var paymentRepository: PaymentRepository
     private var cancellables = Set<AnyCancellable>()
     
-    private let outputSubject = PassthroughSubject<PaymentMethodsViewModelOutputAction, Never>()
+    private let _output = PassthroughSubject<PaymentMethodsViewModelOutputAction, Never>()
     
     var output: AnyPublisher<PaymentMethodsViewModelOutputAction, Never> {
-        outputSubject.eraseToAnyPublisher()
+        _output.eraseToAnyPublisher()
     }
     
     @Published var paymentMethods: [CardModel] = []
@@ -56,7 +56,7 @@ final class DefaultPaymentMethodsViewModel: ObservableObject, PaymentMethodsView
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.error(error))
+                    self?._output.send(.error(error))
                 }
             }, receiveValue: { [weak self] methods in
                 self?.paymentMethods = methods.sorted(by: { $0.isDefault && !$1.isDefault })
@@ -69,7 +69,7 @@ final class DefaultPaymentMethodsViewModel: ObservableObject, PaymentMethodsView
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.error(error))
+                    self?._output.send(.error(error))
                 }
             }, receiveValue: { [weak self] _ in
                 self?.fetchPaymentMethods()
@@ -84,7 +84,7 @@ final class DefaultPaymentMethodsViewModel: ObservableObject, PaymentMethodsView
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.error(error))
+                    self?._output.send(.error(error))
                 }
             }, receiveValue: { [weak self] _ in
                 self?.fetchPaymentMethods()
@@ -101,7 +101,7 @@ final class DefaultPaymentMethodsViewModel: ObservableObject, PaymentMethodsView
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    self?.outputSubject.send(.error(error))
+                    self?._output.send(.error(error))
                 }
             }, receiveValue: { [weak self] _ in
                 self?.fetchPaymentMethods()

@@ -47,8 +47,8 @@ final class DefaultProfileTabCoordinator: NSObject, ProfileTabCoordinator {
     }
     
     func goToSettings() {
-//        let viewController = UIHostingController(rootView: SettingsView())
-//        rootViewController.pushViewController(viewController, animated: true)
+        let viewController = SettingsViewController()
+        rootViewController.pushViewController(viewController, animated: true)
     }
     
     func goBack() {
