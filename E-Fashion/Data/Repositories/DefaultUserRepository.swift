@@ -37,4 +37,59 @@ public struct DefaultUserRepository: UserRepository {
         }
         .eraseToAnyPublisher()
     }
+    
+    func FetchUserInfoUseCase() -> AnyPublisher<User, Error> {
+        getCurrentUser()
+            .flatMap { user in
+                Future { promise in
+                    let userRef = self.db
+                        .collection("Users")
+                        .document(user.uid)
+                    
+                    userRef.getDocument { (snapshot, error) in
+                        if let error = error {
+                            promise(.failure(error))
+                            return
+                        }
+                        
+                        guard let snapshot = snapshot, snapshot.exists else {
+                            promise(.failure(NSError(domain: "Firestore Error", code: -1, userInfo: [NSLocalizedDescriptionKey: "User document not found"])))
+                            return
+                        }
+                        
+                        do {
+                            let user = try snapshot.data(as: User.self)
+                            promise(.success(user))
+                        } catch {
+                            promise(.failure(error))
+                        }
+                    }
+                }
+            }.eraseToAnyPublisher()
+    }
+    
+    func updateUserInfo(user: User) -> AnyPublisher<Void, Error> {
+        getCurrentUser()
+            .flatMap { firebaseUser in
+                Future { promise in
+                    let userRef = db
+                        .collection("Users")
+                        .document(firebaseUser.uid)
+                    
+                    do {
+                        try userRef.setData(from: user) { error in
+                            if let error = error {
+                                promise(.failure(error))
+                            } else {
+                                promise(.success(()))
+                            }
+                        }
+                        
+                    } catch {
+                        promise(.failure(error))
+                    }
+                }
+            }
+            .eraseToAnyPublisher()
+    }
 }

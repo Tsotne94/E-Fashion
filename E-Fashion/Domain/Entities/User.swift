@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 15.01.25.
 //
 
-public struct User {
+public struct User: Codable {
     let uid: String
     let email: String?
     let displayName: String?
