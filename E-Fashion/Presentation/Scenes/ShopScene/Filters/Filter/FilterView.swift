@@ -213,7 +213,7 @@ struct FilterView: View {
                     ProductCondition.allConditions.first { $0.id == conditionId }
                 }.map { [$0] }
                 
-                viewModel.applyFilters(
+                viewModel.fetchWithFilters(
                     minPrice: Int(minPrice),
                     maxPrice: Int(maxPrice),
                     selectedColors: selectedColor,
