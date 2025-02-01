@@ -98,4 +98,4 @@ Whether you're seeking to refresh your wardrobe with hot new picks or organize y
 ---
 
 ## ❤️ Credits
-Built with passion by [Your Name]. Special thanks to the **RapidAPI Vinted API** for providing product data.
+Built with passion by Tsotne Chubinidze. Special thanks to the **RapidAPI Vinted API** for providing product data.
