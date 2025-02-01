@@ -99,5 +99,4 @@ class GreetingViewController: UIViewController {
             infoLabel.widthAnchor.constraint(equalToConstant: 250)
         ])
     }
-
 }

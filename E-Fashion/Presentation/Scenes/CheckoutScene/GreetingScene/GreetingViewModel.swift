@@ -16,7 +16,6 @@ protocol GreetingViewModelInput {
 }
 
 protocol GreetingViewModelOutput{
-    
 }
 
 final class DefaultGreetingViewModelOutput: GreetingViewModel {
