@@ -91,7 +91,17 @@ public final class Categories {
                     title: "New Items",
                     parentId: 1904,
                     type: .new,
-                    items: []
+                    items: [
+                        Category(id: 12, title: "Tops & T-Shirts", parentId: 4),
+                        Category(id: 11, title: "Skirts", parentId: 4),
+                        Category(id: 10, title: "Dresses", parentId: 4),
+                        Category(id: 8, title: "Suits & Blazers", parentId: 4),
+                        Category(id: 15, title: "Shorts", parentId: 4),
+                        Category(id: 13, title: "Sweaters", parentId: 4),
+                        Category(id: 215, title: "Slippers", parentId: 16),
+                        Category(id: 543, title: "Heels", parentId: 16),
+                        Category(id: 1049, title: "Boots", parentId: 16)
+                    ]
                 ),
                 .clothes: SubcategorySection(
                     id: 4,
