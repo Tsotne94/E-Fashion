@@ -65,7 +65,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
                 minPrice: parameters.minPrice,
                 maxPrice: parameters.maxPrice
             )
-            if let id = id {
+            if let id = id, isLoading == false {
                 fetchProducts(for: id)
             }
             _output.send(.sortingChanged)
