@@ -33,7 +33,7 @@ enum BagViewModelOutputAction {
     case error(Error)
 }
 
-class DefaultBagViewModel: ObservableObject, BagViewModel {
+final class DefaultBagViewModel: ObservableObject, BagViewModel {
     @Inject private var bagCoordinator: BagTabCoordinator
     @Inject private var fetchProductsInCartUseCase: FetchItemsInCartUseCase
     @Inject private var removeItemFromCartUseCase: RemoveWholeItemFromCartUseCase

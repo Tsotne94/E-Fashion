@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol FetchItemsInCartUseCase {
+public protocol FetchItemsInCartUseCase {
     func execute() -> AnyPublisher<[ProductInCart], Never>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultFetchItemsInCartUseCase: FetchItemsInCartUseCase {
     
     public init() { }
     
-    func execute() -> AnyPublisher<[ProductInCart], Never> {
+    public func execute() -> AnyPublisher<[ProductInCart], Never> {
         cartRepository.fetchItemsInCart()
     }
 }

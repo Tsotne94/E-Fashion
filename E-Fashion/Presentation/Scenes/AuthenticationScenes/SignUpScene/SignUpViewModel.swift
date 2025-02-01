@@ -58,12 +58,11 @@ final class DefaultSignUpViewModel: SignUpViewModel, ObservableObject {
     @Published var alertMessage: String = ""
     
     private var _output = PassthroughSubject<SignUpViewModelOutputAction, Never>()
+    private var subscriptions = Set<AnyCancellable>()
     
     var output: AnyPublisher<SignUpViewModelOutputAction, Never> {
         _output.eraseToAnyPublisher()
     }
-    
-    private var subscriptions = Set<AnyCancellable>()
     
     init() {
         setupBinding()
@@ -76,10 +75,10 @@ final class DefaultSignUpViewModel: SignUpViewModel, ObservableObject {
                 switch action {
                 case .successfullSignUp:
                     self?.alertTitle = "Success!"
-                    self?.alertMessage = "Successfull Sign Up!"
+                    self?.alertMessage = "Successful Sign Up!"
                     self?.showAlert = true
                 case .signUpError(let error):
-                    self?.alertTitle = "Error Occured During Registration!"
+                    self?.alertTitle = "Error Occurred During Registration!"
                     self?.alertMessage = error.description
                     self?.showAlert = true
                 }
@@ -88,67 +87,45 @@ final class DefaultSignUpViewModel: SignUpViewModel, ObservableObject {
     
     func signUp() {
         isLoading = true
-        checkIfSignedUp()
-    }
-
-    private func checkIfSignedUp() {
-        getCurrentUserUseCase.execute()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(_):
-                    self?.handleSignUp()
-                }
-            } receiveValue: { [weak self] user in
-                self?.saveUser(user.uid)
-            }.store(in: &subscriptions)
-    }
-
-    private func handleSignUp() {
-        if validateInputs() {
-            signUpUseCase.execute(email: email, password: password)
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] completion in
-                    switch completion {
-                    case .finished:
-                        self?.isLoading = false
-                        self?._output.send(.successfullSignUp)
-                    case .failure(let error):
-                        self?.isLoading = false
-                        let mappedError: SignUpError = ErrorMapper.map(error)
-                        self?._output.send(.signUpError(mappedError))
-                    }
-                } receiveValue: { [weak self] user in
-                    self?.saveUser(user.uid)
-                }.store(in: &subscriptions)
-        } else {
+        
+        guard validateInputs() else {
             isLoading = false
+            return
         }
-    }
-
-    private func saveUser(_ userId: String) {
-        let user = User(uid: userId, email: email, displayName: name)
-        saveUserUseCase.execute(user: user)
+        
+        signUpUseCase.execute(email: email, password: password)
+            .flatMap { [weak self] user -> AnyPublisher<Void, Error> in
+                guard let self = self else {
+                    return Fail(error: NSError(domain: "SignUpError", code: -1, userInfo: nil))
+                        .eraseToAnyPublisher()
+                }
+                
+                let userWithName = User(
+                    uid: user.uid,
+                    email: self.email,
+                    displayName: self.name
+                )
+                
+                return self.saveUserUseCase.execute(user: userWithName)
+            }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
+                self?.isLoading = false
+                
                 switch completion {
                 case .finished:
+                    self?._output.send(.successfullSignUp)
                     self?.authenticationCoordinator.successfullLogin()
                 case .failure(let error):
                     let mappedError: SignUpError = ErrorMapper.map(error)
                     self?._output.send(.signUpError(mappedError))
-                    
-                    self?.alertTitle = "Error"
-                    self?.alertMessage = "Failed to save user information. Please try again."
-                    self?.showAlert = true
                 }
             } receiveValue: { _ in
-                print("User info saved successfully")
-            }.store(in: &subscriptions)
+                print("User registration and data save completed successfully")
+            }
+            .store(in: &subscriptions)
     }
-
+    
     func showPassword() {
         passwordIsHidden = false
     }
@@ -174,7 +151,6 @@ final class DefaultSignUpViewModel: SignUpViewModel, ObservableObject {
               !email.isEmpty,
               !password.isEmpty,
               !confirmPasswod.isEmpty else {
-            
             _output.send(.signUpError(.unknownError("All fields are required")))
             return false
         }

@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol UpdateDefaultPaymentMethodUseCase {
+public protocol UpdateDefaultPaymentMethodUseCase {
     func execute(id: String) -> AnyPublisher<Void, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultUpdateDefaultPaymentMethodUseCase: UpdateDefaultPaymentMeth
     
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<Void, any Error> {
+    public func execute(id: String) -> AnyPublisher<Void, any Error> {
         paymentRepository.updateDefaultPaymentMethod(id: id)
     }
 }

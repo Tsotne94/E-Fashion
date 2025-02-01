@@ -5,8 +5,8 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-struct Category: Codable, Identifiable {
-    let id: Int
+public struct Category: Codable, Identifiable {
+    public let id: Int
     let title: String
     let parentId: Int
     let parent: String
@@ -17,7 +17,7 @@ struct Category: Codable, Identifiable {
         case parent
     }
     
-    init(id: Int, title: String = "", parentId: Int = 0, parent: String = "") {
+    public init(id: Int, title: String = "", parentId: Int = 0, parent: String = "") {
         self.id = id
         self.title = title
         self.parentId = parentId

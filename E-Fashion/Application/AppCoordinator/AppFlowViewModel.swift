@@ -14,6 +14,7 @@ public protocol AppFlowViewModelInput: AnyObject {
     func startAuthentication()
     func startMainFlow()
     func loadAppState()
+    func signOut()
 }
 
 public protocol AppFlowViewModelOutput {
@@ -30,6 +31,7 @@ public final class DefaultAppFlowViewModel: AppFlowViewModel {
     @Inject var loadAppStateUseCase: LoadAppStateUseCase
     @Inject var updateAppStateUseCase: UpdateAppStateUseCase
     @Inject var hasSeenOnboardingUseCase: HasSeenOnboardingUseCase
+    @Inject var signOutUseCase: SignOutUseCase
     
     private let _output = PassthroughSubject<AppFlowViewModelOutputAction, Never>()
     public var output: AnyPublisher<AppFlowViewModelOutputAction, Never> {
@@ -55,6 +57,15 @@ public final class DefaultAppFlowViewModel: AppFlowViewModel {
     public func startMainFlow() {
         updateAppStateUseCase.execute(state: .mainFlow)
         _output.send(.startMainFlow)
+    }
+    
+    public func signOut() {
+        signOutUseCase.execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateAppStateUseCase.execute(state: .authentication)
+                self?._output.send(.startAuthentication)
+            }.store(in: &subscriptions)
     }
     
     public func loadAppState() {

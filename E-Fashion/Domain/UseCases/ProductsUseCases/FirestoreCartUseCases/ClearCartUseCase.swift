@@ -7,14 +7,14 @@
 
 import Combine
 
-protocol ClearCartUseCase {
+public protocol ClearCartUseCase {
     func execute() -> AnyPublisher<Void, Error>
 }
 
 public struct DefaultClearCartUseCase: ClearCartUseCase {
     @Inject private var cartRepository: FirestoreCartRepository
     
-    func execute() -> AnyPublisher<Void, Error> {
+    public func execute() -> AnyPublisher<Void, Error> {
         cartRepository.clearItems()
     }
 }

@@ -7,16 +7,16 @@
 
 import Combine
 
-protocol FetchSingleProductUseCase {
+public protocol FetchSingleProductUseCase {
     func execute(id: String) -> AnyPublisher<ProductDetails, Error>
 }
 
-struct DefaultFetchSingleProductUseCase: FetchSingleProductUseCase {
+public struct DefaultFetchSingleProductUseCase: FetchSingleProductUseCase {
     @Inject private var productsRepository: ProductsRepository
 
     public init() { }
     
-    func execute(id: String) -> AnyPublisher<ProductDetails, any Error> {
+    public func execute(id: String) -> AnyPublisher<ProductDetails, any Error> {
         productsRepository.fetchSingleProduct(id: id)
     }
 }

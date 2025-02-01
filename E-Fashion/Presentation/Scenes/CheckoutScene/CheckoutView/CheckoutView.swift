@@ -133,7 +133,3 @@ struct OrderButton: View {
         .disabled(viewModel.isVlaid())
     }
 }
-
-#Preview {
-    CheckoutView()
-}

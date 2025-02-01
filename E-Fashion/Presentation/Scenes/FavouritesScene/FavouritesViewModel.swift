@@ -15,6 +15,7 @@ protocol FavouritesViewModelInput {
     func fetchProducts()
     func deleteProduct(id: Int)
     func addToCart(id: Int)
+    func fetchItemsinCart()
     var favouriteProducts: [Product] { get }
     var images: [String: Data] { get }
     var isLoading: Bool { get }
@@ -34,16 +35,18 @@ enum FavouritesViewModelOutputAction {
 
 class DefaultFavouritesViewModel: ObservableObject, FavouritesViewModel, FavouritesViewModelInput, FavouritesViewModelOutput {
     @Inject private var favouritesCoordinator: FavouritesTabCoordinator
+    
     @Inject private var fetchFavouriteProductsUseCase: FetchFavouriteItemsUseCase
     @Inject private var removeFromFavouritesUseCase: RemoveFromFavouritesUseCase
     @Inject private var fetchProductDetailsUseCase: FetchSingleProductUseCase
+    @Inject private var fetchItemsInCartUseCase: FetchItemsInCartUseCase
     @Inject private var addToCartUseCase: AddToCartUseCase
     @Inject private var fetchImageUseCase: FetchImageUseCase
     
     @Published private(set) var favouriteProducts: [Product] = []
     @Published private(set) var images: [String: Data] = [:]
     @Published private(set) var isLoading: Bool = false
-    @Published private var isInCart: [Int: Bool] = [:]
+    @Published private(set) var isInCart: [Int: Bool] = [:]
     
     private var _output = PassthroughSubject<FavouritesViewModelOutputAction, Never>()
     var output: AnyPublisher<FavouritesViewModelOutputAction, Never> {
@@ -55,6 +58,7 @@ class DefaultFavouritesViewModel: ObservableObject, FavouritesViewModel, Favouri
     
     public init() {
         setupBinding()
+        fetchItemsinCart()
     }
     
     private func setupBinding() {
@@ -175,6 +179,28 @@ class DefaultFavouritesViewModel: ObservableObject, FavouritesViewModel, Favouri
                 self?._output.send(.productsFetched(products))
                 FavouriteProducts.products = products
             })
+            .store(in: &subscriptions)
+    }
+    
+    func fetchItemsinCart() {
+        fetchItemsInCartUseCase.execute()
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    print("Successfully fetched items in cart")
+                case .failure(let error):
+                    self._output.send(.error(error))
+                }
+            } receiveValue: { [weak self] products in
+                self?.isInCart.removeAll()
+                
+                products.forEach { product in
+                    if let productId = Int(product.id) {
+                        self?.isInCart[productId] = true
+                    }
+                }
+            }
             .store(in: &subscriptions)
     }
 }

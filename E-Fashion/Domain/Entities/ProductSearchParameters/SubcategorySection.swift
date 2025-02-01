@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 29.01.25.
 //
 
-struct SubcategorySection {
+public struct SubcategorySection {
     let id: Int
     let title: String
     let parentId: Int

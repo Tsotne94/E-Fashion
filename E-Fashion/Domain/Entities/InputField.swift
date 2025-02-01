@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum InputField: Hashable, Equatable {
+public enum InputField: Hashable, Equatable {
     case name
     case email
     case password

@@ -40,6 +40,10 @@ public extension DependencyContainer {
             Module { DefaultFetchDefaultDelieryLocationUseCase() as FetchDefaultDelieryLocationUseCase }
             Module { DefaultFetchDefaultPaymentMethodUseCase() as FetchDefaultPaymentMethodUseCase }
             Module { DefaultClearCartUseCase() as ClearCartUseCase }
+            Module { DefaultUpdateUserInfoUseCase() as UpdateUserInfoUseCase }
+            Module { DefaultFetchUserInfoUseCase() as FetchUserInfoUseCase }
+            Module { DefaultUploadProfilePictureUseCase() as UploadProfilePictureUseCase }
+            Module { DefaultSignOutUseCase() as SignOutUseCase }
         }
     }
 }

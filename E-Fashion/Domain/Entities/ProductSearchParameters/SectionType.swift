@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 29.01.25.
 //
 
-enum SectionType {
+public enum SectionType {
     case new
     case clothes
     case shoes

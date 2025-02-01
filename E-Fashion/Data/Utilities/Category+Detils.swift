@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-extension Array where Element: ParameterItem {
+public extension Array where Element: ParameterItem {
     func getTitles() -> [String] {
         map { $0.title }
     }

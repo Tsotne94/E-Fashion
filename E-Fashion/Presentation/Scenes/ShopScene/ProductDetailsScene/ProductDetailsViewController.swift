@@ -399,4 +399,3 @@ extension ProductDetailsViewController: UICollectionViewDelegateFlowLayout {
         return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
     }
 }
-

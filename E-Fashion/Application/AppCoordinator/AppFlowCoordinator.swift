@@ -14,6 +14,7 @@ protocol AppFlowCoordinator: Coordinator {
     func startOnboarding()
     func startAuthentication()
     func startMainFlow()
+    func signOut()
 }
 
 final class DefaultAppFlowCoordinator: AppFlowCoordinator {
@@ -69,6 +70,10 @@ final class DefaultAppFlowCoordinator: AppFlowCoordinator {
         mainCoordinator.start()
         self.childCoordinators = [mainCoordinator]
         self.window.setRootViewControllerWithPushTransition(mainCoordinator.rootViewController, animated: animatedTransition)
+    }
+    
+    func signOut() {
+        viewModel.signOut()
     }
 }
 

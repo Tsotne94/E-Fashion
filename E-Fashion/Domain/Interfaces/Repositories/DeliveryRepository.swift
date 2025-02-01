@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol DeliveryRepository {
+public protocol DeliveryRepository {
     func addAddress(address: AddressModel) -> AnyPublisher<Void, Error>
     func removeAddress(id: String) -> AnyPublisher<Void, Error>
     func updateDefaultAddress(id: String) -> AnyPublisher<Void, Error>

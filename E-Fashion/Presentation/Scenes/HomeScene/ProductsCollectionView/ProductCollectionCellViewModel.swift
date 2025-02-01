@@ -47,11 +47,11 @@ final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewMode
         return "\(product?.productId ?? 0)"
     }
     
-    private let outputSubject = PassthroughSubject<ProductCollectionCellViewModelOutputAction, Never>()
+    private let _output = PassthroughSubject<ProductCollectionCellViewModelOutputAction, Never>()
     private var subscriptions = Set<AnyCancellable>()
     
     var output: AnyPublisher<ProductCollectionCellViewModelOutputAction, Never> {
-        outputSubject.eraseToAnyPublisher()
+        _output.eraseToAnyPublisher()
     }
     
     init() { }
@@ -62,7 +62,7 @@ final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewMode
     
     func favouritesTapped() {
         guard let product = product else {
-            outputSubject.send(.showError("No product available"))
+            _output.send(.showError("No product available"))
             return
         }
         
@@ -80,7 +80,7 @@ final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewMode
                 case .finished:
                     break
                 case .failure(let error):
-                    self?.outputSubject.send(.showError(error.localizedDescription))
+                    self?._output.send(.showError(error.localizedDescription))
                 }
             } receiveValue: { [weak self] _ in
                 guard let self = self else { return }
@@ -88,7 +88,7 @@ final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewMode
                 if !FavouriteProducts.products.contains(where: { $0.productId == product.productId }) {
                     FavouriteProducts.products.append(product)
                 }
-                self.outputSubject.send(.favouriteStatusChanged)
+                self._output.send(.favouriteStatusChanged)
             }.store(in: &subscriptions)
     }
     
@@ -99,12 +99,12 @@ final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewMode
                 case .finished:
                     break
                 case .failure(let error):
-                    self?.outputSubject.send(.showError(error.localizedDescription))
+                    self?._output.send(.showError(error.localizedDescription))
                 }
             } receiveValue: { [weak self] _ in
                 guard let self = self else { return }
                 FavouriteProducts.products.removeAll { $0.productId == product.productId }
-                self.outputSubject.send(.favouriteStatusChanged)
+                self._output.send(.favouriteStatusChanged)
             }.store(in: &subscriptions)
     }
     
@@ -129,7 +129,7 @@ final class DefaultProductCollectionCellViewModel: ProductCollectionCellViewMode
                 return scaledImage
             }
             .sink { [weak self] image in
-                self?.outputSubject.send(.imageLoaded(image))
+                self?._output.send(.imageLoaded(image))
             }
             .store(in: &subscriptions)
     }

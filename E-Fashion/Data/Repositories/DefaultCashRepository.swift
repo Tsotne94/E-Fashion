@@ -17,7 +17,7 @@ public struct DefaultCashRepository: CacheRepository {
         self.cache.countLimit = 100
     }
     
-    func cacheImage(url: String, image: Data) -> AnyPublisher<Void, any Error> {
+    public func cacheImage(url: String, image: Data) -> AnyPublisher<Void, any Error> {
         Just(())
             .tryMap { _ in
                 self.cache.setObject(image as NSData, forKey: url as NSString)
@@ -29,7 +29,7 @@ public struct DefaultCashRepository: CacheRepository {
             .eraseToAnyPublisher()
     }
     
-    func getImage(url: String) -> AnyPublisher<Data, ImageCacheError> {
+    public func getImage(url: String) -> AnyPublisher<Data, ImageCacheError> {
         Just(url)
             .tryMap { url -> Data in
                 guard let data = self.cache.object(forKey: url as NSString) as Data? else {
@@ -46,11 +46,11 @@ public struct DefaultCashRepository: CacheRepository {
             .eraseToAnyPublisher()
     }
     
-    func clearCache() {
+    public func clearCache() {
         cache.removeAllObjects()
     }
     
-    func removeImage(url: String) {
+    public func removeImage(url: String) {
         cache.removeObject(forKey: url as NSString)
     }
 }

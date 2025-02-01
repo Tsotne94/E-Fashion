@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 21.01.25.
 //
 
-struct DetailSeller: Codable {
+public struct DetailSeller: Codable {
     let userId: Int
     let username: String
     let name: String?

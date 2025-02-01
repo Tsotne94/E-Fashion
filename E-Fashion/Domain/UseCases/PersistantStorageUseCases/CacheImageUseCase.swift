@@ -8,16 +8,16 @@
 import Foundation
 import Combine
 
-protocol CacheImageUseCase {
+public protocol CacheImageUseCase {
     func execute(url: String, imageAsData: Data) -> AnyPublisher<Void, Error>
 }
 
-struct DefaultCacheImageUseCase: CacheImageUseCase {
+public struct DefaultCacheImageUseCase: CacheImageUseCase {
     @Inject private var cacheRepository: CacheRepository
     
     public init() { }
     
-    func execute(url: String, imageAsData: Data) -> AnyPublisher<Void, any Error> {
+    public func execute(url: String, imageAsData: Data) -> AnyPublisher<Void, any Error> {
         cacheRepository.cacheImage(url: url, image: imageAsData)
     }
 }

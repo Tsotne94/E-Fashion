@@ -5,6 +5,6 @@
 //  Created by Cotne Chubinidze on 30.01.25.
 //
 
-final class FavouriteProducts {
+public final class FavouriteProducts {
     static var products: [Product] = []
 }

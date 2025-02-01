@@ -12,7 +12,9 @@ import Combine
 public struct DefaultPaymentRepository: PaymentRepository {
     @Inject private var getCurrentUserUseCase: GetCurrentUserUseCase
     
-    func addPaymentMethod(method: CardModel) -> AnyPublisher<Void, any Error> {
+    public init() { }
+    
+    public func addPaymentMethod(method: CardModel) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in
@@ -38,7 +40,7 @@ public struct DefaultPaymentRepository: PaymentRepository {
             .eraseToAnyPublisher()
     }
     
-    func fetchPaymentMethods() -> AnyPublisher<[CardModel], any Error> {
+    public func fetchPaymentMethods() -> AnyPublisher<[CardModel], any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future<[CardModel], any Error> { promise in
@@ -65,7 +67,7 @@ public struct DefaultPaymentRepository: PaymentRepository {
             .eraseToAnyPublisher()
     }
     
-    func removePaymentMethod(id: String) -> AnyPublisher<Void, any Error> {
+    public func removePaymentMethod(id: String) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in
@@ -124,7 +126,7 @@ public struct DefaultPaymentRepository: PaymentRepository {
             .eraseToAnyPublisher()
     }
     
-    func updateDefaultPaymentMethod(id: String) -> AnyPublisher<Void, any Error> {
+    public func updateDefaultPaymentMethod(id: String) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future<Void, any Error> { promise in
@@ -164,7 +166,7 @@ public struct DefaultPaymentRepository: PaymentRepository {
             .eraseToAnyPublisher()
     }
     
-    func fetchDefaultPaymentMethod() -> AnyPublisher<CardModel, any Error> {
+    public func fetchDefaultPaymentMethod() -> AnyPublisher<CardModel, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in

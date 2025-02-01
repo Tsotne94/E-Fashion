@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct FavouriteProduct: Codable {
+public struct FavouriteProduct: Codable {
     let id: String
     let product: Product
     let timestamp: Date
     
-    init(id: String, product: Product) {
+    public init(id: String, product: Product) {
         self.id = "\(product.productId)"
         self.product = product
         self.timestamp = Date()

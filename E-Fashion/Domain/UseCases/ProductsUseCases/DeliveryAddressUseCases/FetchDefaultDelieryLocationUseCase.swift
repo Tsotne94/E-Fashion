@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol FetchDefaultDelieryLocationUseCase {
+public protocol FetchDefaultDelieryLocationUseCase {
     func execute() -> AnyPublisher<AddressModel, Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultFetchDefaultDelieryLocationUseCase: FetchDefaultDelieryLoca
     
     public init() { }
     
-    func execute() -> AnyPublisher<AddressModel, any Error> {
+    public func execute() -> AnyPublisher<AddressModel, any Error> {
         deliveryRepository.fetchDefaultDelieryLocation()
     }
 }

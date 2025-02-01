@@ -5,33 +5,33 @@
 //  Created by Cotne Chubinidze on 20.01.25.
 //
 
-struct MainCategory {
+public struct MainCategory {
     let id: Int
     let title: String
     var sections: [SectionType: SubcategorySection]
     
-    init(id: Int, title: String, sections: [SectionType: SubcategorySection]) {
+    public init(id: Int, title: String, sections: [SectionType: SubcategorySection]) {
         self.id = id
         self.title = title
         self.sections = sections
     }
     
-    func getSection(_ type: SectionType) -> SubcategorySection? {
+    public func getSection(_ type: SectionType) -> SubcategorySection? {
         return sections[type]
     }
     
-    func getItems(_ type: SectionType) -> [Category] {
+    public func getItems(_ type: SectionType) -> [Category] {
         return sections[type]?.items ?? []
     }
 }
 
 
-class Categories {
+public final class Categories {
     let men: MainCategory
     let women: MainCategory
     let kids: MainCategory
     
-    init() {
+    public init() {
         self.men = MainCategory(
             id: 5,
             title: "Men",
@@ -91,7 +91,17 @@ class Categories {
                     title: "New Items",
                     parentId: 1904,
                     type: .new,
-                    items: []
+                    items: [
+                        Category(id: 12, title: "Tops & T-Shirts", parentId: 4),
+                        Category(id: 11, title: "Skirts", parentId: 4),
+                        Category(id: 10, title: "Dresses", parentId: 4),
+                        Category(id: 8, title: "Suits & Blazers", parentId: 4),
+                        Category(id: 15, title: "Shorts", parentId: 4),
+                        Category(id: 13, title: "Sweaters", parentId: 4),
+                        Category(id: 215, title: "Slippers", parentId: 16),
+                        Category(id: 543, title: "Heels", parentId: 16),
+                        Category(id: 1049, title: "Boots", parentId: 16)
+                    ]
                 ),
                 .clothes: SubcategorySection(
                     id: 4,
@@ -176,7 +186,7 @@ class Categories {
         )
     }
     
-    func getCategories(for type: CategoryType) -> MainCategory {
+    public func getCategories(for type: CategoryType) -> MainCategory {
         switch type {
         case .men: return men
         case .women: return women
@@ -184,7 +194,7 @@ class Categories {
         }
     }
     
-    func getSection(for categoryType: CategoryType, sectionType: SectionType) -> SubcategorySection? {
+    public func getSection(for categoryType: CategoryType, sectionType: SectionType) -> SubcategorySection? {
         let mainCategory = getCategories(for: categoryType)
         
         guard let section = mainCategory.sections[sectionType] else {
@@ -194,7 +204,7 @@ class Categories {
         return section
     }
     
-    func getItems(for categoryType: CategoryType, sectionType: SectionType) -> [Category] {
+    public func getItems(for categoryType: CategoryType, sectionType: SectionType) -> [Category] {
         guard let section = getSection(for: categoryType, sectionType: sectionType) else {
             return []
         }
@@ -202,12 +212,12 @@ class Categories {
         return section.items
     }
     
-    func getItem(id: Int, categoryType: CategoryType, sectionType: SectionType) -> Category? {
+    public func getItem(id: Int, categoryType: CategoryType, sectionType: SectionType) -> Category? {
         let items = getItems(for: categoryType, sectionType: sectionType)
         return items.first { $0.id == id }
     }
     
-    func getSubcategoryItems(id: Int) -> [Category] {
+    public func getSubcategoryItems(id: Int) -> [Category] {
         let allMainCategories = [men, women, kids]
 
         for mainCategory in allMainCategories {

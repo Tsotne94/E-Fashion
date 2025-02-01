@@ -6,13 +6,13 @@
 //
 import Foundation
 
-struct ProductInCart: Codable {
+public struct ProductInCart: Codable {
     let id: String
     let product: ProductDetails
     var quantity: Int
     let timestamp: Date
     
-    init(id: String, product: ProductDetails, quantity: Int) {
+    public init(id: String, product: ProductDetails, quantity: Int) {
         self.id = id
         self.product = product
         self.quantity = quantity

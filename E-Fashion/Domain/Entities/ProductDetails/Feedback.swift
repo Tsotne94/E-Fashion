@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 21.01.25.
 //
 
-struct Feedback: Codable {
+public struct Feedback: Codable {
     let total: Int
     let positive: Int
     let negative: Int

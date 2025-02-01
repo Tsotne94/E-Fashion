@@ -10,6 +10,7 @@ import SwiftUI
 struct FavoriteProductCardView: View {
     let product: Product
     let imageData: Data?
+    @State var isInCart: Bool
     let onDelete: () -> Void
     let onAddToCart: () -> Void
     
@@ -69,9 +70,10 @@ struct FavoriteProductCardView: View {
                     Image(systemName: "bag")
                         .foregroundColor(.white)
                         .padding(8)
-                        .background(Color.accentRed)
+                        .background(isInCart ? .customGray : Color.accentRed)
                         .clipShape(Circle())
                 }
+                .disabled(isInCart)
             }
         }
         .padding()

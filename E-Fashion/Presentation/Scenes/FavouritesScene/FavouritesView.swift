@@ -33,7 +33,7 @@ struct FavoritesView: View {
                         ForEach(viewModel.favouriteProducts, id: \.productId) { product in
                             FavoriteProductCardView(
                                 product: product,
-                                imageData: viewModel.images[product.image],
+                                imageData: viewModel.images[product.image], isInCart: viewModel.isInCart[product.productId] ?? false,
                                 onDelete: {
                                     viewModel.deleteProduct(id: product.productId)
                                 },
@@ -52,6 +52,7 @@ struct FavoritesView: View {
         }
         .onAppear {
             viewModel.fetchProducts()
+            viewModel.fetchItemsinCart()
         }
         .background(Color.customWhite)
     }

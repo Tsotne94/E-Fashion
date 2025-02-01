@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 27.01.25.
 //
 
-extension ProductDetails {
+public extension ProductDetails {
     func toProduct() -> Product {
         return Product(
             productId: self.productId,

@@ -11,7 +11,9 @@ import FirebaseFirestore
 public struct DefaultDeliveryRepository: DeliveryRepository {
     @Inject private var getCurrentUserUseCase: GetCurrentUserUseCase
     
-    func addAddress(address: AddressModel) -> AnyPublisher<Void, any Error> {
+    public init() { }
+    
+    public func addAddress(address: AddressModel) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in
@@ -36,7 +38,7 @@ public struct DefaultDeliveryRepository: DeliveryRepository {
             .eraseToAnyPublisher()
     }
     
-    func removeAddress(id: String) -> AnyPublisher<Void, any Error> {
+    public func removeAddress(id: String) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in
@@ -95,7 +97,7 @@ public struct DefaultDeliveryRepository: DeliveryRepository {
             .eraseToAnyPublisher()
     }
     
-    func updateDefaultAddress(id: String) -> AnyPublisher<Void, any Error> {
+    public func updateDefaultAddress(id: String) -> AnyPublisher<Void, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future<Void, any Error> { promise in
@@ -135,7 +137,7 @@ public struct DefaultDeliveryRepository: DeliveryRepository {
             .eraseToAnyPublisher()
     }
     
-    func fetchAddresses() -> AnyPublisher<[AddressModel], any Error> {
+    public func fetchAddresses() -> AnyPublisher<[AddressModel], any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future<[AddressModel], any Error> { promise in
@@ -162,7 +164,7 @@ public struct DefaultDeliveryRepository: DeliveryRepository {
             .eraseToAnyPublisher()
     }
     
-    func fetchDefaultDelieryLocation() -> AnyPublisher<AddressModel, any Error> {
+    public func fetchDefaultDelieryLocation() -> AnyPublisher<AddressModel, any Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user in
                 Future { promise in

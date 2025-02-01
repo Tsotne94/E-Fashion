@@ -7,7 +7,7 @@
 import MyNetworkManager
 import Foundation
 
-final class APIEndpoint {
+public final class APIEndpoint {
     static let shared = APIEndpoint()
     private init() {}
     

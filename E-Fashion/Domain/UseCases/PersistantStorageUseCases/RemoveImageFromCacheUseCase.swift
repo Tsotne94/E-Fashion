@@ -5,16 +5,16 @@
 //  Created by Cotne Chubinidze on 22.01.25.
 //
 
-protocol RemoveImageFromCacheUseCase {
+public protocol RemoveImageFromCacheUseCase {
     func execute(url: String)
 }
 
-struct DefaultRemoveImageFromCacheUseCase: RemoveImageFromCacheUseCase {
+public struct DefaultRemoveImageFromCacheUseCase: RemoveImageFromCacheUseCase {
     @Inject private var cacheRepository: CacheRepository
     
     public init() { }
     
-    func execute(url: String) {
+    public func execute(url: String) {
         cacheRepository.removeImage(url: url)
     }
 }

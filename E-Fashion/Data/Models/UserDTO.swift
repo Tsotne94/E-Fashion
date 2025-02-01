@@ -7,7 +7,7 @@
 
 import FirebaseAuth
 
-struct UserDTO {
+public struct UserDTO {
     let uid: String
     let email: String?
     let displayName: String?

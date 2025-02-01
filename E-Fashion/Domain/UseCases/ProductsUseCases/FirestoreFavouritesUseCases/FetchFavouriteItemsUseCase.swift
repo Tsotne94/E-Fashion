@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol FetchFavouriteItemsUseCase {
+public protocol FetchFavouriteItemsUseCase {
     func execute() -> AnyPublisher<[Product], Error>
 }
 
@@ -16,7 +16,7 @@ public struct DefaultFetchFavouriteItemsUseCase: FetchFavouriteItemsUseCase {
     
     public init() { }
     
-    func execute() -> AnyPublisher<[Product], any Error> {
+    public func execute() -> AnyPublisher<[Product], any Error> {
         favouritesRepository.fetchFavourites()
     }
 }

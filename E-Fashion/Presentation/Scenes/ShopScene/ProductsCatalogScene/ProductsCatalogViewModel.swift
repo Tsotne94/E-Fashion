@@ -19,7 +19,7 @@ protocol ProductsCatalogViewModelInput {
     func presentSortingView()
     func presentFilterView()
     func dismissPresented()
-    func applyFilters(minPrice: Int?, maxPrice: Int?, selectedColors: [ProductColor]?, selectedMaterials: [ProductMaterial]?, selectedConditions: [ProductCondition]?)
+    func fetchWithFilters(minPrice: Int?, maxPrice: Int?, selectedColors: [ProductColor]?, selectedMaterials: [ProductMaterial]?, selectedConditions: [ProductCondition]?)
     var currentPage: Int { get }
     var id: Int? { get set }
     var orderType: OrderType { get set }
@@ -65,7 +65,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
                 minPrice: parameters.minPrice,
                 maxPrice: parameters.maxPrice
             )
-            if let id = id {
+            if let id = id, isLoading == false {
                 fetchProducts(for: id)
             }
             _output.send(.sortingChanged)
@@ -75,13 +75,7 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
     var currentPage: Int = 1
     var id: Int? = nil
     
-    lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orderType) {
-        didSet {
-            if let id = id {
-                fetchProducts(for: id)
-            }
-        }
-    }
+    lazy var parameters: SearchParameters = SearchParameters(page: currentPage, order: orderType)
     
     var products: [Product] = []
     var cateogries: [Category] = [] {
@@ -145,43 +139,44 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
             .store(in: &subscriptions)
     }
     
-    func applyFilters( minPrice: Int?, maxPrice: Int?, selectedColors: [ProductColor]?, selectedMaterials: [ProductMaterial]?, selectedConditions: [ProductCondition]?
-    ) {
-        parameters = SearchParameters(
+    func fetchWithFilters(minPrice: Int?, maxPrice: Int?, selectedColors: [ProductColor]?, selectedMaterials: [ProductMaterial]?, selectedConditions: [ProductCondition]?) {
+        guard let id = id else { return }
+        
+        _output.send(.isLoading(true))
+        
+        let filterParams = SearchParameters(
             page: currentPage,
             order: parameters.order,
             query: parameters.query,
-            category: parameters.category,
+            category: Category(id: id),
             colors: selectedColors,
             materials: selectedMaterials,
             conditions: selectedConditions,
             minPrice: minPrice,
             maxPrice: maxPrice
         )
+        
+        fetchProductsUseCase.execute(params: filterParams)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    print("Error: \(error.localizedDescription)")
+                    self?._output.send(.isLoading(false))
+                }
+            } receiveValue: { [weak self] products in
+                if !products.isEmpty {
+                    self?.products = products
+                    self?._output.send(.productsFetched)
+                } else {
+                    self?._output.send(.nothingFound)
+                }
+                self?._output.send(.isLoading(false))
+            }
+            .store(in: &subscriptions)
     }
     
     func searchProduct(query: String) {
         searchSubject.send(query)
-    }
-    
-    func productTappedAt(index: Int) {
-        shopCorrdinator.goToProductDetail(id: index)
-    }
-    
-    func backButtonTapped() {
-        shopCorrdinator.goBack(animated: true)
-    }
-    
-    func presentSortingView() {
-        shopCorrdinator.presentSortingViewController(nowSelected: orderType, viewModel: self)
-    }
-    
-    func presentFilterView() {
-        shopCorrdinator.presentFilterViewController(nowSelectedParameters: parameters, viewModel: self)
-    }
-    
-    func dismissPresented() {
-        shopCorrdinator.dismissPresented()
     }
     
     private func performSearch(query: String) {
@@ -218,5 +213,25 @@ final class DefaultProductsCatalogViewModel: ProductsCatalogViewModel {
                 }
             }
             .store(in: &subscriptions)
+    }
+    
+    func productTappedAt(index: Int) {
+        shopCorrdinator.goToProductDetail(id: index)
+    }
+    
+    func backButtonTapped() {
+        shopCorrdinator.goBack(animated: true)
+    }
+    
+    func presentSortingView() {
+        shopCorrdinator.presentSortingViewController(nowSelected: orderType, viewModel: self)
+    }
+    
+    func presentFilterView() {
+        shopCorrdinator.presentFilterViewController(nowSelectedParameters: parameters, viewModel: self)
+    }
+    
+    func dismissPresented() {
+        shopCorrdinator.dismissPresented()
     }
 }

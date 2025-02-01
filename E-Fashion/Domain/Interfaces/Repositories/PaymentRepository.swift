@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol PaymentRepository {
+public protocol PaymentRepository {
     func addPaymentMethod(method: CardModel) -> AnyPublisher<Void, Error>
     func fetchPaymentMethods() -> AnyPublisher<[CardModel], Error>
     func removePaymentMethod(id: String) -> AnyPublisher<Void, Error>

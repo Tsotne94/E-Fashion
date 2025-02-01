@@ -7,7 +7,7 @@
 
 import Combine
 
-protocol FirestoreCartRepository {
+public protocol FirestoreCartRepository {
     func addToCart(product: ProductInCart) -> AnyPublisher<Void, Error>
     func fetchItemsInCart() -> AnyPublisher<[ProductInCart], Never>
     func removeWholeItem(id: String) -> AnyPublisher<Void, Error>

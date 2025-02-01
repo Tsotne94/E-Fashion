@@ -139,7 +139,7 @@ class ProductsCatalogViewController: UIViewController {
         setupBinding()
         setupConstraints()
         setupTargets()
-        if let id = self.id {
+        if let id = id {
             viewModel.viewDidLoad(id: id)
         }
     }
@@ -151,7 +151,6 @@ class ProductsCatalogViewController: UIViewController {
     
     func fetchProducts(id: Int) {
         self.id = id
-        viewModel.viewDidLoad(id: id)
     }
     
     private func setupUI() {

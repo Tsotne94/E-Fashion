@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension SearchParameters {
+public extension SearchParameters {
     func toQueryItems() -> [URLQueryItem] {
         var items = [
             URLQueryItem(name: "country", value: "us"),
