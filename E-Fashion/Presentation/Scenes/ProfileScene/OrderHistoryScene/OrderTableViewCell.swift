@@ -75,6 +75,9 @@ class OrderTableViewCell: UITableViewCell, IdentifiableProtocol {
     }
     
     private func setupUI() {
+        contentView.backgroundColor = .white
+        contentView.layer.cornerRadius = 20
+        contentView.clipsToBounds = true
         contentView.addSubview(orderNumberLabel)
         contentView.addSubview(dateLabel)
         contentView.addSubview(quantityLabel)
@@ -122,7 +125,7 @@ class OrderTableViewCell: UITableViewCell, IdentifiableProtocol {
         let length = number.count - 10
         let attributedNum = NSMutableAttributedString(string: number)
         attributedNum.addAttribute(.foregroundColor, value: UIColor.black, range: NSRange(location: 10, length: length))
-        quantityLabel.text = attributedNum.string
+        quantityLabel.attributedText = attributedNum
         
         let date = order.timeStamp.formatted(date: .numeric, time: .omitted)
         dateLabel.text = date
@@ -131,7 +134,7 @@ class OrderTableViewCell: UITableViewCell, IdentifiableProtocol {
         let pricelength = total.count - 14
         let attrPrice = NSMutableAttributedString(string: total)
         attrPrice.addAttribute(.foregroundColor, value: UIColor.black, range: NSRange(location: 14, length: pricelength))
-        priceLabel.text = String(order.totalPrice)
+        priceLabel.attributedText = attrPrice
         
         statusLabel.text = order.status.name
         switch order.status {
