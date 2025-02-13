@@ -88,7 +88,7 @@ enum WomenAssets {
     static let shoes = "womanShoes"
 }
 
-enum DeliveryProviders: String, CaseIterable {
+public enum DeliveryProviders: String, Codable, CaseIterable {
     case dhl = "dhl"
     case usps = "usps"
     case fedex = "fedex"

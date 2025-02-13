@@ -11,7 +11,7 @@ struct FilterView: View {
     let viewModel: DefaultProductsCatalogViewModel
     
     @State private var minPrice: Double = 1
-    @State private var maxPrice: Double = 500
+    @State private var maxPrice: Double = 1500
     @State private var selectedColorId: Int? = nil
     @State private var selectedConditionId: Int? = nil
     @State private var selectedMaterialId: Int? = nil
@@ -23,7 +23,7 @@ struct FilterView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                SUICustomHeaderView(title: "Filters")
+                SUICustomHeaderView(title: "Filters", showBackButton: false)
                 
                 ScrollView {
                     VStack(spacing: 20) {
@@ -40,7 +40,7 @@ struct FilterView: View {
                             SUIPriceRangeSlider(
                                 minPrice: $minPrice,
                                 maxPrice: $maxPrice,
-                                range: 1...500
+                                range: 1...1500
                             )
                             .padding(.horizontal)
                         }

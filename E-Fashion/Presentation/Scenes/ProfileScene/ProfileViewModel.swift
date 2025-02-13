@@ -9,7 +9,6 @@ import Combine
 import Foundation
 
 protocol ProfileViewModel: ProfileViewModelInput, ProfileViewModelOutput {
-    
 }
 
 protocol ProfileViewModelInput {

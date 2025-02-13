@@ -110,6 +110,7 @@ public struct DefaultFirestoreCartRepository: FirestoreCartRepository {
                 }
             }.eraseToAnyPublisher()
     }
+    
     public func clearItems() -> AnyPublisher<Void, Error> {
         getCurrentUserUseCase.execute()
             .flatMap { user -> AnyPublisher<Void, Error> in

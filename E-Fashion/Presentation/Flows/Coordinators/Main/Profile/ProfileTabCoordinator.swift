@@ -14,6 +14,7 @@ protocol ProfileTabCoordinator: Coordinator {
     func goToAddresses()
     func goToPaymentMethods()
     func goToSettings()
+    func goToOrderHistory()
     func goBack()
     func addAddress(viewModel: ShippingAddressesViewModel)
     func addPaymentMethod(viewModel: PaymentMethodsViewModel)
@@ -73,6 +74,10 @@ final class DefaultProfileTabCoordinator: NSObject, ProfileTabCoordinator {
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
         }
         rootViewController.present(addPaymentView, animated: true)
+    }
+    
+    func goToOrderHistory() {
+        
     }
     
     func dismissPresented() {

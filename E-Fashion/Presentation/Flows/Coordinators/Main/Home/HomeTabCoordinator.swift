@@ -14,7 +14,7 @@ protocol HomeTabCoordinator: Coordinator {
     func goBack()
 }
 
-class DefaultHomeTabCoordinator: NSObject, HomeTabCoordinator {
+final class DefaultHomeTabCoordinator: NSObject, HomeTabCoordinator {
     var rootViewController = UINavigationController()
     
     override init() {
