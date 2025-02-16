@@ -76,8 +76,6 @@ class OrderTableViewCell: UITableViewCell, IdentifiableProtocol {
     
     private func setupUI() {
         contentView.backgroundColor = .white
-        contentView.layer.cornerRadius = 20
-        contentView.clipsToBounds = true
         contentView.addSubview(orderNumberLabel)
         contentView.addSubview(dateLabel)
         contentView.addSubview(quantityLabel)

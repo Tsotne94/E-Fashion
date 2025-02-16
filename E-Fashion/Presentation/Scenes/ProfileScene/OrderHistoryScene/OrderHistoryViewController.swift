@@ -75,6 +75,10 @@ class OrderHistoryViewController: UIViewController {
         view.addSubview(ordersTypeStackView)
         view.addSubview(ordersTableView)
         setupTableView()
+        
+        deliveredButton.addTarget(self, action: #selector(deliveredTapped), for: .touchUpInside)
+        processingButton.addTarget(self, action: #selector(proccessingTapped), for: .touchUpInside)
+        cancelledButton.addTarget(self, action: #selector(cancelledTapped), for: .touchUpInside)
     }
     
     private func setupTableView() {
@@ -82,8 +86,8 @@ class OrderHistoryViewController: UIViewController {
         ordersTableView.dataSource = self
         ordersTableView.backgroundColor = .clear
         ordersTableView.register(OrderTableViewCell.self, forCellReuseIdentifier: OrderTableViewCell.reuseIdentifier)
-        ordersTableView.separatorStyle = .none
-        ordersTableView.contentInset = .init(top: 0, left: 0, bottom: 20, right: 0)
+        ordersTableView.separatorStyle = .singleLine
+        ordersTableView.layer.cornerRadius = 20
     }
     
     private func setupConstraints() {
@@ -105,8 +109,53 @@ class OrderHistoryViewController: UIViewController {
         ])
     }
     
+    @objc private func deliveredTapped() {
+        highlightButton(deliveredButton)
+    }
+    
+    @objc private func proccessingTapped() {
+        highlightButton(processingButton)
+    }
+    
+    @objc private func cancelledTapped() {
+        highlightButton(cancelledButton)
+    }
+    
     private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    private func highlightButton(_ sender: UIButton) {
+        switch sender {
+        case deliveredButton:
+            highlight(deliveredButton)
+            resetButton(processingButton)
+            resetButton(cancelledButton)
+        case processingButton:
+            highlight(processingButton)
+            resetButton(deliveredButton)
+            resetButton(cancelledButton)
+        case cancelledButton:
+            highlight(cancelledButton)
+            resetButton(processingButton)
+            resetButton(deliveredButton)
+        default:
+            break
+        }
+    }
+    
+    private func highlight(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.2) {
+            sender.backgroundColor = .accentBlack
+            sender.setTitleColor(.white, for: .normal)
+        }
+    }
+    
+    private func resetButton(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.2) {
+            sender.backgroundColor = .lightGray
+            sender.setTitleColor(.accentBlack, for: .normal)
+        }
     }
 }
 

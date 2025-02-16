@@ -5,7 +5,7 @@
 //  Created by Cotne Chubinidze on 13.02.25.
 //
 
-public enum OrderStatus: Codable {
+public enum OrderStatus: String, Codable {
     case delivered
     case cancelled
     case proccessing

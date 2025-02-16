@@ -44,6 +44,9 @@ public extension DependencyContainer {
             Module { DefaultFetchUserInfoUseCase() as FetchUserInfoUseCase }
             Module { DefaultUploadProfilePictureUseCase() as UploadProfilePictureUseCase }
             Module { DefaultSignOutUseCase() as SignOutUseCase }
+            Module { DefaultFetchOrdersUseCase() as FetchOrdersUseCase }
+            Module { DefaultPlaceOrderUseCase() as PlaceOrderUseCase }
+            Module { DefaultFetchSingleOrderUseCase() as FetchSingleOrderUseCase }
         }
     }
 }
