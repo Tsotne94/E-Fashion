@@ -171,7 +171,7 @@ final class ProfileViewController: UIViewController {
     private func handleMenuItemTap(_ type: MenuItemType) {
         switch type {
         case .orders:
-            print("orders tapped")
+            viewModel.goToOrders()
         case .shippingAddresses:
             viewModel.goToAddresses()
         case .paymentMethods:

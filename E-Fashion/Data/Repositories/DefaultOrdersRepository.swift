@@ -21,8 +21,8 @@ public struct DefaultOrdersRepository: OrdersRepository {
                         .collection("OrdersHistory")
                         .document(user.uid)
                         .collection("Orders")
-                        .order(by: "timeStamp")
                         .whereField("status", isEqualTo: orderStatus.rawValue)
+                        .order(by: "timeStamp")
                     
                     orderRef.getDocuments { snapshot, error in
                         if let error = error {

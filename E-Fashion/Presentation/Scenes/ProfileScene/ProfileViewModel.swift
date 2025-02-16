@@ -18,6 +18,7 @@ protocol ProfileViewModelInput {
     func goToAddresses()
     func goToPaymentMethods()
     func goToSettings()
+    func goToOrders()
     var user: User? { get }
     var numberOfOrders: Int? { get }
     var numberOfAdresses: Int? { get }
@@ -142,5 +143,9 @@ final class DefautlProfileViewModel: ProfileViewModel {
     
     func goToSettings() {
         profileCoordinator.goToSettings()
+    }
+    
+    func goToOrders() {
+        profileCoordinator.goToOrderHistory()
     }
 }

@@ -77,7 +77,8 @@ final class DefaultProfileTabCoordinator: NSObject, ProfileTabCoordinator {
     }
     
     func goToOrderHistory() {
-        
+        let viewController = OrderHistoryViewController()
+        rootViewController.pushViewController(viewController, animated: true)
     }
     
     func dismissPresented() {

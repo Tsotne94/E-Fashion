@@ -22,6 +22,7 @@ protocol CheckoutViewModelInput {
     var totalPrice: Double? { get }
     var defaultDeliveryLocation: AddressModel? { get }
     var defaultPaymentMethod: CardModel? { get }
+    var selectedDelivery: DeliveryProviders { get }
 }
 
 protocol CheckoutViewModelOutput {
@@ -38,9 +39,11 @@ final class DefaultCheckoutViewModel: ObservableObject, CheckoutViewModel {
     @Inject private var fetchProductsInCartUseCase: FetchItemsInCartUseCase
     @Inject private var fetchDefaultPaymentUseCase: FetchDefaultPaymentMethodUseCase
     @Inject private var fetchDefaultAddressUseCase: FetchDefaultDelieryLocationUseCase
+    @Inject private var placeorderUseCase: PlaceOrderUseCase
     
     @Published var products: [ProductInCart] = []
     @Published var totalPrice: Double? = nil
+    @Published var selectedDelivery: DeliveryProviders = .dhl
     @Published var defaultDeliveryLocation: AddressModel? = nil
     @Published var defaultPaymentMethod: CardModel? = nil
     
@@ -66,7 +69,31 @@ final class DefaultCheckoutViewModel: ObservableObject, CheckoutViewModel {
     }
     
     func orderPlaced() {
-        coordinator.orderPlaced()
+        guard let price = totalPrice else { return }
+
+        let orderPrice = price - selectedDelivery.price()
+        
+        let order = OrderModel(
+            price: orderPrice,
+            deliveryFee: selectedDelivery.price(),
+            totalPrice: price,
+            items: products,
+            deliveryProvider: selectedDelivery,
+            status: .proccessing)
+        
+        placeorderUseCase.execute(order: order)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    print("order placed")
+                case .failure(let error):
+                    print("error occured during placing order: \(error)")
+                }
+            } receiveValue: { [weak self] _ in
+                self?.coordinator.orderPlaced()
+            }
+            .store(in: &subscriptions)
     }
     
     func fetchDefaultAddress() {

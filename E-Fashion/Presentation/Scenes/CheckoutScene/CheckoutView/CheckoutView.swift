@@ -9,14 +9,13 @@ import SwiftUI
 
 struct CheckoutView: View {
     @StateObject private var viewModel = DefaultCheckoutViewModel()
-    @State var selectedDelivery: DeliveryProviders = .dhl
     
     var body: some View {
         VStack {
             if viewModel.products.isEmpty {
                 EmptyStateView(viewModel: viewModel)
             } else {
-                FullCheckoutView(viewModel: viewModel, selectedDelivery: $selectedDelivery)
+                FullCheckoutView(viewModel: viewModel, selectedDelivery: $viewModel.selectedDelivery)
             }
         }
         .onAppear {

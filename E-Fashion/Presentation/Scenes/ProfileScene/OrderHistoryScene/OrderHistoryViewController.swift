@@ -5,9 +5,13 @@
 //  Created by Cotne Chubinidze on 13.02.25.
 //
 
+import Combine
 import UIKit
 
 class OrderHistoryViewController: UIViewController {
+    private let viewModel = DefaultOrderHistoryViewModel()
+    private var subscriptions = Set<AnyCancellable>()
+    
     private lazy var header: CustomHeaderView = {
         let header = CustomHeaderView(title: "My Orders", showBackButton: true)
         header.translatesAutoresizingMaskIntoConstraints = false
@@ -66,7 +70,13 @@ class OrderHistoryViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
+        setupBinding()
         setupConstraints()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.viewDidLoad()
     }
     
     private func setupUI() {
@@ -79,6 +89,18 @@ class OrderHistoryViewController: UIViewController {
         deliveredButton.addTarget(self, action: #selector(deliveredTapped), for: .touchUpInside)
         processingButton.addTarget(self, action: #selector(proccessingTapped), for: .touchUpInside)
         cancelledButton.addTarget(self, action: #selector(cancelledTapped), for: .touchUpInside)
+    }
+    
+    private func setupBinding() {
+        viewModel.output
+            .sink { [weak self] action in
+                switch action {
+                case .ordersFetched:
+                    self?.ordersTableView.reloadData()
+                case .statusChanged(let orderStatus):
+                    self?.highlightButton(orderStatus)
+                }
+            }.store(in: &subscriptions)
     }
     
     private func setupTableView() {
@@ -110,37 +132,35 @@ class OrderHistoryViewController: UIViewController {
     }
     
     @objc private func deliveredTapped() {
-        highlightButton(deliveredButton)
+        viewModel.fetchedOrdersStatus = .delivered
     }
     
     @objc private func proccessingTapped() {
-        highlightButton(processingButton)
+        viewModel.fetchedOrdersStatus = .proccessing
     }
     
     @objc private func cancelledTapped() {
-        highlightButton(cancelledButton)
+        viewModel.fetchedOrdersStatus = .cancelled
     }
     
     private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
     
-    private func highlightButton(_ sender: UIButton) {
+    private func highlightButton(_ sender: OrderStatus) {
         switch sender {
-        case deliveredButton:
+        case .delivered:
             highlight(deliveredButton)
             resetButton(processingButton)
             resetButton(cancelledButton)
-        case processingButton:
+        case .proccessing:
             highlight(processingButton)
             resetButton(deliveredButton)
             resetButton(cancelledButton)
-        case cancelledButton:
+        case .cancelled:
             highlight(cancelledButton)
             resetButton(processingButton)
             resetButton(deliveredButton)
-        default:
-            break
         }
     }
     
@@ -161,7 +181,7 @@ class OrderHistoryViewController: UIViewController {
 
 extension OrderHistoryViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        viewModel.orders.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -169,7 +189,7 @@ extension OrderHistoryViewController: UITableViewDelegate, UITableViewDataSource
             return UITableViewCell()
         }
         
-        let order = OrderModel(price: 100, deliveryFee: 10, totalPrice: 110, items: [], deliveryProvider: .usps, status: .delivered)
+        let order = viewModel.orders[indexPath.row]
         cell.configureCell(with: order)
         return cell
     }
