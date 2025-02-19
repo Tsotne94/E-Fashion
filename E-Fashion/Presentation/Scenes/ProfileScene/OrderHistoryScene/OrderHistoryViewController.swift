@@ -197,6 +197,15 @@ extension OrderHistoryViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let action = UIContextualAction(style: .destructive, title: "Delete") { (action, sourceView, completionHandler) in
+            self.viewModel.orders.remove(at: indexPath.row)
+            completionHandler(true)
+            tableView.reloadData()
+        }
+        return UISwipeActionsConfiguration(actions: [action])
+    }
 }
 
 import SwiftUI
