@@ -108,8 +108,7 @@ class OrderHistoryViewController: UIViewController {
         ordersTableView.dataSource = self
         ordersTableView.backgroundColor = .clear
         ordersTableView.register(OrderTableViewCell.self, forCellReuseIdentifier: OrderTableViewCell.reuseIdentifier)
-        ordersTableView.separatorStyle = .singleLine
-        ordersTableView.layer.cornerRadius = 20
+        ordersTableView.separatorStyle = .none
     }
     
     private func setupConstraints() {
@@ -127,7 +126,7 @@ class OrderHistoryViewController: UIViewController {
             ordersTableView.topAnchor.constraint(equalTo: ordersTypeStackView.bottomAnchor, constant: 20),
             ordersTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             ordersTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            ordersTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ordersTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
     
@@ -191,7 +190,12 @@ extension OrderHistoryViewController: UITableViewDelegate, UITableViewDataSource
         
         let order = viewModel.orders[indexPath.row]
         cell.configureCell(with: order)
+        cell.addShadow()
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

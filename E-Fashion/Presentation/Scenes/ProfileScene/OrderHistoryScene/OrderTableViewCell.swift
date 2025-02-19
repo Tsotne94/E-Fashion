@@ -74,8 +74,20 @@ class OrderTableViewCell: UITableViewCell, IdentifiableProtocol {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8))
+    }
+    
     private func setupUI() {
+        self.backgroundColor = .clear
+        self.layer.cornerRadius = 20
+        self.layer.masksToBounds = false
+        
         contentView.backgroundColor = .white
+        contentView.layer.cornerRadius = 20
+        contentView.clipsToBounds = true
+        
         contentView.addSubview(orderNumberLabel)
         contentView.addSubview(dateLabel)
         contentView.addSubview(quantityLabel)
@@ -128,7 +140,8 @@ class OrderTableViewCell: UITableViewCell, IdentifiableProtocol {
         let date = order.timeStamp.formatted(date: .numeric, time: .omitted)
         dateLabel.text = date
         
-        let total = "Total Amount: \(order.totalPrice)$"
+        let totalPriceRounded = Double(round(100 * order.totalPrice)) / 100
+        let total = "Total Amount: \(totalPriceRounded)$"
         let pricelength = total.count - 14
         let attrPrice = NSMutableAttributedString(string: total)
         attrPrice.addAttribute(.foregroundColor, value: UIColor.black, range: NSRange(location: 14, length: pricelength))

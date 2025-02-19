@@ -110,7 +110,7 @@ final class DefaultSettingsViewModel: SettingsViewModel {
     }
     
     func updateUsername(name: String) {
-        guard var currentUser = self.user else  { return }
+        guard let currentUser = self.user else  { return }
 
         let updatedUser = User(
             uid: currentUser.uid,
